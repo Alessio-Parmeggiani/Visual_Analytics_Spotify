@@ -1,6 +1,6 @@
 
 // set the dimensions and margins of the graph
-const margin = {top: 10, right: 30, bottom: 30, left: 60},
+const margin = {top: 10, right: 30, bottom: 70, left: 60},
         width = 460 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
 
@@ -23,7 +23,6 @@ d3.csv("/tracks_small.csv",d3.autoType).then(function(data){
 
 var category_x="year"
 
-
 var category_y="tempo"
 var category_y2="valence"
 
@@ -36,14 +35,16 @@ var x = d3.scaleLinear()
 .domain([xLimits[0], xLimits[1]])
 .range([ 0, width ]);
 
+var xAxis_ = d3.axisBottom(x).ticks(5, ".0f")
 var xAxis=svg.append("g")
 .attr("transform", `translate(0, ${height})`)
-.call(d3.axisBottom(x));
+.call(xAxis_)
+
 
 //label for x axis
 svg.append("text")
       .attr("text-anchor", "end")
-      .attr("x", width)
+      .attr("x", width + margin.right )
       .attr("y", height + margin.top + 20)
       .text(category_x);
 
@@ -52,8 +53,10 @@ var y = d3.scaleLinear()
 .domain([yLimits[0],yLimits[1]])
 .range([ height, 0]);
 
+var yAxis_=d3.axisLeft(y).ticks(5, ".0f")
+
 var yAxis=svg.append("g")
-.call(d3.axisLeft(y));
+.call(yAxis_);
 
 // Y axis label:
 var yLabel=svg.append("text")
@@ -63,6 +66,39 @@ var yLabel=svg.append("text")
     .attr("x", -margin.top)
     .text(category_y)
 
+// Add a clipPath: everything out of this area won't be drawn.
+var clip = svg.append("defs").append("svg:clipPath")
+    .attr("id", "clip")
+    .append("svg:rect")
+    .attr("width", width )
+    .attr("height", height )
+    .attr("x", 0)
+    .attr("y", 0);
+
+// Create the scatter variable: where both the circles and the interactions take place
+var scatter = svg.append('g')
+.attr("clip-path", "url(#clip)")
+
+scatter
+.selectAll("circle")
+.data(data)
+.enter()
+.append("circle")
+    .attr("cx", function (d) { return x(d[category_x]); } )
+    .attr("cy", function (d) { return y(d[category_y]); } )
+    .attr("r", 3)
+    .style("opacity", 0.5)
+    .style("fill", "#69b3a2")
+
+
+/*
+***************************
+INTERACTIONS
+***************************
+*/
+
+
+//CHANGE AXIS
 yLabel.on("click", function() {
     console.log("changing y axis");
     yLabel.text(category_y2)
@@ -83,33 +119,56 @@ yLabel.on("click", function() {
 
     });
 
-// Add a clipPath: everything out of this area won't be drawn.
-var clip = svg.append("defs").append("svg:clipPath")
-    .attr("id", "clip")
-    .append("svg:rect")
-    .attr("width", width )
-    .attr("height", height )
-    .attr("x", 0)
-    .attr("y", 0);
 
-// Create the scatter variable: where both the circles and the brush take place
-var scatter = svg.append('g')
-.attr("clip-path", "url(#clip)")
 
+//BRUSHING
+
+// Add brushing
+var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+.extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+.on("end", updateChartBrush) // Each time the brush selection changes, trigger the 'updateChart' function
 
 scatter
-.selectAll("circle")
-.data(data)
-.enter()
-.append("circle")
-    .attr("cx", function (d) { return x(d[category_x]); } )
-    .attr("cy", function (d) { return y(d[category_y]); } )
-    .attr("r", 3)
-    .style("opacity", 0.5)
-    .style("fill", "#69b3a2")
+.append("g")
+    .attr("class", "brush")
+    .call(brush);
 
+// A function that set idleTimeOut to null
+var idleTimeout
+function idled() { idleTimeout = null; }
+
+// A function that update the chart for given boundaries
+function updateChartBrush(event) {
+
+    extent = event.selection
+
+    // If no selection, back to initial coordinate. Otherwise, update X axis domain
+    if(!extent){
+      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+      x.domain([xLimits[0], xLimits[1]])
+    }else{
+      x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+      scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+    }
+
+    // Update axis and circle position
+    xAxis.transition().duration(1000)
+    .call(xAxis_)    
+        .selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
+    scatter
+      .selectAll("circle")
+      .transition().duration(1000)
+      .attr("cx", function (d) { return x(d[category_x]); } )
+      .attr("cy", function (d) { return y(d[category_y]); } )
+
+}
 
 /*
+//SCROLLING
 // Alternative: Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
 var zoom = d3.zoom()
     .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
@@ -144,47 +203,5 @@ function updateChartZoom(event) {
         .attr('cy', function(d) {return newY(d[category_y])});
 }
 */
-
-
-//BRUSHING
-
-// Add brushing
-var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
-.extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-.on("end", updateChartBrush) // Each time the brush selection changes, trigger the 'updateChart' function
-
-scatter
-.append("g")
-    .attr("class", "brush")
-    .call(brush);
-
-// A function that set idleTimeOut to null
-var idleTimeout
-function idled() { idleTimeout = null; }
-
-// A function that update the chart for given boundaries
-function updateChartBrush(event) {
-
-    extent = event.selection
-
-    // If no selection, back to initial coordinate. Otherwise, update X axis domain
-    if(!extent){
-      if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-      x.domain([xLimits[0], xLimits[1]])
-    }else{
-      x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
-      scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
-    }
-
-    // Update axis and circle position
-    xAxis.transition().duration(1000).call(d3.axisBottom(x))
-    scatter
-      .selectAll("circle")
-      .transition().duration(1000)
-      .attr("cx", function (d) { return x(d[category_x]); } )
-      .attr("cy", function (d) { return y(d[category_y]); } )
-
-}
-
 
 })
