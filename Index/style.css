@@ -1,0 +1,99 @@
+p {
+    color: blue;
+}
+
+html {
+    scrollbar-width: none;
+}
+body {
+    height: 100vh;
+    margin: 0;
+    scrollbar-width: none;
+    background-color: antiquewhite;
+}
+
+#search-form {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+}
+
+#search-input {
+    width: 100%;
+    box-sizing: border-box; /* this is needed otherwise its width would be that of the parent PLUS padding and border size */
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+#scatter-plot-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+.scatter-plot {
+    width: 50%;
+    border-top: 3px solid orangered;
+}
+#scatter-plot-1 {
+    border-right: 3px solid orangered;
+}
+
+
+svg {
+    height: 100%;
+    width: 100%;
+}
+
+#radial-graph {
+    width: 50%;
+    border-right: 3px solid green;
+}
+
+#other-graph {
+    width: 50%;
+}
+
+.block {
+    border: 4px solid;
+    border-radius: 3px;
+    margin: 5px;
+    text-align: center;
+}
+
+#filter-bar {
+    grid-area: filter-bar;
+    border-color: blue;
+}
+
+#scatter-plots {
+    grid-area: scatter-plots;
+    border-color: orangered;
+    display: flex;
+    flex-direction: column;
+}
+
+#stats-bar {
+    grid-area: stats-bar;
+    border-color: orange;
+
+}
+
+#graphs {
+    grid-area: graphs;
+    border-color: green;
+    display: flex;
+    flex-direction: row;
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-rows: 60% 40%;
+    grid-template-areas:
+        "filter-bar scatter-plots scatter-plots scatter-plots"
+        "stats-bar graphs graphs graphs";
+    width: 100%;
+    height: 100%;
+}

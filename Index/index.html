@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Visual Analytics Project</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script defer src="..\Scatter_plot.js"></script>
+        <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
+    </head>
+    <body>
+        <div id="container">
+            <div id="filter-bar" class="block">Filters</div>
+            <div id="scatter-plots" class="block">
+                <form id="search-form">
+                    <input type="text" id="search-input" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+                <div id="scatter-plot-container">
+                    <div id="scatter-plot-1" class="scatter-plot"></div>
+                    <div id="scatter-plot-2" class="scatter-plot"></div>
+                </div>	
+            </div>
+            <div id="stats-bar" class="block">Stats</div>
+            <div id="graphs" class="block">
+                <div id="radial-graph"></div>
+                <div id="other-graph"></div>
+            </div>
+        </div>
+    </body>
+</html>
