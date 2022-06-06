@@ -22,7 +22,7 @@ function callback_data(data, margin, width, height, svg) {
     svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", width)
-        .attr("y", height + 35)
+        .attr("y", height + 45)
         .text(category_x);
 
     // Add Y axis
@@ -36,7 +36,7 @@ function callback_data(data, margin, width, height, svg) {
     .call(yAxis_);
 
     // Y axis label:
-    svg.append("text")
+    var yLabel = svg.append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
         .attr("y", -margin.left+20)
@@ -246,7 +246,7 @@ function main() {
     const div_width = document.getElementById("scatter-plot-1").clientWidth;
 
     // set the dimensions and margins of the graph
-    const margin = {top: 10, right: 20, bottom: 50, left: 60},
+    const margin = {top: 10, right: 20, bottom: 60, left: 60},
     width = div_width - margin.left - margin.right,
     height = div_height - margin.top - margin.bottom;
     
