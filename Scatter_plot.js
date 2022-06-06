@@ -1,3 +1,9 @@
+function getMaxMin(data, key) {
+    let max = d3.max(data, d => d[key]);
+    let min = d3.min(data, d => d[key]);
+    return [min, max];
+}
+
 function callback_data(data, margin, width, height, svg) {
 
     var category_x="year"
@@ -69,12 +75,12 @@ function callback_data(data, margin, width, height, svg) {
         .style("opacity", 0.5)
         .style("fill", "#69b3a2")
 
+
     /*
     ***************************
     INTERACTIONS
     ***************************
     */
-
 
     //CHANGE AXIS
     yLabel.on("click", function() {
@@ -94,7 +100,6 @@ function callback_data(data, margin, width, height, svg) {
         .attr("cy", function (d) { return y(d[category_y2]); } )
         
 
-
         //switch category_y and category_y2
         var temp=category_y
         category_y=category_y2
@@ -102,44 +107,6 @@ function callback_data(data, margin, width, height, svg) {
 
 
     });
-
-
-    /*
-    // Alternative: Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
-    var zoom = d3.zoom()
-        .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
-        .extent([[0, 0], [width, height]])
-        .on("zoom", updateChartZoom);
-
-    // This add an invisible rect on top of the chart area. This rect can recover pointer events: necessary to understand when the user zoom
-    svg.append("rect")
-        .attr("width", width)
-        .attr("height", height)
-        .style("fill", "none")
-        .style("pointer-events", "all")
-        .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-        .call(zoom);
-    // now the user can zoom and it will trigger the function called updateChart
-
-    // A function that updates the chart when the user zoom and thus new boundaries are available
-    function updateChartZoom(event) {
-
-        // recover the new scale
-        var newX = event.transform.rescaleX(x);
-        var newY = event.transform.rescaleY(y);
-
-        // update axes with these new boundaries
-        xAxis.call(d3.axisBottom(newX))
-        yAxis.call(d3.axisLeft(newY))
-
-        // update circle position
-        scatter
-            .selectAll("circle")
-            .attr('cx', function(d) {return newX(d[category_x]) })
-            .attr('cy', function(d) {return newY(d[category_y])});
-    }
-    */
-
 
     //BRUSHING
 
@@ -165,14 +132,20 @@ function callback_data(data, margin, width, height, svg) {
         // If no selection, back to initial coordinate. Otherwise, update X axis domain
         if(!extent){
             if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-            x.domain([min_x, max_x])
+            x.domain([xLimits[0], xLimits[1]])
         }else{
             x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
             scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
         }
 
         // Update axis and circle position
-        xAxis.transition().duration(1000).call(d3.axisBottom(x))
+        xAxis.transition().duration(1000)
+        .call(d3.axisBottom(x))
+            .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", ".15em")
+            .attr("transform", "rotate(-65)");
         scatter
         .selectAll("circle")
         .transition().duration(1000)
@@ -181,11 +154,7 @@ function callback_data(data, margin, width, height, svg) {
 
     }
 
-    function getMaxMin(data, key) {
-        let max = d3.max(data, d => d[key]);
-        let min = d3.min(data, d => d[key]);
-        return [min, max];
-    }
+
 
     // Update axis and circle position
     xAxis.transition().duration(1000)
