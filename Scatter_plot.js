@@ -36,9 +36,12 @@ var x = d3.scaleLinear()
 .range([ 0, width ]);
 
 var xAxis_ = d3.axisBottom(x).ticks(5, ".0f")
+
 var xAxis=svg.append("g")
 .attr("transform", `translate(0, ${height})`)
-.call(xAxis_)
+.call(xAxis_) 
+
+
 
 
 //label for x axis
@@ -53,7 +56,7 @@ var y = d3.scaleLinear()
 .domain([yLimits[0],yLimits[1]])
 .range([ height, 0]);
 
-var yAxis_=d3.axisLeft(y).ticks(5, ".0f")
+var yAxis_=d3.axisLeft(y)
 
 var yAxis=svg.append("g")
 .call(yAxis_);
@@ -101,14 +104,20 @@ INTERACTIONS
 //CHANGE AXIS
 yLabel.on("click", function() {
     console.log("changing y axis");
+
+    //change axis
     yLabel.text(category_y2)
     yLimits=getMaxMin(data, category_y2)
     y.domain([yLimits[0],yLimits[1]])
-    yAxis.call(d3.axisLeft(y));
+    yAxis.transition().duration(200)
+    .call(yAxis_);
+
+    //change plot
     scatter
     .selectAll("circle")
-    .transition().duration(1000)
+    .transition().duration(500).ease(d3.easeBackInOut)
     .attr("cy", function (d) { return y(d[category_y2]); } )
+    
 
 
     //switch category_y and category_y2
@@ -167,8 +176,9 @@ function updateChartBrush(event) {
 
 }
 
-/*
 //SCROLLING
+/*
+
 // Alternative: Set the zoom and Pan features: how much you can zoom, on which part, and what to do when there is a zoom
 var zoom = d3.zoom()
     .scaleExtent([.5, 20])  // This control how much you can unzoom (x0.5) and zoom (x20)
