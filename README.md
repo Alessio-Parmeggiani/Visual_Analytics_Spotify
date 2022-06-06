@@ -25,3 +25,8 @@
   - 22: "time_signature"
   - 23: "year"
   - 24: "release_date"
+
+## TO-DO
+
+- levare primo numero da assi del radial plot
+- cliccare su qualcosa
