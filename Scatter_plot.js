@@ -12,24 +12,28 @@ const svg = d3.select("#my_dataviz")
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+function getMaxMin(data, key) {
+    let max = d3.max(data, d => d[key]);
+    let min = d3.min(data, d => d[key]);
+    return [min, max];
+}
+
 //Read the data
 d3.csv("/tracks_small.csv",d3.autoType).then(function(data){
 
 var category_x="year"
-var category_y="tempo"
 
-var max_x=d3.max(data, function(d) { 
-  return d[category_x]; })
-var max_y=d3.max(data, function(d) { 
-    return d[category_y]; })
-var min_x=d3.min(data, function(d) { 
-      return d[category_x]; })
-var min_y=d3.min(data, function(d) { 
-        return d[category_y]; })
+
+var category_y="tempo"
+var category_y2="valence"
+
+var xLimits=getMaxMin(data, category_x)
+var yLimits=getMaxMin(data, category_y)
+
 
 // Add X axis
 var x = d3.scaleLinear()
-.domain([min_x, max_x])
+.domain([xLimits[0], xLimits[1]])
 .range([ 0, width ]);
 
 var xAxis=svg.append("g")
@@ -45,19 +49,39 @@ svg.append("text")
 
 // Add Y axis
 var y = d3.scaleLinear()
-.domain([min_y,max_y])
+.domain([yLimits[0],yLimits[1]])
 .range([ height, 0]);
+
 var yAxis=svg.append("g")
 .call(d3.axisLeft(y));
 
 // Y axis label:
-svg.append("text")
+var yLabel=svg.append("text")
     .attr("text-anchor", "end")
     .attr("transform", "rotate(-90)")
     .attr("y", -margin.left+20)
     .attr("x", -margin.top)
     .text(category_y)
 
+yLabel.on("click", function() {
+    console.log("changing y axis");
+    yLabel.text(category_y2)
+    yLimits=getMaxMin(data, category_y2)
+    y.domain([yLimits[0],yLimits[1]])
+    yAxis.call(d3.axisLeft(y));
+    scatter
+    .selectAll("circle")
+    .transition().duration(1000)
+    .attr("cy", function (d) { return y(d[category_y2]); } )
+
+
+    //switch category_y and category_y2
+    var temp=category_y
+    category_y=category_y2
+    category_y2=temp
+
+
+    });
 
 // Add a clipPath: everything out of this area won't be drawn.
 var clip = svg.append("defs").append("svg:clipPath")
@@ -146,7 +170,7 @@ function updateChartBrush(event) {
     // If no selection, back to initial coordinate. Otherwise, update X axis domain
     if(!extent){
       if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-      x.domain([min_x, max_x])
+      x.domain([xLimits[0], xLimits[1]])
     }else{
       x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
       scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
