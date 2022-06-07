@@ -29,4 +29,4 @@
 ## TO-DO
 
 - levare primo numero da assi del radial plot
-- cliccare su qualcosa
+- far funzionare sia brushing che hover/click
