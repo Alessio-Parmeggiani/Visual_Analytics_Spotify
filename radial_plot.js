@@ -107,19 +107,34 @@ function radialPlotMain() {
   axs=[]
   for (let i=0; i<categories.length; i++){
     //create axis for this category
-    axs.push(d3.axisRight()
-    .scale(cat_radial_scale[i])
-    .ticks(5)
-    )
+    axis=d3.axisRight()
+        .scale(cat_radial_scale[i])
+        .ticks(5)
+    axs.push(axis)
 
     //insert axis, rotate axis and rotate text of ticks
     const angle = i * 360 / categories.length;
-    svg.append('g')
+
+    //to do, move tick label so they are visible
+    var tickTranslate=(angle/360)*20
+    if (angle%180==0) tickTranslate=0
+    tickTranslate=0
+
+    var axisSvg=svg.append('g')
     .attr('transform', ` translate(${center.x},${center.y}) rotate(${angle})`)
-    .call(axs[i])
+    .call(axis)
+    .style('fill-opacity', d => d === 0 ? 0.0 : 1.0)
     .selectAll("text")
-    .attr("transform", "rotate(" + (-angle) + ")")
+    .attr("transform", "translate("+ (tickTranslate)+","+(tickTranslate)+") rotate(" + (-angle) + ")") 
     .style("text-anchor", "start");
+    
+    //axisSvg.call(axis).filter(function (d) { return d === 0;  }).remove()
+    svg.selectAll(".tick")
+    .each(function (d) {
+        if ( d === 0 ) {
+            this.remove();
+        }
+    });
 
     const angle_rad=i * Math.PI*2  / categories.length;
     const x = center.x + radius*1.2 * Math.sin(angle_rad);
