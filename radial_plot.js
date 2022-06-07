@@ -1,9 +1,10 @@
+//what to plot when a song is selected in radial plot
 const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo"]
 var radialPath;
 var cat_radial_scale;
 var radial_plot_center;
 
-
+//this is called when I click a pint in the scatter plot
 function updateRadialPlot(targetSong){
 
   var song=[]
@@ -12,7 +13,7 @@ function updateRadialPlot(targetSong){
     song.push( 
       {category:categories[i],
       value:  (targetSong[categories[i]] - cat_limits[i][0]) / (cat_limits[i][1] - cat_limits[i][0]) ,
-      max_value:cat_max_values[i] })
+      })
   }
   console.log("selected song is ", song)
   song.push(song[0])
@@ -34,6 +35,19 @@ function updateRadialPlot(targetSong){
   .attr('stroke', 'red')
   .attr('stroke-width', 3)
 }
+  
+/*
+  //create random song
+  function create_song(categories) {
+    var song=[]
+    for(var i=0;i<categories.length;i++){
+      song.push( 
+        {category:categories[i],
+        value:Math.random()})
+    }
+    return song
+  }
+*/
 
 function radialPlotMain() {
   const svg = d3.select('#radial-graph')
@@ -46,44 +60,25 @@ function radialPlotMain() {
   console.log(radius);
   radial_plot_center= {x: div_width/2, y: div_height/2};
   center=radial_plot_center;
-  //song data
-  
-  cat_max_values=[1,1,1,1,1,1]
-  //get max values for each category
-  var song_values=[0.1,0.5,1.3,2.4,3.5,4]
-  /*
-  //create song
-  function create_song(categories, cat_max_values) {
-    var song=[]
-    for(var i=0;i<categories.length;i++){
-      song.push( 
-        {category:categories[i],
-        value:Math.random()*cat_max_values[i],
-        max_value:cat_max_values[i] })
-    }
-    return song
-  }
-  */
-  /*
-  var song=create_song(categories, cat_max_values)
-  */
 
-  //first song
+  //first song all 0
   var song=[]
     for(var i=0;i<categories.length;i++){
       song.push( 
         {category:categories[i],
-        value:0,
-        max_value:cat_max_values[i] })
+        value:0
+      })
     }
   song.push(song[0])
+  
 
-  const maxValue = d3.max(song_values);
+  //create circle plot
+  //secondo me questo non serve a niente per fare i cerchi
+  // ne fa sempre 5 indipendentemente da maxValue
+  const maxValue = 1;
   const radialScale = d3.scaleLinear()
     .domain([0, maxValue]) 
     .range([0, radius]) 
-
-  //create circle plot
   let val, angle;
   for (val = 0; val <= maxValue; val += maxValue / 5) {
     const r = radialScale(val);
@@ -95,16 +90,19 @@ function radialPlotMain() {
       .style('fill', 'none');
   }
 
+
+  console.log("cat limits",cat_limits)
   //create a linear scale for each category
   cat_radial_scale=[]
-  for (let i=0;i<song.length;i++){
+  for (let i=0;i<song.length-1;i++){
     cat_radial_scale.push(d3.scaleLinear()
-    .domain([0,song[i].max_value])
+    //.domain([cat_limits[i][0],cat_limits[i][1]])
+    .domain([0,1])
     .range([0,radius])
     )
   }
 
-  var labelClickable;
+  
   //create the axis for the plot
   axs=[]
   for (let i=0; i<categories.length; i++){
@@ -128,10 +126,9 @@ function radialPlotMain() {
     const y = center.y + radius*1.2 * -Math.cos(angle_rad);
 
     //add label
-    labelClickable=svg.append('text')
+    svg.append('text')
       .text(categories[i])
       .attr('text-anchor', 'middle')
-
       .attr('x', x)
       .attr('y', y)
   }
@@ -157,116 +154,9 @@ function radialPlotMain() {
     .attr('stroke-width', 3)
     .attr('transform', `translate(${center.x},${center.y})`)
   
-  radialPath.on("click", function() {
-    var song=create_song(categories, cat_max_values)
-    song.push(song[0])
 
-    radial=d3.radialLine()
-    .radius( function(d,i) { 
-      // if is used for closure of plot
-      if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
-      return cat_radial_scale[i](d.value) } )
-    .angle((d, i) => (2*Math.PI / (categories.length)) * i)
-    .curve(d3.curveCatmullRom)
-
-    radialPath
-    .attr('transform', `translate(${center.x},${center.y})`)
-    .transition()
-    .attr('d', radial(song))
-    .attr('fill', 'none')
-    .attr('stroke', 'red')
-    .attr('stroke-width', 3)
-
-  })
     
 }
 
-radialPlotMain()
 
-
-  //other implementation
-  /*
-
-  const data = [
-  {color: 'orange', values: [500, 400, 900]},
-  {color: 'blue', values: [800, 200, 400]},
-  {color: 'green', values: [300, 1000, 600]},
-];
-
-const svg = d3.select('svg');
-
-const maxValue = 1000;
-const radius = 150;
-const center = {x: 250, y: 200};
-
-const radialScale = d3.scaleLinear()
-  .domain([0, maxValue]) 
-  .range([radius, 0]) 
-  
-const axis = d3.axisRight()
-  .scale(radialScale)
-  .ticks(5)
-
-svg.append('g')
-  .attr('transform', `translate(${center.x},${center.y  - radius})`)
-  .call(axis);
-
-let val, angle;
-for (val = 0; val <= maxValue; val += maxValue / 5) {
-  const r = radialScale(val);
-  svg.append('circle')
-    .attr('cx', center.x)
-    .attr('cy', center.y)
-    .attr('r', r)
-    .style('stroke', '#aaa')
-    .style('fill', 'none');
-}
-
-const labels = ['Base Attack', 'Base Stamina', 'Base Defence'];
-const anchors = ['middle', 'start', 'end'];
-const shifts = [{x: 0, y: -15}, {x: 10, y: 15}, {x: -10, y: 15}];
-
-for (let index = 0; index < labels.length; index++) {
-  const angle = index * Math.PI * 2 / labels.length;
-  const x = center.x + radius * Math.sin(angle);
-  const y = center.y + radius * -Math.cos(angle);
-  if (angle > 0) {
-    svg.append('line')
-        .attr('x1', center.x)
-        .attr('y1', center.y)
-        .attr('x2', x)
-        .attr('y2', y)
-        .style('stroke', '#000');
-  }
-  svg.append('text')
-    .text(labels[index])
-    .attr('text-anchor', anchors[index])
-    .attr('dx', shifts[index].x)
-    .attr('dy', shifts[index].y)
-    .attr('x', x)
-    .attr('y', y)
-}
-
-data.forEach(({color, values}, index) => {
-    let path = '';
-  for (let i = 0; i < values.length; i++) {
-    const r = radius - radialScale(values[i]);
-    console.log('V: ', values[i]);
-    console.log('R: ', r);
-    const angle = i * Math.PI * 2 / values.length;
-    const x = center.x + r * Math.sin(angle);
-    const y = center.y + r * -Math.cos(angle);
-    path += `${i > 0 ? 'L' : 'M'} ${x},${y} `;
-  }
-  path += 'Z';
-  svg.append('path')
-    .attr('d', path)
-    .style('stroke', color)
-    .style('stroke-width', 3)
-    .style('stroke-opacity', 0.6)
-    .style('fill', color)
-    .style('fill-opacity', 0.3)
-  
-});
-
-  */
+ 
