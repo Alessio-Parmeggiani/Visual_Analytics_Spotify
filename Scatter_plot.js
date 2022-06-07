@@ -30,6 +30,7 @@ function callback_data(data, margin, width, height, svg) {
 
     var xAxis=svg.append("g")
     .attr("transform", `translate(0, ${height})`)
+    .attr('id', "axis--x")
     .call(xAxis_) 
 
     //label for x axis
@@ -47,6 +48,7 @@ function callback_data(data, margin, width, height, svg) {
     var yAxis_=d3.axisLeft(y)
 
     var yAxis=svg.append("g")
+    .attr('id', "axis--y")
     .call(yAxis_);
 
     // Y axis label:
@@ -72,16 +74,7 @@ function callback_data(data, margin, width, height, svg) {
     .attr("clip-path", "url(#clip)")
 
 
-    scatter
-    .selectAll("circle")
-    .data(data)
-    .enter()
-    .append("circle")
-        .attr("cx", function (d) { return x(d[category_x]); } )
-        .attr("cy", function (d) { return y(d[category_y]); } )
-        .attr("r", 3)
-        .style("opacity", 0.5)
-        .style("fill", "#69b3a2")
+
 
 
     /*
@@ -90,32 +83,6 @@ function callback_data(data, margin, width, height, svg) {
     ***************************
     */
 
-
-    //click on point
-    scatter.selectAll("circle")
-    .on("click", function(d) {
-        //get related data
-        console.log("selected element on scatter:",d)
-        updateRadialPlot(d.originalTarget.__data__)
-    })
-    .on('mouseover', function (d, i) {
-        d3.select(this).transition()
-              .duration(50)
-              .attr("r", 7)
-              .attr("stroke","black")
-              .attr("stroke-width",3)
-              .style("fill","red")
-              .style("opacity", 1)
-    })
-    .on('mouseout', function (d, i) {
-        d3.select(this).transition()
-             .duration(200)
-             .attr("r", 3)
-             .attr("stroke","none")
-             .style("opacity", 0.5)
-             .style("fill","#69b3a2")
-    })
-   
 
 
     //CHANGE AXIS
@@ -143,6 +110,77 @@ function callback_data(data, margin, width, height, svg) {
 
 
     });
+
+    //ALTERNATIVE BRUSHING ON BOTH AXIS
+
+    var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
+    idleTimeout,
+    idleDelay = 350;
+
+    scatter.append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+    function brushended(event) {
+
+        var s = event.selection;
+        if (!s) {
+            if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+            x.domain(d3.extent(data, function (d) { return d[category_x]; })).nice();
+            y.domain(d3.extent(data, function (d) { return d[category_y]; })).nice();
+        } else {
+            
+            x.domain([s[0][0], s[1][0]].map(x.invert, x));
+            y.domain([s[1][1], s[0][1]].map(y.invert, y));
+            scatter.select(".brush").call(brush.move, null);
+        }
+        zoom();
+    }
+
+    function idled() {
+        idleTimeout = null;
+    }
+
+    function zoom() {
+        xAxis.transition().call(xAxis_);
+        yAxis.transition().call(yAxis_);
+        scatter.selectAll("circle").transition()
+        .attr("cx", function (d) { return x(d[category_x]); })
+        .attr("cy", function (d) { return y(d[category_y]); });
+    }
+
+    scatter
+    .selectAll(".dot")
+    .data(data)
+    .enter()
+    .append("circle")
+        .attr("cx", function (d) { return x(d[category_x]); } )
+        .attr("cy", function (d) { return y(d[category_y]); } )
+        .attr("r", 3)
+        .style("opacity", 0.5)
+        .style("fill", "#69b3a2")
+        .on("click", function(d) {
+            //get related data
+            console.log("selected element on scatter:",d)
+            updateRadialPlot(d.originalTarget.__data__)
+        })
+        .on('mouseover', function (d, i) {
+            d3.select(this).transition()
+                  .duration(50)
+                  .attr("r", 7)
+                  .attr("stroke","black")
+                  .attr("stroke-width",3)
+                  .style("fill","red")
+                  .style("opacity", 1)
+        })
+        .on('mouseout', function (d, i) {
+            d3.select(this).transition()
+                 .duration(200)
+                 .attr("r", 3)
+                 .attr("stroke","none")
+                 .style("opacity", 0.5)
+                 .style("fill","#69b3a2")
+        })
 
     //BRUSHING
     /*
