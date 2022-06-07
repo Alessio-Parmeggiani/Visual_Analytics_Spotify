@@ -1,4 +1,6 @@
 
+
+
 function main() {
   const svg = d3.select('#radial-graph')
     .append('svg');
@@ -12,17 +14,22 @@ function main() {
 
   //song data
   const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo"]
-  var max_values=[1,2,3,4,5,6]
+  var max_values=[1,1,1,1,1,1]
   var song_values=[0.1,0.5,1.3,2.4,3.5,4]
 
   //create song
-  var song=[]
-  for(var i=0;i<categories.length;i++){
-    song.push( 
-      {category:categories[i],
-      value:song_values[i],
-      max_value:max_values[i] })
+  function create_song(categories, max_values) {
+    var song=[]
+    for(var i=0;i<categories.length;i++){
+      song.push( 
+        {category:categories[i],
+        value:Math.random()*max_values[i],
+        max_value:max_values[i] })
+    }
+    return song
   }
+
+  var song=create_song(categories, max_values)
 
   const maxValue = d3.max(song_values);
   const radialScale = d3.scaleLinear()
@@ -50,7 +57,7 @@ function main() {
     )
   }
 
-
+  var labelClickable;
   //create the axis for the plot
   axs=[]
   for (let i=0; i<categories.length; i++){
@@ -74,7 +81,7 @@ function main() {
     const y = center.y + radius*1.2 * -Math.cos(angle_rad);
 
     //add label
-    svg.append('text')
+    labelClickable=svg.append('text')
       .text(categories[i])
       .attr('text-anchor', 'middle')
 
@@ -95,13 +102,35 @@ function main() {
   song.push(song[0])
 
   //add radial plot to page
-  svg.append('path')
+  var radialPath=svg.append('path')
     .datum(song)
     .attr('d', radial)
     .attr('fill', 'none')
     .attr('stroke', 'red')
     .attr('stroke-width', 3)
     .attr('transform', `translate(${center.x},${center.y})`)
+  
+  radialPath.on("click", function() {
+    var song=create_song(categories, max_values)
+    song.push(song[0])
+
+    radial=d3.radialLine()
+    .radius( function(d,i) { 
+      // if is used for closure of plot
+      if (i>=cat_scales.length) return cat_scales[0](d.value)
+      return cat_scales[i](d.value) } )
+    .angle((d, i) => (2*Math.PI / (categories.length)) * i)
+    .curve(d3.curveCatmullRom)
+
+    radialPath
+    .attr('transform', `translate(${center.x},${center.y})`)
+    .transition()
+    .attr('d', radial(song))
+    .attr('fill', 'none')
+    .attr('stroke', 'red')
+    .attr('stroke-width', 3)
+
+  })
     
 }
 

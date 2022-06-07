@@ -81,6 +81,14 @@ function callback_data(data, margin, width, height, svg) {
     INTERACTIONS
     ***************************
     */
+    //click on point
+    scatter.selectAll("circle")
+    .on("click", function(d) {
+        //get related data
+        console.log(d.originalTarget.__data__)
+    }
+    )
+
 
     //CHANGE AXIS
     yLabel.on("click", function() {
@@ -110,11 +118,12 @@ function callback_data(data, margin, width, height, svg) {
 
     //BRUSHING
 
+    /*
     // Add brushing
     var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
     .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
     .on("end", updateChartBrush) // Each time the brush selection changes, trigger the 'updateChart' function
-
+    
     scatter
     .append("g")
         .attr("class", "brush")
@@ -170,6 +179,7 @@ function callback_data(data, margin, width, height, svg) {
         .attr("cx", function (d) { return x(d[category_x]); } )
         .attr("cy", function (d) { return y(d[category_y]); } )
 
+    */
 
     //SCROLLING
     /*
