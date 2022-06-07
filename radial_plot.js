@@ -1,7 +1,41 @@
+const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo"]
+var radialPath;
+var cat_radial_scale;
+var radial_plot_center;
 
 
+function updateRadialPlot(targetSong){
 
-function main() {
+  var song=[]
+  console.log("limits", cat_limits)
+  for(var i=0;i<categories.length;i++){
+    song.push( 
+      {category:categories[i],
+      value:  (targetSong[categories[i]] - cat_limits[i][0]) / (cat_limits[i][1] - cat_limits[i][0]) ,
+      max_value:cat_max_values[i] })
+  }
+  console.log("selected song is ", song)
+  song.push(song[0])
+
+
+  radial=d3.radialLine()
+  .radius( function(d,i) { 
+    // if is used for closure of plot
+    if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
+    return cat_radial_scale[i](d.value) } )
+  .angle((d, i) => (2*Math.PI / (categories.length)) * i)
+  .curve(d3.curveCatmullRom)
+
+  radialPath
+  .attr('transform', `translate(${center.x},${center.y})`)
+  .transition()
+  .attr('d', radial(song))
+  .attr('fill', 'none')
+  .attr('stroke', 'red')
+  .attr('stroke-width', 3)
+}
+
+function radialPlotMain() {
   const svg = d3.select('#radial-graph')
     .append('svg');
 
@@ -10,26 +44,39 @@ function main() {
 
   const radius = Math.min(div_width/2-(div_width*0.1), div_height/2-(div_height*0.15));
   console.log(radius);
-  const center = {x: div_width/2, y: div_height/2};
-
+  radial_plot_center= {x: div_width/2, y: div_height/2};
+  center=radial_plot_center;
   //song data
-  const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo"]
-  var max_values=[1,1,1,1,1,1]
+  
+  cat_max_values=[1,1,1,1,1,1]
+  //get max values for each category
   var song_values=[0.1,0.5,1.3,2.4,3.5,4]
-
+  /*
   //create song
-  function create_song(categories, max_values) {
+  function create_song(categories, cat_max_values) {
     var song=[]
     for(var i=0;i<categories.length;i++){
       song.push( 
         {category:categories[i],
-        value:Math.random()*max_values[i],
-        max_value:max_values[i] })
+        value:Math.random()*cat_max_values[i],
+        max_value:cat_max_values[i] })
     }
     return song
   }
+  */
+  /*
+  var song=create_song(categories, cat_max_values)
+  */
 
-  var song=create_song(categories, max_values)
+  //first song
+  var song=[]
+    for(var i=0;i<categories.length;i++){
+      song.push( 
+        {category:categories[i],
+        value:0,
+        max_value:cat_max_values[i] })
+    }
+  song.push(song[0])
 
   const maxValue = d3.max(song_values);
   const radialScale = d3.scaleLinear()
@@ -49,9 +96,9 @@ function main() {
   }
 
   //create a linear scale for each category
-  var cat_scales=[]
+  cat_radial_scale=[]
   for (let i=0;i<song.length;i++){
-    cat_scales.push(d3.scaleLinear()
+    cat_radial_scale.push(d3.scaleLinear()
     .domain([0,song[i].max_value])
     .range([0,radius])
     )
@@ -63,7 +110,7 @@ function main() {
   for (let i=0; i<categories.length; i++){
     //create axis for this category
     axs.push(d3.axisRight()
-    .scale(cat_scales[i])
+    .scale(cat_radial_scale[i])
     .ticks(5)
     )
 
@@ -93,8 +140,8 @@ function main() {
   radial=d3.radialLine()
   .radius( function(d,i) { 
     // if is used for closure of plot
-    if (i>=cat_scales.length) return cat_scales[0](d.value)
-    return cat_scales[i](d.value) } )
+    if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
+    return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
   .curve(d3.curveCatmullRom)
 
@@ -102,7 +149,7 @@ function main() {
   song.push(song[0])
 
   //add radial plot to page
-  var radialPath=svg.append('path')
+  radialPath=svg.append('path')
     .datum(song)
     .attr('d', radial)
     .attr('fill', 'none')
@@ -111,14 +158,14 @@ function main() {
     .attr('transform', `translate(${center.x},${center.y})`)
   
   radialPath.on("click", function() {
-    var song=create_song(categories, max_values)
+    var song=create_song(categories, cat_max_values)
     song.push(song[0])
 
     radial=d3.radialLine()
     .radius( function(d,i) { 
       // if is used for closure of plot
-      if (i>=cat_scales.length) return cat_scales[0](d.value)
-      return cat_scales[i](d.value) } )
+      if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
+      return cat_radial_scale[i](d.value) } )
     .angle((d, i) => (2*Math.PI / (categories.length)) * i)
     .curve(d3.curveCatmullRom)
 
@@ -134,7 +181,7 @@ function main() {
     
 }
 
-main()
+radialPlotMain()
 
 
   //other implementation

@@ -1,3 +1,5 @@
+var cat_limits=[];
+
 function getMaxMin(data, key) {
     let max = d3.max(data, d => d[key]);
     let min = d3.min(data, d => d[key]);
@@ -5,6 +7,12 @@ function getMaxMin(data, key) {
 }
 
 function callback_data(data, margin, width, height, svg) {
+
+    for(var i=0;i<categories.length;i++){
+        limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
+        cat_limits.push(limits)
+    }
+    console.log("limits: ", cat_limits)
 
     var category_x="year"
     var category_y="tempo"
@@ -81,13 +89,33 @@ function callback_data(data, margin, width, height, svg) {
     INTERACTIONS
     ***************************
     */
+
+
     //click on point
     scatter.selectAll("circle")
     .on("click", function(d) {
         //get related data
-        console.log(d.originalTarget.__data__)
-    }
-    )
+        console.log("selected element on scatter:",d)
+        updateRadialPlot(d.originalTarget.__data__)
+    })
+    .on('mouseover', function (d, i) {
+        d3.select(this).transition()
+              .duration(50)
+              .attr("r", 7)
+              .attr("stroke","black")
+              .attr("stroke-width",3)
+              .style("fill","red")
+              .style("opacity", 1)
+    })
+    .on('mouseout', function (d, i) {
+        d3.select(this).transition()
+             .duration(200)
+             .attr("r", 3)
+             .attr("stroke","none")
+             .style("opacity", 0.5)
+             .style("fill","#69b3a2")
+    })
+   
 
 
     //CHANGE AXIS
@@ -117,8 +145,8 @@ function callback_data(data, margin, width, height, svg) {
     });
 
     //BRUSHING
-
     /*
+    
     // Add brushing
     var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
     .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
@@ -180,6 +208,7 @@ function callback_data(data, margin, width, height, svg) {
         .attr("cy", function (d) { return y(d[category_y]); } )
 
     */
+    
 
     //SCROLLING
     /*
