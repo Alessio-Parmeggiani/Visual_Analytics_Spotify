@@ -28,5 +28,5 @@
 
 ## TO-DO
 
-- levare primo numero da assi del radial plot
-- far funzionare sia brushing che hover/click
+- levare primo numero da assi del radial plot /
+- far funzionare sia brushing che hover/click /

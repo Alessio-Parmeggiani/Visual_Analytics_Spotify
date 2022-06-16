@@ -1,21 +1,29 @@
 //what to plot when a song is selected in radial plot
-const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo"]
+const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo",
+"danceability","energy","loudness"
+]
 var radialPath;
 var cat_radial_scale;
 var radial_plot_center;
 
 //this is called when I click a pint in the scatter plot
-function updateRadialPlot(targetSong){
+function updateRadialPlot(targetSong,named=true){
 
   var song=[]
-  console.log("limits", cat_limits)
+  //console.log("limits", cat_limits)
   for(var i=0;i<categories.length;i++){
+    var value=0
+    if (named){
+      value=norm_min_max(targetSong[categories[i]], cat_limits[i][0], cat_limits[i][1])
+    }
+    else {
+      value=targetSong[i]
+    }
+      
     song.push( 
-      {category:categories[i],
-      value:  (targetSong[categories[i]] - cat_limits[i][0]) / (cat_limits[i][1] - cat_limits[i][0]) ,
-      })
+        {category: categories[i],value: value}) 
   }
-  console.log("selected song is ", song)
+  console.log("radial plot updated with values:", song)
   song.push(song[0])
 
 
@@ -25,7 +33,7 @@ function updateRadialPlot(targetSong){
     if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
     return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
-  .curve(d3.curveCatmullRom)
+  //.curve(d3.curveCatmullRom)
 
   radialPath
   .attr('transform', `translate(${center.x},${center.y})`)
@@ -106,14 +114,19 @@ function radialPlotMain() {
   //create the axis for the plot
   axs=[]
   for (let i=0; i<categories.length; i++){
+    n_ticks=0
+    if (i==0){
+      n_ticks=5 
+    }
+    
     //create axis for this category
     axis=d3.axisRight()
         .scale(cat_radial_scale[i])
-        .ticks(5)
+        .ticks(n_ticks)
     axs.push(axis)
 
     //insert axis, rotate axis and rotate text of ticks
-    const angle = i * 360 / categories.length;
+    const angle = 180-(i * 360 / categories.length);
 
     //to do, move tick label so they are visible
     var tickTranslate=(angle/360)*20
@@ -139,7 +152,7 @@ function radialPlotMain() {
     const angle_rad=i * Math.PI*2  / categories.length;
     const x = center.x + radius*1.2 * Math.sin(angle_rad);
     const y = center.y + radius*1.2 * -Math.cos(angle_rad);
-
+    //console.log("label angle",angle_rad,categories[i])
     //add label
     svg.append('text')
       .text(categories[i])
@@ -155,7 +168,7 @@ function radialPlotMain() {
     if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
     return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
-  .curve(d3.curveCatmullRom)
+  //.curve(d3.curveCatmullRom)
 
   //add again first value so plot closes
   song.push(song[0])
