@@ -1,9 +1,19 @@
-function showStats(data) {
-    let stats = ["name", "album", "year", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
+function showStats(data, view_artist) {
     let container = document.getElementById("stats-container");
+    let stats = [];
 
-    container.innerHTML = ""; 
+    container.innerHTML = "";
 
+    console.log(data);
+
+    if (!view_artist) {
+        stats = ["name", "album", "year", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
+    }
+    else {
+        stats = ["speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
+    }
+
+    // Write artist names
     let p = document.createElement("p");
     p.classList.add("stat-element");
     let artists = "";

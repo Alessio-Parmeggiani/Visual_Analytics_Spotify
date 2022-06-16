@@ -1,14 +1,13 @@
 //what to plot when a song is selected in radial plot
 const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo",
-"danceability","energy","loudness"
-]
+"danceability","energy","loudness"]
 var radialPath;
 var cat_radial_scale;
 var radial_plot_center;
 
 //this is called when I click a pint in the scatter plot
 function updateRadialPlot(targetSong,named=true){
-
+  console.log("values to update",targetSong)
   var song=[]
   //console.log("limits", cat_limits)
   for(var i=0;i<categories.length;i++){
@@ -181,8 +180,6 @@ function radialPlotMain() {
     .attr('stroke', 'red')
     .attr('stroke-width', 3)
     .attr('transform', `translate(${center.x},${center.y})`)
-  
-
     
 }
 
