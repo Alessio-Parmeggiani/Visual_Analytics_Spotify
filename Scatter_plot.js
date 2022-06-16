@@ -157,6 +157,7 @@ function ScatterPlotMain(data, margin, width, height, svg) {
             //get related data
             console.log("selected element on scatter:",d)
             updateRadialPlot(d.originalTarget.__data__)
+            showStats(d.originalTarget.__data__)
         })
         .on('mouseover', function (d, i) {
             d3.select(this).transition()
