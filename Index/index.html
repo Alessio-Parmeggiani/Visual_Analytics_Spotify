@@ -7,7 +7,9 @@
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script defer src="..\pca.js"></script>
         <script defer src="..\utils.js"></script>
+        <script defer src="..\show_stats.js"></script>
         <script defer src="..\Scatter_plot_artists.js"></script>
+        <script defer src="..\Scatter_plot.js"></script>
         <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
     </head>
     <body>
@@ -23,7 +25,10 @@
                     <div id="scatter-plot-2" class="scatter-plot"></div>
                 </div>	
             </div>
-            <div id="stats-bar" class="block">Stats</div>
+            <div id="stats-bar" class="block">
+                Stats
+                <div id="stats-container"></div>
+            </div>
             <div id="graphs" class="block">
                 <div id="radial-graph"></div>
                 <div id="other-graph"></div>
