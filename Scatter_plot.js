@@ -35,6 +35,25 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         "stroke": "red",
         "stroke-width":1,
     }
+    let select_simil_style={
+        "opacity": 1,
+        "fill":"green",
+    }
+    let select_simil_attr={
+        "r":7,
+        "stroke": "red",
+        "stroke-width":1,
+    }
+    let same_artist_style={
+        "opacity": 1,
+        "fill":"grey",
+    }
+    let same_artist_attr={
+        "r":7,
+        "stroke": "red",
+        "stroke-width":1,
+    }
+
 
 
     if (this_artist) {
@@ -371,8 +390,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                             d3.select(this)
                             .transition()
                             .duration(200)
-                            .attrs(select_attr)
-                            .styles(select_style)
+                            .attrs(same_artist_attr)
+                            .styles(same_artist_style)
                         }
 
                     }
@@ -419,11 +438,20 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                         }
                         //song selected remain selected
                         if (song["artists"]==selected_artist["artists"]) {
-                            d3.select(this)
-                            .transition()
-                            .duration(50)
-                            .attrs(select_attr)
-                            .styles(select_style)
+                            if (selected_song){
+                                d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(same_artist_attr)
+                                .styles(same_artist_style)
+                            }
+                            else{
+                                d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(select_attr)
+                                .styles(select_style)
+                            }
                         }
                         if (selected_song && song["id"]==selected_song["id"]) {
                             d3.select(this)
@@ -447,6 +475,43 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             else {
                 scatter_artists.
                 selectAll("circle")
+                .each(function(d){
+                    //console.log(d)
+                    artist=d[2]
+                    if(selected_artist){                    
+                        if (artist["artists"]!=selected_artist["artists"]) {
+                            d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(base_attr)
+                            .styles(base_style)
+                        }
+                    if (artist["artists"]==selected_artist["artists"]) {
+                        if (selected_song){
+                            d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(select_attr)
+                            .styles(select_style)
+                        }
+                        else{
+                            d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(highlight_attr)
+                            .styles(highlight_style)
+                        }
+                    }
+                    else{
+                        d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(base_attr)
+                        .styles(base_style)
+                    }
+                }
+
+                })
                 .filter(function(d){
                     if(selected_artist){
                         //only non selected artists return to normal
