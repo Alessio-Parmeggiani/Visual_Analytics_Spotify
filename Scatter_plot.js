@@ -342,11 +342,14 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 .attrs(base_attr)
                 .styles(base_style) 
             }
+
             //CLICK ON SONG SCATTERPLOT
             else{
                 selected_song=d.originalTarget.__data__[2]
                 selected_artist=d.originalTarget.__data__[2]
+
                 //all artists to normal
+                //penso che non serva sia questo che sotto l'if
                 scatter_artists.selectAll("circle").transition().duration(100)
                 .attrs(base_attr)
                 .styles(base_style)
@@ -355,6 +358,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 scatter_artists.selectAll("circle")
                 .each(function(d){
                     artist=d[2]
+                    //if non selected artist stay normal
                     if (artist["artists"]!=selected_song["artists"]) {
                         d3.select(this)
                         .transition()
@@ -362,6 +366,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                         .attrs(base_attr)
                         .styles(base_style)
                     }
+                    //if selected artist then change color
                     else if (artist["artists"]==selected_song["artists"]) {
                         d3.select(this)
                         .transition()
@@ -409,7 +414,6 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         })
         .on('mouseover', function (d, i) {
             //on song scatter plot dot is highlighted only fif it not belng to selected artist  
-            
             d3.select(this)
             .transition()
             .duration(50)
@@ -420,8 +424,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .on('mouseout', function (d, i) {
             //events on mouse out from scatter dot
 
-            //in scatter songs, return to normal only if songs is not selected_artist 
+            //in scatter plot with songs
             if (!this_artist) {
+                 //return to normal only if songs is not made by selected artist 
                 scatter_songs.selectAll("circle")
                 .each(function(d){
                     //console.log(d)
@@ -437,6 +442,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                             .styles(base_style)
                         }
                         //song selected remain selected
+                        //difference between song selected by clicking on artist or 
+                        //selection by clicking on other song of same artist
                         if (song["artists"]==selected_artist["artists"]) {
                             if (selected_song){
                                 d3.select(this)
@@ -453,6 +460,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                                 .styles(select_style)
                             }
                         }
+                        //this is the song I selected, highlight in different color
                         if (selected_song && song["id"]==selected_song["id"]) {
                             d3.select(this)
                             .transition()
@@ -471,14 +479,15 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     }
                 })
             }
-            //in scatter artists, return to normal only if artist is not selected
+            //scatter plot with artist 
             else {
                 scatter_artists.
                 selectAll("circle")
                 .each(function(d){
                     //console.log(d)
                     artist=d[2]
-                    if(selected_artist){                    
+                    if(selected_artist){     
+                        //non seleced artist stay nromal               
                         if (artist["artists"]!=selected_artist["artists"]) {
                             d3.select(this)
                             .transition()
@@ -486,22 +495,27 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                             .attrs(base_attr)
                             .styles(base_style)
                         }
-                    if (artist["artists"]==selected_artist["artists"]) {
-                        if (selected_song){
-                            d3.select(this)
-                            .transition()
-                            .duration(50)
-                            .attrs(select_attr)
-                            .styles(select_style)
-                        }
-                        else{
-                            d3.select(this)
-                            .transition()
-                            .duration(50)
-                            .attrs(highlight_attr)
-                            .styles(highlight_style)
-                        }
+                        //selected artist is highlighted if I clicked it
+                        //different style if artist is selected by clicking on song
+                        if (artist["artists"]==selected_artist["artists"]) {
+                            if (selected_song){
+                                //selected using song
+                                d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(select_attr)
+                                .styles(select_style)
+                            }
+                            else{
+                                //selected using artist
+                                d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(highlight_attr)
+                                .styles(highlight_style)
+                            }
                     }
+                    //if no artist selected stay normal
                     else{
                         d3.select(this)
                         .transition()
