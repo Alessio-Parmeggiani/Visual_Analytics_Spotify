@@ -1,13 +1,42 @@
 var cat_limits=[];
 
-
-
+let scatter_artists;
+let scatter_songs;
+let selected_artist;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
-function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
+function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     //create a new matrix that contain all the needed data to represent each song
 
-    if (view_artist) {
+    let base_style={
+        "opacity": 0.5,
+        "fill":"#69b3a2",
+    }
+    let base_attr={
+        "r":3,
+        "stroke": "none",
+    }
+    let highlight_style={
+        "opacity": 1,
+        "fill":"red",
+    }
+    let highlight_attrs={
+        "r":7,
+        "stroke": "black",
+        "stroke-width":3,
+    }
+    let select_style={
+        "opacity": 1,
+        "fill":"blue",
+    }
+    let select_attr={
+        "r":7,
+        "stroke": "red",
+        "stroke-width":1,
+    }
+
+
+    if (this_artist) {
         console.log("Viewing artists...")
         //group song by artist
         //artists or artist_ids
@@ -142,8 +171,15 @@ function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
         .attr("y", 0);
 
     // Create the scatter variable: where both the circles and the brush take place
-    var scatter = svg.append('g')
-    .attr("clip-path", "url(#clip)")
+    var scatter;
+    if (this_artist) {
+        scatter_artists=svg.append('g').attr("clip-path", "url(#clip)")
+        scatter=scatter_artists
+        }
+    else {
+        scatter_songs=svg.append('g').attr("clip-path", "url(#clip)")
+        scatter=scatter_songs
+    }
 
 
 
@@ -222,7 +258,6 @@ function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
 
 
     //CREATE SCATTER PLOT and add interaction with mouse
-
     scatter
     .selectAll(".dot")
     //.data(data)
@@ -234,39 +269,112 @@ function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
         //PCA
         .attr("cx", function (d) { return x(d[category_x]); } )
         .attr("cy", function (d) { return y(d[category_y]); } )
-        .attr("r", 3)
-        .style("opacity", 0.5)
-        .style("fill", "#69b3a2")
+        .attrs(base_attr)
+        .styles(base_style)
+
         
         .on("click", function(d) {
             //get related data
             console.log("selected element on scatter:",d)
             
             named_data=true
-            if (view_artist) {
+            if (this_artist) {
                 named_data=false
                 console.log("selected artist:",d.originalTarget.__data__[2])
             }
             else  console.log("selected song:",d.originalTarget.__data__[2])
+
             updateRadialPlot(d.originalTarget.__data__[2],named=true)
-            showStats(d.originalTarget.__data__[2], view_artist)
+            showStats(d.originalTarget.__data__[2], this_artist)
+            
+            
+            //update scatter plot songs of same artist
+            if (this_artist) {
+                selected_artist=d.originalTarget.__data__[2]
+                scatter_songs.selectAll("circle").transition().duration(100)
+                .attrs(base_attr)
+                .styles(base_style)
+
+                scatter_songs.selectAll("circle")
+                .filter(function(d){ 
+                    song=d[2]
+                    //console.log(selected_artist)
+                    return song["artists"]==selected_artist["artists"]
+                })
+                .transition()
+                //change color
+                .attrs(select_attr)
+                .styles(select_style)
+
+            }
+             
         })
         .on('mouseover', function (d, i) {
-            d3.select(this).transition()
-                  .duration(50)
-                  .attr("r", 7)
-                  .attr("stroke","black")
-                  .attr("stroke-width",3)
-                  .style("fill","red")
-                  .style("opacity", 1)
+            //on song scatter plot dot is highlighted only fif it not belng to selected artist  
+            
+            d3.select(this)
+            .transition()
+            .duration(50)
+            .attrs(highlight_attrs)
+            .styles(highlight_style)  
         })
         .on('mouseout', function (d, i) {
-            d3.select(this).transition()
-                 .duration(200)
-                 .attr("r", 3)
-                 .attr("stroke","none")
-                 .style("opacity", 0.5)
-                 .style("fill","#69b3a2")
+            //events on mouse out from scatter dot
+
+            //in scatter songs, return to normal only if songs is not selected_artist 
+            if (!this_artist) {
+                scatter_songs.selectAll("circle")
+                .each(function(d){
+                    //console.log(d)
+                    song=d[2]
+                    //if an artist is selected special behaviour
+                    if(selected_artist){
+                        //non selected song return to normal
+                        if (song["artists"]!=selected_artist["artists"]) {
+                            d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(base_attr)
+                            .styles(base_style)
+                        }
+                        //song selected remain selected
+                        if (song["artists"]==selected_artist["artists"]) {
+                            d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(select_attr)
+                            .styles(select_style)
+                        }
+                    }
+                    //if no artist selected all songs return to normal
+                    else{
+                        d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(base_attr)
+                        .styles(base_style)
+                    }
+                })
+            }
+            //in scatter artists, return to normal only if artist is not selected
+            else {
+                scatter_artists.
+                selectAll("circle")
+                .filter(function(d){
+                    if(selected_artist){
+                        //only non selected artists return to normal
+                        artist=d[2]
+                        //console.log(selected)
+                        return artist["artists"]!=selected_artist["artists"]
+                    }
+                    //nothing has been selected
+                    return true  
+                })
+                .transition()
+                .duration(200)
+                .attrs(base_attr)
+                .styles(base_style)      
+            }
         })
         
 
