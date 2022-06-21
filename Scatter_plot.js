@@ -7,54 +7,7 @@ let selected_song;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
-    //create a new matrix that contain all the needed data to represent each song
-
-    let base_style={
-        "opacity": 0.5,
-        "fill":"#69b3a2",
-    }
-    let base_attr={
-        "r":3,
-        "stroke": "none",
-    }
-    let highlight_style={
-        "opacity": 1,
-        "fill":"red",
-    }
-    let highlight_attr={
-        "r":7,
-        "stroke": "black",
-        "stroke-width":3,
-    }
-    let select_style={
-        "opacity": 1,
-        "fill":"blue",
-    }
-    let select_attr={
-        "r":7,
-        "stroke": "red",
-        "stroke-width":1,
-    }
-    let select_simil_style={
-        "opacity": 1,
-        "fill":"green",
-    }
-    let select_simil_attr={
-        "r":7,
-        "stroke": "red",
-        "stroke-width":1,
-    }
-    let same_artist_style={
-        "opacity": 1,
-        "fill":"grey",
-    }
-    let same_artist_attr={
-        "r":7,
-        "stroke": "red",
-        "stroke-width":1,
-    }
-
-
+    
 
     if (this_artist) {
         //group song by artist
@@ -158,28 +111,6 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     .attr('id', "axis--y")
     .call(yAxis_);
 
-
-    //label for X axis
-    /*
-    svg.append("text")
-        .attr("text-anchor", "end")
-        .attr("x", width)
-        .attr("y", height + 45)
-        .text(category_x);
-    */
-    // label for Y axis
-    /*
-    var yLabel = svg.append("text")
-        .attr("text-anchor", "end")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left+20)
-        .attr("x", -margin.top)
-        .text(category_y)
-    */
-
-    
-
-
     // everything out of this area won't be drawn
     var clip = svg.append("defs").append("svg:clipPath")
         .attr("id", "clip")
@@ -208,35 +139,6 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     ***************************
     */
 
-
-
-    //CHANGE AXIS
-    /*
-    yLabel.on("click", function() {
-        console.log("changing y axis");
-
-        //change axis
-        yLabel.text(category_y2)
-        yLimits=getMaxMin(data, category_y2)
-        y.domain([yLimits[0],yLimits[1]])
-        yAxis.transition().duration(200)
-        .call(yAxis_);
-
-        //change plot
-        scatter
-        .selectAll("circle")
-        .transition().duration(500).ease(d3.easeBackInOut)
-        .attr("cy", function (d) { return y(d[category_y2]); } )
-        
-
-        //switch category_y and category_y2
-        var temp=category_y
-        category_y=category_y2
-        category_y2=temp
-
-
-    });
-    */
     //BRUSHING ON BOTH AXIS
 
     var brush = d3.brush().extent([[0, 0], [width, height]]).on("end", brushended),
@@ -275,6 +177,10 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cy", function (d) { return y(d[category_y]); });
     }
 
+    var div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
+
 
     //CREATE SCATTER PLOT and add interaction with mouse
     scatter
@@ -296,21 +202,22 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             //get related data
             console.log("selected element on scatter:",d)
             
-            named_data=true
             if (this_artist) {
-                named_data=false
                 console.log("selected artist:",d.originalTarget.__data__[2])
             }
             else  console.log("selected song:",d.originalTarget.__data__[2])
 
-            updateRadialPlot(d.originalTarget.__data__[2],named=true)
+            updateRadialPlot(d.originalTarget.__data__[2])
             showStats(d.originalTarget.__data__[2], this_artist)
             
             
             //CLICK ON ARTIST SCATTERPLOT
             if (this_artist) {
+                //now an artist is selected, not a song
                 selected_artist=d.originalTarget.__data__[2]
                 selected_song=null
+
+                //select songs made by selected artist
                 scatter_songs.selectAll("circle").transition().duration(100)
                 .attrs(base_attr)
                 .styles(base_style)
@@ -325,6 +232,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 //change color
                 .attrs(select_attr)
                 .styles(select_style)
+                
 
                 scatter_artists.
                 selectAll("circle")
@@ -347,12 +255,6 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             else{
                 selected_song=d.originalTarget.__data__[2]
                 selected_artist=d.originalTarget.__data__[2]
-
-                //all artists to normal
-                //penso che non serva sia questo che sotto l'if
-                scatter_artists.selectAll("circle").transition().duration(100)
-                .attrs(base_attr)
-                .styles(base_style)
 
                 //highlight artist of selected song
                 scatter_artists.selectAll("circle")
@@ -377,7 +279,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 
                 })
 
-                //highlight song of same artist
+                //highlight song of same artist of the selected song
                 scatter_songs.selectAll("circle")
                 .each(function(d){
                     song=d[2]
@@ -419,10 +321,54 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             .duration(50)
             .attrs(highlight_attr)
             .styles(highlight_style)  
+            
+            sel=d.originalTarget.__data__[2]
+            let text_artist=sel["artists"].replace(/[\[\]\'']+/g, '').split(',')
+            if (text_artist.length>1) {
+                text_artist=text_artist[0]+" and others"
+            }
+            //Tooltip
+            if (this_artist) {
+                height=30+10*Math.round((text_artist.length/20))
+                console.log("artist:"+text_artist +"length="+height)
+                artist=sel
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .8);		
+                div	.html( "Artist:"+ text_artist+"<br/>" )	
+                    .style("left", (d.pageX) + "px")		
+                    .style("top", (d.pageY) + "px")
+                    //modify height
+                    .style("height", (height)+"px")
+            
+            }
+            else{
+                song=sel
+                //shorten song name if too long
+                song_text=song["name"]
+                if(song_text.length>50){
+                    song_text=song_text.substring(0,50)
+                    song_text=song_text+"..."
+                }
+                //compute height bases on how many lines of text
+                height=30+10*Math.round((song_text.length/20))
+                div.transition()		
+                    .duration(200)		
+                    .style("opacity", .8);		
+                div	.html( "Song:"+ song_text+"<br/>"+
+                            "Artist:"+ text_artist)	
+                    .style("left", (d.pageX) + "px")		
+                    .style("top", (d.pageY - 28) + "px")
+                    .style("height", (height)+"px")	
+            
+            }
         })
 
         .on('mouseout', function (d, i) {
             //events on mouse out from scatter dot
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
 
             //in scatter plot with songs
             if (!this_artist) {
@@ -479,7 +425,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     }
                 })
             }
-            //scatter plot with artist 
+            //mouse out on scatter plot with artists
             else {
                 scatter_artists.
                 selectAll("circle")
@@ -487,7 +433,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     //console.log(d)
                     artist=d[2]
                     if(selected_artist){     
-                        //non seleced artist stay nromal               
+                        //non selected artist stay normal               
                         if (artist["artists"]!=selected_artist["artists"]) {
                             d3.select(this)
                             .transition()
@@ -514,6 +460,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                                 .attrs(highlight_attr)
                                 .styles(highlight_style)
                             }
+                        }
                     }
                     //if no artist selected stay normal
                     else{
@@ -523,23 +470,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                         .attrs(base_attr)
                         .styles(base_style)
                     }
-                }
 
                 })
-                .filter(function(d){
-                    if(selected_artist){
-                        //only non selected artists return to normal
-                        artist=d[2]
-                        //console.log(selected)
-                        return artist["artists"]!=selected_artist["artists"]
-                    }
-                    //nothing has been selected
-                    return true  
-                })
-                .transition()
-                .duration(200)
-                .attrs(base_attr)
-                .styles(base_style)      
+
             }
         })
         

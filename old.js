@@ -188,3 +188,55 @@ data.forEach(({color, values}, index) => {
 });
 
   */
+
+//Change Scatter plot axis
+/*
+    //CHANGE AXIS
+    yLabel.on("click", function() {
+        console.log("changing y axis");
+
+        //change axis
+        yLabel.text(category_y2)
+        yLimits=getMaxMin(data, category_y2)
+        y.domain([yLimits[0],yLimits[1]])
+        yAxis.transition().duration(200)
+        .call(yAxis_);
+
+        //change plot
+        scatter
+        .selectAll("circle")
+        .transition().duration(500).ease(d3.easeBackInOut)
+        .attr("cy", function (d) { return y(d[category_y2]); } )
+        
+
+        //switch category_y and category_y2
+        var temp=category_y
+        category_y=category_y2
+        category_y2=temp
+
+
+    });
+*/
+
+//AXIS LABEL
+/*
+  //label for X axis
+  
+  svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("x", width)
+      .attr("y", height + 45)
+      .text(category_x);
+  
+  // label for Y axis
+  
+  var yLabel = svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", -margin.left+20)
+      .attr("x", -margin.top)
+      .text(category_y)
+*/
+    
+
+    
