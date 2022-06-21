@@ -182,6 +182,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     .style("opacity", 0);
 
 
+
     //CREATE SCATTER PLOT and add interaction with mouse
     scatter
     .selectAll(".dot")
@@ -196,8 +197,6 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cy", function (d) { return y(d[category_y]); } )
         .attrs(base_attr)
         .styles(base_style)
-
-        
         .on("click", function(d) {
             //get related data
             console.log("selected element on scatter:",d)
@@ -330,14 +329,14 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             //Tooltip
             if (this_artist) {
                 height=30+10*Math.round((text_artist.length/20))
-                console.log("artist:"+text_artist +"length="+height)
+                //console.log("artist: "+text_artist +" computed height: "+height)
                 artist=sel
                 div.transition()		
                     .duration(200)		
                     .style("opacity", .8);		
                 div	.html( "Artist:"+ text_artist+"<br/>" )	
-                    .style("left", (d.pageX) + "px")		
-                    .style("top", (d.pageY) + "px")
+                    .style("left", (d.pageX+5) + "px")		
+                    .style("top", (d.pageY+5) + "px")
                     //modify height
                     .style("height", (height)+"px")
             
@@ -351,14 +350,14 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     song_text=song_text+"..."
                 }
                 //compute height bases on how many lines of text
-                height=30+10*Math.round((song_text.length/20))
+                height=40+20*Math.round((song_text.length/15))
                 div.transition()		
                     .duration(200)		
                     .style("opacity", .8);		
-                div	.html( "Song:"+ song_text+"<br/>"+
-                            "Artist:"+ text_artist)	
-                    .style("left", (d.pageX) + "px")		
-                    .style("top", (d.pageY - 28) + "px")
+                div	.html( "Song: "+ song_text+"<br/>"+
+                            "Artist: "+ text_artist)	
+                    .style("left", (d.pageX+5) + "px")		
+                    .style("top", (d.pageY+5) + "px")
                     .style("height", (height)+"px")	
             
             }
