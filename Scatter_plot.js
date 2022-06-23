@@ -328,6 +328,15 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             }
             //Tooltip
             if (this_artist) {
+
+                function checkPosX(X){
+                    
+                    bodyWidth=document.getElementsByTagName("body")[0].clientWidth
+                    if (X+100>bodyWidth) return X-100
+                    else return X+5
+                }
+
+
                 height=30+10*Math.round((text_artist.length/20))
                 //console.log("artist: "+text_artist +" computed height: "+height)
                 artist=sel
@@ -335,7 +344,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     .duration(200)		
                     .style("opacity", .8);		
                 div	.html( "Artist:"+ text_artist+"<br/>" )	
-                    .style("left", (d.pageX+5) + "px")		
+                    .style("left", (checkPosX(d.pageX)) + "px")		
                     .style("top", (d.pageY+5) + "px")
                     //modify height
                     .style("height", (height)+"px")
