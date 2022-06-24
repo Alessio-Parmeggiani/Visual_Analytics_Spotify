@@ -63,6 +63,10 @@ svg {
     border-color: blue;
 }
 
+#filter-container {
+    height: 30%;
+}
+
 #scatter-plots {
     grid-area: scatter-plots;
     border-color: orangered;

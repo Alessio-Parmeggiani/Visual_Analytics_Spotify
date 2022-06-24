@@ -245,7 +245,7 @@ function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
             named_data=true
             if (view_artist) {
                 named_data=false
-                console.log("selected artist:",d.originalTarget.__data__[2])
+                console.log("selected artist:",d.originalTarget.__data__[2])    // QUI ORIGINALTARGET È DA CAMBIARE, NON È COMPATIBILE CON NESSUN BROWSER CHE NON SIA FIREFOX
             }
             else  console.log("selected song:",d.originalTarget.__data__[2])
             updateRadialPlot(d.originalTarget.__data__[2],named=true)
@@ -271,6 +271,10 @@ function ScatterPlotMain(data, margin, width, height, svg, view_artist) {
         
 
     
+}
+
+function updateScatterPlot() {
+
 }
 
 function main() {
@@ -306,6 +310,9 @@ function main() {
                 cat_limits.push(limits)
             }
             console.log("limits:",cat_limits)
+
+            let lowLimit, topLimit = filterHistogram(data, 'energy');
+
             ScatterPlotMain(data, margin, width, height, svg1, false)
             ScatterPlotMain(data, margin, width, height, svg2, true)
 

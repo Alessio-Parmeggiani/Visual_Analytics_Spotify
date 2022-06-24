@@ -24,3 +24,23 @@ function getPCA(pca_data){
     console.log("data after PCA:",new_data)
     return new_data
 }
+
+function getHistValues(data, bins, category) {
+    let vals = [];
+    for (let i=0; i<bins; i++) {
+        vals.push(d3.count(data, function(d) {
+            return (d[category] >= i/bins && d[category] < (i+1)/bins) ? 1 : undefined;
+        }))
+    }
+    return vals;
+}
+
+/**
+ * Rounds a number to the closest bin value that is <= number
+ */
+function round2Bin(n, bins) {
+    let i = 0
+    while (i/bins < n) {i++};
+
+    return i/bins;
+}

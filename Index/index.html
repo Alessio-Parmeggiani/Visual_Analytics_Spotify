@@ -8,12 +8,18 @@
         <script defer src="..\pca.js"></script>
         <script defer src="..\utils.js"></script>
         <script defer src="..\show_stats.js"></script>
+        <script defer src="..\histogram_filter.js"></script>
         <script defer src="..\Scatter_plot.js"></script>
         <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
+        
     </head>
     <body>
         <div id="container">
-            <div id="filter-bar" class="block">Filters</div>
+            <div id="filter-bar" class="block">
+                Filters
+                <button id="add-filter">Add Filter</button>
+                <div id="filter-container"></div>
+            </div>
             <div id="scatter-plots" class="block">
                 <form id="search-form">
                     <input type="text" id="search-input" placeholder="Search...">
