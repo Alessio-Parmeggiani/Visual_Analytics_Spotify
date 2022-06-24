@@ -7,7 +7,6 @@ var radial_plot_center;
 
 //this is called when I click a pint in the scatter plot
 function updateRadialPlot(targetSong,named=true){
-  console.log("values to update",targetSong)
   var song=[]
   //console.log("limits", cat_limits)
   for(var i=0;i<categories.length;i++){
@@ -32,7 +31,7 @@ function updateRadialPlot(targetSong,named=true){
     if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
     return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
-  //.curve(d3.curveCatmullRom)
+  .curve(d3.curveCatmullRom)
 
   radialPath
   .attr('transform', `translate(${center.x},${center.y})`)
@@ -167,20 +166,16 @@ function radialPlotMain() {
     if (i>=cat_radial_scale.length) return cat_radial_scale[0](d.value)
     return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
-  //.curve(d3.curveCatmullRom)
+  .curve(d3.curveCatmullRom)
 
   //add again first value so plot closes
   song.push(song[0])
-
+  
   //add radial plot to page
   radialPath=svg.append('path')
     .datum(song)
     .attr('d', radial)
-    .attr('fill', 'none')
-    .attr('stroke', 'red')
-    .attr('stroke-width', 3)
-    .attr('transform', `translate(${center.x},${center.y})`)
-    
+  
 }
 
 

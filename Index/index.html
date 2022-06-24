@@ -5,8 +5,10 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
         <script src="https://d3js.org/d3.v7.min.js"></script>
+        <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
         <script defer src="..\pca.js"></script>
         <script defer src="..\utils.js"></script>
+        <script defer src="..\styles.js"></script>
         <script defer src="..\show_stats.js"></script>
         <script defer src="..\histogram_filter.js"></script>
         <script defer src="..\Scatter_plot.js"></script>
@@ -39,5 +41,21 @@
                 <div id="other-graph"></div>
             </div>
         </div>
+        <style> /* set the CSS */
+            
+            div.tooltip {	
+                position: absolute;			
+                text-align: center;			
+                width: 100px;					
+                height: 50px;					
+                padding: 2px;				
+                font: 12px sans-serif;		
+                background: lightsteelblue;	
+                border: 0px;		
+                border-radius: 8px;			
+                pointer-events: none;			
+            }
+            
+            </style>
     </body>
 </html>
