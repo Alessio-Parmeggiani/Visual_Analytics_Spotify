@@ -6,6 +6,30 @@ let selected_artist;
 let selected_song;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
+function compute_boxplot_data(songs){
+    //compute boxplot data for a given category
+    var boxplot_data = []
+    for(var i=0;i<categories.length;i++){
+        //dtaa for this category
+        category_data={}
+        category_data.category=categories[i]
+        category_data.min = d3.min(songs, function(d) { return d[categories[i]]; });
+        category_data.max = d3.max(songs, function(d) { return d[categories[i]]; });
+        category_data.median = d3.median(songs, function(d) { return d[categories[i]]; });
+        
+        category_data.q1 = d3.quantile(songs, 0.25, function(d) { return d[categories[i]]; });
+        category_data.q3 = d3.quantile(songs, 0.75, function(d) { return d[categories[i]]; });
+        //interqauntile range (the box)
+        category_data.iqr = category_data.q3 - category_data.q1;
+
+        //baffi
+        category_data.upper = category_data.q3 + 1.5 * category_data.iqr;
+        category_data.lower = category_data.q1 - 1.5 * category_data.iqr;
+        boxplot_data.push(category_data);
+    }
+    return boxplot_data
+}
+
 function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     
 
@@ -222,15 +246,22 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 .styles(base_style)
 
                 scatter_songs.selectAll("circle")
-                .filter(function(d){ 
+                .each(function(d){
                     song=d[2]
-                    //console.log(selected_artist)
-                    return song["artists"]==selected_artist["artists"]
+                    current_artist_songs=[]
+                    
+                    if (song["artists"]==selected_artist["artists"]) {
+                        d3.select(this).transition()
+                        .attrs(select_attr)
+                        .styles(select_style);
+
+                        current_artist_songs.push(song)
+                    }
+                    boxplot_songs_data=compute_boxplot_data(current_artist_songs)
+                    update_boxplot(boxplot_songs_data)
+
                 })
-                .transition()
-                //change color
-                .attrs(select_attr)
-                .styles(select_style)
+
                 
 
                 scatter_artists.
@@ -525,6 +556,7 @@ function main() {
             ScatterPlotMain(data, margin, width, height, svg2, true)
 
             radialPlotMain()
+            boxPlotMain()
             
             })
         .catch((error) => console.log(error))
