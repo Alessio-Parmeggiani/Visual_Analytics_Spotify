@@ -9,13 +9,284 @@ let selected_artist;
 let selected_song;
 let artistsPCA;
 let songsPCA;
+
+let tooltip_div;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function prova(a){
     console.log("prova",a)
-
 }
 
+
+function onClick(this_artist) {
+    // I use this structure in order use the this_artist variable defined in scatterPlotMain
+    return function(d) {
+        //get related data
+        console.log("selected element on scatter:",d)
+        
+        if (this_artist) {
+            console.log("selected artist:",d.originalTarget.__data__[2])    // QUI ORIGINALTARGET È DA CAMBIARE, NON È COMPATIBILE CON NESSUN BROWSER CHE NON SIA FIREFOX
+        }
+        else  console.log("selected song:",d.originalTarget.__data__[2])
+        selected_artist=d.originalTarget.__data__[2]
+
+        updateRadialPlot(d.originalTarget.__data__[2])
+        showStats(d.originalTarget.__data__[2], this_artist)
+
+        scatter_songs.selectAll("circle").transition().duration(100)
+            .attrs(base_attr)
+            .styles(base_style)
+
+        //get songs of this artist 
+        current_artist_songs=[]
+        scatter_songs.selectAll("circle")
+        .each(function(d){
+            song=d[2]
+            if (song["artists"]==selected_artist["artists"]) {
+                current_artist_songs.push(song)
+                //update style
+                if (this_artist) {
+                    d3.select(this).transition()
+                    .attrs(select_attr)
+                    .styles(select_style);
+                }
+            }
+        });
+        //update boxplot
+        let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
+        update_boxplot(boxplot_songs_data)
+
+        //CLICK ON ARTIST SCATTERPLOT
+        if (this_artist) {
+            //now an artist is selected, not a song
+            selected_song=null
+
+            //all other artists return to base style
+            scatter_artists.selectAll("circle")
+                .filter(function(d){
+                    if(selected_artist){
+                        //only non selected artists return to normal
+                        const artist=d[2]
+                        return artist["artists"]!=selected_artist["artists"]
+                    }
+                    //nothing has been selected
+                    return true  
+                })
+                .transition()
+                .duration(200)
+                .attrs(base_attr)
+                .styles(base_style) 
+        }
+
+        //CLICK ON SONG SCATTERPLOT
+        else{
+            selected_song=d.originalTarget.__data__[2]
+
+            //highlight artist of selected song
+            scatter_artists.selectAll("circle")
+                .each(function(d){
+                    const artist=d[2]
+                    //if non selected artist stay normal
+                    if (artist["artists"]!=selected_song["artists"]) {
+                        d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(base_attr)
+                            .styles(base_style)
+                    }
+                    //if selected artist then change color
+                    else if (artist["artists"]==selected_song["artists"]) {
+                        d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attrs(select_attr)
+                            .styles(select_style)
+                    }
+                
+                })
+
+            //highlight song of same artist of the selected song
+            scatter_songs.selectAll("circle")
+                .each(function(d){
+                    const song=d[2]
+                    if (song["artists"]==selected_song["artists"]) {
+                        //hihglight selected song
+                        if (song["id"]==selected_song["id"]) {
+                            d3.select(this)
+                                .transition()
+                                .duration(200)
+                                .attrs(highlight_attr)
+                                .styles(highlight_style)
+                        }
+                        //same artist but not selected song
+                        else{
+                            d3.select(this)
+                                .transition()
+                                .duration(200)
+                                .attrs(same_artist_attr)
+                                .styles(same_artist_style)
+                        }
+
+                    }
+                    else{
+                        d3.select(this)
+                            .transition()
+                            .duration(200)
+                            .attrs(base_attr)
+                            .styles(base_style)
+                    }
+                })
+
+        }
+         
+    }
+}
+
+function onMouseOver(this_artist) {
+    return function(d, i) {
+        //on song scatter plot dot is highlighted only fif it not belng to selected artist  
+        d3.select(this)
+            .transition()
+            .duration(50)
+            .attrs(highlight_attr)
+            .styles(highlight_style)  
+    
+        const sel=d.originalTarget.__data__[2]
+        let text_artist=sel["artists"].replace(/[\[\]\'']+/g, '').split(',')
+        if (text_artist.length>1) {
+            text_artist=text_artist[0]+" and others"
+        }
+        //Tooltip
+        if (this_artist) {
+            function checkPosX(X){
+                
+                const bodyWidth=document.getElementsByTagName("body")[0].clientWidth
+                if (X+100>bodyWidth) return X-100
+                else return X+5
+            }
+
+            const tooltipHeight=30+10*Math.round((text_artist.length/20))
+            //console.log("artist: "+text_artist +" computed height: "+height)
+            const artist=sel
+            tooltip_div.transition()		
+                .duration(200)		
+                .style("opacity", .8);		
+            tooltip_div	.html( "Artist:"+ text_artist+"<br/>" )	
+                .style("left", (checkPosX(d.pageX)) + "px")		
+                .style("top", (d.pageY+5) + "px")
+                //modify height
+                .style("height", (tooltipHeight)+"px")
+        }
+        else{
+            const song=sel
+            //shorten song name if too long
+            song_text=song["name"]
+            /*
+            if(song_text.length>50){
+                song_text=song_text.substring(0,50)
+                song_text=song_text+"..."
+            }*/
+            //compute height bases on how many lines of text
+            const tooltipHeight=40+20*Math.round((song_text.length/15))
+            tooltip_div.transition()		
+                .duration(200)		
+                .style("opacity", .8);		
+            tooltip_div	.html( "Song: "+ song_text+"<br/>"+
+                        "Artist: "+ text_artist)	
+                .style("left", (d.pageX+5) + "px")		
+                .style("top", (d.pageY+5) + "px")
+                .style("height", (tooltipHeight)+"px")	
+        
+        }
+    }
+}
+
+function onMouseOut(this_artist) {
+    return function (d, i) {
+        //events on mouse out from scatter dot
+
+        //tooltip disappear
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    
+        const element=d.originalTarget.__data__[2]
+        //console.log("mouse out",element)
+
+        
+        if (!selected_artist) {
+            //if no artist is selected, element return to nromal
+            d3.select(this)
+                .transition()
+                .duration(50)
+                .attrs(base_attr)
+                .styles(base_style)
+            return
+        }
+        
+        //if an artist is selected, distinguish between
+        //highlighted: element clicked or cursor is passing over
+        //selected: song of clicked artist or artist of clicked song
+        //same_artist: song made by the same artist of the clicked song
+
+        //non selected song return to normal
+        if (element["artists"]!=selected_artist["artists"]) {
+            d3.select(this)
+            .transition()
+            .duration(50)
+            .attrs(base_attr)
+            .styles(base_style)
+        }
+        //song selected remain selected
+        //difference between song selected by clicking on artist or 
+        //selection by clicking on other song of same artist
+        else if (element["artists"]==selected_artist["artists"]) {
+            if (selected_song){
+                //selection by clicking on song
+                if (this_artist){
+                    d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attrs(select_attr)
+                    .styles(select_style)
+                }
+                else{
+                    d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attrs(same_artist_attr)
+                    .styles(same_artist_style)
+                }
+            }
+            else{
+                //selection by clicking on artist
+                if(this_artist){
+                    d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attrs(highlight_attr)
+                    .styles(highlight_style)
+                }
+                else{
+                    d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attrs(select_attr)
+                    .styles(select_style)
+                }
+
+            }
+            //this is the song I selected, highlight in different color
+            if (selected_song && element["id"]==selected_song["id"]) {
+                d3.select(this)
+                .transition()
+                .duration(50)
+                .attrs(highlight_attr)
+                .styles(highlight_style)
+            }
+        }
+    }
+}
 
 function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     
@@ -189,10 +460,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cy", function (d) { return y(d[category_y]); });
     }
 
-    var tooltip_div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
-    .style("opacity", 0);
-
+    tooltip_div = d3.select("body").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0);
 
 
     //CREATE SCATTER PLOT and add interaction with mouse
@@ -209,275 +479,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cy", function (d) { return y(d[category_y]); } )
         .attrs(base_attr)
         .styles(base_style)
-        .on("click", function(d) {
-            //get related data
-            console.log("selected element on scatter:",d)
-            
-            if (this_artist) {
-                console.log("selected artist:",d.originalTarget.__data__[2])    // QUI ORIGINALTARGET È DA CAMBIARE, NON È COMPATIBILE CON NESSUN BROWSER CHE NON SIA FIREFOX
-            }
-            else  console.log("selected song:",d.originalTarget.__data__[2])
-            selected_artist=d.originalTarget.__data__[2]
-
-            updateRadialPlot(d.originalTarget.__data__[2])
-            showStats(d.originalTarget.__data__[2], this_artist)
-
-            scatter_songs.selectAll("circle").transition().duration(100)
-                .attrs(base_attr)
-                .styles(base_style)
-
-            //get songs of this artist 
-            current_artist_songs=[]
-            scatter_songs.selectAll("circle")
-            .each(function(d){
-                song=d[2]
-                if (song["artists"]==selected_artist["artists"]) {
-                    current_artist_songs.push(song)
-                    //update style
-                    if (this_artist) {
-                        d3.select(this).transition()
-                        .attrs(select_attr)
-                        .styles(select_style);
-                    }
-                }
-            });
-            //update boxplot
-            let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
-            update_boxplot(boxplot_songs_data)
-
-            //CLICK ON ARTIST SCATTERPLOT
-            if (this_artist) {
-                //now an artist is selected, not a song
-                selected_song=null
-
-                //all other artists return to base style
-                scatter_artists.selectAll("circle")
-                    .filter(function(d){
-                        if(selected_artist){
-                            //only non selected artists return to normal
-                            const artist=d[2]
-                            return artist["artists"]!=selected_artist["artists"]
-                        }
-                        //nothing has been selected
-                        return true  
-                    })
-                    .transition()
-                    .duration(200)
-                    .attrs(base_attr)
-                    .styles(base_style) 
-            }
-
-            //CLICK ON SONG SCATTERPLOT
-            else{
-                selected_song=d.originalTarget.__data__[2]
-
-                //highlight artist of selected song
-                scatter_artists.selectAll("circle")
-                    .each(function(d){
-                        const artist=d[2]
-                        //if non selected artist stay normal
-                        if (artist["artists"]!=selected_song["artists"]) {
-                            d3.select(this)
-                                .transition()
-                                .duration(50)
-                                .attrs(base_attr)
-                                .styles(base_style)
-                        }
-                        //if selected artist then change color
-                        else if (artist["artists"]==selected_song["artists"]) {
-                            d3.select(this)
-                                .transition()
-                                .duration(50)
-                                .attrs(select_attr)
-                                .styles(select_style)
-                        }
-                    
-                    })
-
-                //highlight song of same artist of the selected song
-                scatter_songs.selectAll("circle")
-                    .each(function(d){
-                        const song=d[2]
-                        if (song["artists"]==selected_song["artists"]) {
-                            //hihglight selected song
-                            if (song["id"]==selected_song["id"]) {
-                                d3.select(this)
-                                    .transition()
-                                    .duration(200)
-                                    .attrs(highlight_attr)
-                                    .styles(highlight_style)
-                            }
-                            //same artist but not selected song
-                            else{
-                                d3.select(this)
-                                    .transition()
-                                    .duration(200)
-                                    .attrs(same_artist_attr)
-                                    .styles(same_artist_style)
-                            }
-
-                        }
-                        else{
-                            d3.select(this)
-                                .transition()
-                                .duration(200)
-                                .attrs(base_attr)
-                                .styles(base_style)
-                        }
-                    })
-
-            }
-             
-        })
-        .on('mouseover', function (d, i) {
-            //on song scatter plot dot is highlighted only fif it not belng to selected artist  
-            d3.select(this)
-                .transition()
-                .duration(50)
-                .attrs(highlight_attr)
-                .styles(highlight_style)  
-            
-            const sel=d.originalTarget.__data__[2]
-            let text_artist=sel["artists"].replace(/[\[\]\'']+/g, '').split(',')
-            if (text_artist.length>1) {
-                text_artist=text_artist[0]+" and others"
-            }
-            //Tooltip
-            if (this_artist) {
-
-                function checkPosX(X){
-                    
-                    const bodyWidth=document.getElementsByTagName("body")[0].clientWidth
-                    if (X+100>bodyWidth) return X-100
-                    else return X+5
-                }
-
-
-                const tooltipHeight=30+10*Math.round((text_artist.length/20))
-                //console.log("artist: "+text_artist +" computed height: "+height)
-                const artist=sel
-                tooltip_div.transition()		
-                    .duration(200)		
-                    .style("opacity", .8);		
-                tooltip_div	.html( "Artist:"+ text_artist+"<br/>" )	
-                    .style("left", (checkPosX(d.pageX)) + "px")		
-                    .style("top", (d.pageY+5) + "px")
-                    //modify height
-                    .style("height", (tooltipHeight)+"px")
-            
-            }
-            else{
-                const song=sel
-                //shorten song name if too long
-                song_text=song["name"]
-                /*
-                if(song_text.length>50){
-                    song_text=song_text.substring(0,50)
-                    song_text=song_text+"..."
-                }*/
-                //compute height bases on how many lines of text
-                const tooltipHeight=40+20*Math.round((song_text.length/15))
-                tooltip_div.transition()		
-                    .duration(200)		
-                    .style("opacity", .8);		
-                tooltip_div	.html( "Song: "+ song_text+"<br/>"+
-                            "Artist: "+ text_artist)	
-                    .style("left", (d.pageX+5) + "px")		
-                    .style("top", (d.pageY+5) + "px")
-                    .style("height", (tooltipHeight)+"px")	
-            
-            }
-        })
-
-        .on('mouseout', function (d, i) {
-            //events on mouse out from scatter dot
-
-            //tooltip disappear
-            tooltip_div.transition()		
-                .duration(500)		
-                .style("opacity", 0);	
-           
-            const element=d.originalTarget.__data__[2]
-            //console.log("mouse out",element)
-
-            
-            if (!selected_artist) {
-                //if no artist is selected, element return to nromal
-                d3.select(this)
-                    .transition()
-                    .duration(50)
-                    .attrs(base_attr)
-                    .styles(base_style)
-                return
-            }
-            
-            //if an artist is selected, distinguish between
-            //highlighted: element clicked or cursor is passing over
-            //selected: song of clicked artist or artist of clicked song
-            //same_artist: song made by the same artist of the clicked song
-
-            //non selected song return to normal
-            if (element["artists"]!=selected_artist["artists"]) {
-                d3.select(this)
-                .transition()
-                .duration(50)
-                .attrs(base_attr)
-                .styles(base_style)
-            }
-            //song selected remain selected
-            //difference between song selected by clicking on artist or 
-            //selection by clicking on other song of same artist
-            else if (element["artists"]==selected_artist["artists"]) {
-                if (selected_song){
-                    //selection by clicking on song
-                    if (this_artist){
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(select_attr)
-                        .styles(select_style)
-                    }
-                    else{
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(same_artist_attr)
-                        .styles(same_artist_style)
-                    }
-                }
-                else{
-                    //selection by clicking on artist
-                    if(this_artist){
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(highlight_attr)
-                        .styles(highlight_style)
-                    }
-                    else{
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(select_attr)
-                        .styles(select_style)
-                    }
-
-                }
-                //this is the song I selected, highlight in different color
-                if (selected_song && element["id"]==selected_song["id"]) {
-                    d3.select(this)
-                    .transition()
-                    .duration(50)
-                    .attrs(highlight_attr)
-                    .styles(highlight_style)
-                }
-            }
-
-            
-        })
-        
-
-    
+        .on('click', onClick(this_artist))
+        .on('mouseover', onMouseOver(this_artist))
+        .on('mouseout', onMouseOut(this_artist))
 }
 
 function applyFilter(lowLimit, topLimit, cat) {
