@@ -6,37 +6,7 @@ let selected_artist;
 let selected_song;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
-function compute_boxplot_data(songs){
-    //compute boxplot data for a given category
-    var boxplot_data = []
-    for(var i=0;i<categories.length;i++){
-        //dtaa for this category
-        category_data={}
-        category_data.category=categories[i]
-        category_data.min = d3.min(songs, function(d) { return d[categories[i]]; });
-        category_data.min=norm_min_max(category_data.min, cat_limits[i][0], cat_limits[i][1])
 
-        category_data.max = d3.max(songs, function(d) { return d[categories[i]]; });
-        category_data.max=norm_min_max(category_data.max, cat_limits[i][0], cat_limits[i][1])
-
-        category_data.median = d3.median(songs, function(d) { return d[categories[i]]; });
-        category_data.median=norm_min_max(category_data.median, cat_limits[i][0], cat_limits[i][1])
-        
-        category_data.q1 = d3.quantile(songs, 0.25, function(d) { return d[categories[i]]; });
-        category_data.q1=norm_min_max(category_data.q1, cat_limits[i][0], cat_limits[i][1]) 
-        category_data.q3 = d3.quantile(songs, 0.75, function(d) { return d[categories[i]]; });
-        category_data.q3=norm_min_max(category_data.q3, cat_limits[i][0], cat_limits[i][1])
-        //interqauntile range (the box)
-        category_data.iqr = category_data.q3 - category_data.q1;
-
-        //baffi
-        category_data.upper = category_data.q3 + 1.5 * category_data.iqr;
-        category_data.lower = category_data.q1 - 1.5 * category_data.iqr;
-
-        boxplot_data.push(category_data);
-    }
-    return boxplot_data
-}
 
 function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     
@@ -237,42 +207,40 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 console.log("selected artist:",d.originalTarget.__data__[2])
             }
             else  console.log("selected song:",d.originalTarget.__data__[2])
+            selected_artist=d.originalTarget.__data__[2]
 
             updateRadialPlot(d.originalTarget.__data__[2])
             showStats(d.originalTarget.__data__[2], this_artist)
-            
-            
-            //CLICK ON ARTIST SCATTERPLOT
-            if (this_artist) {
-                current_artist_songs=[]
 
-                //now an artist is selected, not a song
-                selected_artist=d.originalTarget.__data__[2]
-                selected_song=null
-
-                //select songs made by selected artist
-                scatter_songs.selectAll("circle").transition().duration(100)
+            scatter_songs.selectAll("circle").transition().duration(100)
                 .attrs(base_attr)
                 .styles(base_style)
 
-                scatter_songs.selectAll("circle")
-                .each(function(d){
-                    song=d[2]
-                    
-                    
-                    if (song["artists"]==selected_artist["artists"]) {
+            //get songs of this artist 
+            current_artist_songs=[]
+            scatter_songs.selectAll("circle")
+            .each(function(d){
+                song=d[2]
+                if (song["artists"]==selected_artist["artists"]) {
+                    current_artist_songs.push(song)
+                    //update style
+                    if (this_artist) {
                         d3.select(this).transition()
                         .attrs(select_attr)
                         .styles(select_style);
-
-                        current_artist_songs.push(song)
                     }
+                }
+            });
+            //update boxplot
+            boxplot_songs_data=compute_boxplot_data(current_artist_songs)
+            update_boxplot(boxplot_songs_data)
 
-                })
-                boxplot_songs_data=compute_boxplot_data(current_artist_songs)
-                update_boxplot(boxplot_songs_data)
-                
+            //CLICK ON ARTIST SCATTERPLOT
+            if (this_artist) {
+                //now an artist is selected, not a song
+                selected_song=null
 
+                //all other artists return to base style
                 scatter_artists.
                 selectAll("circle")
                 .filter(function(d){
@@ -293,8 +261,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             //CLICK ON SONG SCATTERPLOT
             else{
                 selected_song=d.originalTarget.__data__[2]
-                selected_artist=d.originalTarget.__data__[2]
-
+                
                 //highlight artist of selected song
                 scatter_artists.selectAll("circle")
                 .each(function(d){

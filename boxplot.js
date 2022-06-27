@@ -69,9 +69,9 @@ function boxPlotMain() {
     const height = document.getElementById("other-graph").clientHeight;
     const width = document.getElementById("other-graph").clientWidth;
     const margin_left=50;
-    const margin_right=50;
+    const margin_right=20;
     const margin_top=10;
-    const margin_bottom=20;
+    const margin_bottom=40;
 
     x_scale = d3.scaleBand()
     .range([ margin_left, width-margin_right ])
