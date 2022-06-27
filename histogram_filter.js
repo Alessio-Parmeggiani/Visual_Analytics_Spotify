@@ -10,6 +10,29 @@ function createHistogram(data, cat, update) {
     let lowLimit;
     let topLimit;
 
+    let catMin;
+    let catMax;
+
+    let binsNum;
+
+    if (cat == "tempo") {
+        // Values found analyzing the dataset
+        catMin = 0;
+        catMax = 220;
+        binsNum = 22;
+    }
+    else if (cat == "loudness") {
+        // As per Spotify API documentation
+        catMin = -60;   
+        catMax = 0;
+        binsNum = 12;
+    }
+    else {
+        catMin = 0;
+        catMax = 1;
+        binsNum = 20;
+    }
+
     const svg = d3.select("#filter-container")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -20,7 +43,7 @@ function createHistogram(data, cat, update) {
         // On the x axis we have the values for the speechiness
         // they go from 0 to 1
         let x = d3.scaleLinear()
-            .domain([0, 1])
+            .domain([catMin, catMax])
             .range([0, width]);
         
         svg.append("g")
@@ -29,17 +52,16 @@ function createHistogram(data, cat, update) {
                 return `translate(0, ${height})`
             });
 
-        let binsNum = 20;
-
         // I want the histogram to show the distribution of values between 0 and 1
         // So if there are no more values greater than the maximum of a category, I want to show it
         let histogram = d3.histogram()
             .value(function(d) { return d[cat] })
             .domain(x.domain())
-            .thresholds(x.ticks(20));
+            .thresholds(x.ticks(binsNum));
 
         let bins = histogram(data);
-        let histArr = getHistValues(data, binsNum, cat);
+        let histArr = getHistValues(data, binsNum, cat, catMin, catMax);
+        console.log(`histArr: ${histArr}`)
 
         // the y axis represents the number of samples that have value for that
         // category in the bin
@@ -79,8 +101,8 @@ function createHistogram(data, cat, update) {
                 // without it it would keep looping because every resize generates a new brush event
                 if (!event.sourceEvent) return;
 
-                lowLimit = round2Bin(x.invert(s[0]), binsNum);
-                topLimit = round2Bin(x.invert(s[1]), binsNum);
+                lowLimit = round2Bin(x.invert(s[0]), cat, binsNum, catMin, catMax);
+                topLimit = round2Bin(x.invert(s[1]), cat, binsNum, catMin, catMax);
 
                 // update and move labels
                 brushLabelL
@@ -92,15 +114,13 @@ function createHistogram(data, cat, update) {
 
                 // moving the brush to one of the bins
                 d3.select(this).call(brush.move, [lowLimit, topLimit].map(x))
+
+                update(lowLimit, topLimit, cat)
             })
             .on("end", function(event) {
                 console.log(`I valori sono: ${lowLimit}, ${topLimit}`)
-                update(lowLimit, topLimit, cat)
+                //update(lowLimit, topLimit, cat)
             })
-            /*
-            .on("dblclicked", function(event) {
-                
-            })*/
 
         svg.append("g")
             .attr("class", "brush")

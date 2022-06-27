@@ -1,6 +1,3 @@
-//what to plot when a song is selected in radial plot
-const categories=["speechiness","acousticness","instrumentalness","liveness","valence","tempo",
-"danceability","energy","loudness"]
 var radialPath;
 var cat_radial_scale;
 var radial_plot_center;

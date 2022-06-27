@@ -1,7 +1,7 @@
 var cat_limits=[];
-let filterLimits = {"speechiness": [0, 1], "acousticness": [0, 1], "instrumentalness": [0, 1],
-    "liveness": [0, 1], "valence": [0, 1], "tempo": [0, 1], "danceability": [0, 1],
-     "energy": [0, 1], "loudness": [0, 1]};
+const categories = ["speechiness","acousticness","instrumentalness","liveness","valence","tempo",
+"danceability","energy","loudness"]
+let filterLimits = {};
 
 let scatter_artists;
 let scatter_songs;
@@ -11,6 +11,12 @@ let artistsPCA;
 let songsPCA;
 
 let tooltip_div;
+
+let xLimits;
+let yLimits;
+let x;
+let y;
+
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function prova(a){
@@ -366,20 +372,17 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         scatter_data=songsPCA
     }
 
-    var xLimits=getMaxMin(scatter_data, 0)
-    var yLimits=getMaxMin(scatter_data, 1)
-
-    var category_x=0
-    var category_y=1
+    xLimits=getMaxMin(scatter_data, 0)
+    yLimits=getMaxMin(scatter_data, 1)
 
     // Add X and Y axis
-    var x = d3.scaleLinear()
-    .domain([xLimits[0], xLimits[1]])
-    .range([ 0, width ]);
+    x = d3.scaleLinear()
+        .domain([xLimits[0], xLimits[1]])
+        .range([ 0, width ]);
 
-    var y = d3.scaleLinear()
-    .domain([yLimits[0],yLimits[1]])
-    .range([ height, 0]);
+    y = d3.scaleLinear()
+        .domain([yLimits[0],yLimits[1]])
+        .range([ height, 0]);
 
     //axis don't indicate anything if we usa PCA, useless
     var xAxis_ = d3.axisBottom(x).ticks(0, ".0f")
@@ -437,8 +440,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         var s = event.selection;
         if (!s) {
             if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
-            x.domain(d3.extent(scatter_data, function (d) { return d[category_x]; })).nice();
-            y.domain(d3.extent(scatter_data, function (d) { return d[category_y]; })).nice();
+            x.domain(d3.extent(scatter_data, function (d) { return d[0]; })).nice();
+            y.domain(d3.extent(scatter_data, function (d) { return d[1]; })).nice();
             
         } else {
             x.domain([s[0][0], s[1][0]].map(x.invert, x));
@@ -456,8 +459,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         xAxis.transition().call(xAxis_);
         yAxis.transition().call(yAxis_);
         scatter.selectAll("circle").transition()
-        .attr("cx", function (d) { return x(d[category_x]); })
-        .attr("cy", function (d) { return y(d[category_y]); });
+        .attr("cx", function (d) { return x(d[0]); })
+        .attr("cy", function (d) { return y(d[1]); });
     }
 
     tooltip_div = d3.select("body").append("div")	
@@ -472,11 +475,11 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     .data(scatter_data)
     .enter()
     .append("circle")
-        //.attr("cx", function (d) { return x(d[category_x]); } )
-        //.attr("cy", function (d) { return y(d[category_y]); } )
+        //.attr("cx", function (d) { return x(d[0]); } )
+        //.attr("cy", function (d) { return y(d[1]); } )
         //PCA
-        .attr("cx", function (d) { return x(d[category_x]); } )
-        .attr("cy", function (d) { return y(d[category_y]); } )
+        .attr("cx", function (d) { return x(d[0]); } )
+        .attr("cy", function (d) { return y(d[1]); } )
         .attrs(base_attr)
         .styles(base_style)
         .on('click', onClick(this_artist))
@@ -485,35 +488,31 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
 }
 
 function applyFilter(lowLimit, topLimit, cat) {
-    console.log(songsPCA)
-    /*
+
     filterLimits[cat][0] = lowLimit;
     filterLimits[cat][1] = topLimit;
 
-    console.log(scatter_songs.selectAll("circle")
-        .data(songsPCA)
-        .filter(function (d) {
-            for (const k in filterLimits) {
-                if (d[2][k] < filterLimits[k][0] || d[2][k] > filterLimits[k][1]) {
-                    return false;
-                }
+    const filteredSongs = d3.filter(songsPCA, function(d) {
+        for (const k in filterLimits) {
+            if (d[2][k] < filterLimits[k][0] || d[2][k] > filterLimits[k][1]) {
+                return false;
             }
-            return true;
-        })
-        .enter()
-            .append("circle")
-        .exit()
-            .remove()
+        }
+        return true;
+    })
 
-        .remove()  
-    )
-    */
+    scatter_songs.selectAll("circle")
+        .data(filteredSongs)
+        .join("circle")
+            .attr("cx", function (d) { return x(d[0]); } )
+            .attr("cy", function (d) { return y(d[1]); } )
+            .attrs(base_attr)
+            .styles(base_style)
+            .on('click', onClick(false))
+            .on('mouseover', onMouseOver(false))
+            .on('mouseout', onMouseOut(false))
 }
-/*
-function removeFilter(cat) {
 
-}
-*/
 function main() {
     const div_height = document.getElementById("scatter-plot-1").clientHeight;
     const div_width = document.getElementById("scatter-plot-1").clientWidth;
@@ -543,12 +542,18 @@ function main() {
         .then( function(data){ 
             //get max and min for categories of radial plot (to nromalize)
             for(var i=0;i<categories.length;i++){
-                limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
+                const limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
                 cat_limits.push(limits)
             }
+            for (cat of categories) {
+                filterLimits[cat] = getMaxMin(data, cat) 
+            }
+
+            if (filterLimits['tempo'] > 220) alert("Trovata una canzone con tempo > 220, sistemare l'istogramma dei filtri")
+
             console.log("limits:",cat_limits)
 
-            createHistogram(data, 'energy', applyFilter);
+            createHistogram(data, 'tempo', applyFilter);
 
             ScatterPlotMain(data, margin, width, height, svg1, false)
             ScatterPlotMain(data, margin, width, height, svg2, true)

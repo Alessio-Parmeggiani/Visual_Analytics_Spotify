@@ -25,24 +25,41 @@ function getPCA(pca_data){
     return new_data
 }
 
-function getHistValues(data, bins, category) {
+function getHistValues(data, bins, category, min, max) {
     let vals = [];
-    for (let i=0; i<bins; i++) {
-        vals.push(d3.count(data, function(d) {
-            return (d[category] >= i/bins && d[category] < (i+1)/bins) ? 1 : undefined;
-        }))
+    // Special case for loudness given that min=-60dB
+    if (category == "loudness") {
+        for (let i=0; i<bins; i++) {
+            vals.push(d3.count(data, function(d) {
+                return (d[category] <= (min-max)*i/bins && d[category] > (min-max)*(i+1)/bins) ? 1 : undefined;
+            }))
+        }
     }
+    else{
+        for (let i=0; i<bins; i++) {
+            vals.push(d3.count(data, function(d) {
+                return (d[category] >= (max-min)*i/bins && d[category] < (max-min)*(i+1)/bins) ? 1 : undefined;
+            }))
+        }
+    }
+    console.log(vals);
     return vals;
 }
 
 /**
  * Rounds a number to the closest bin value that is <= number
  */
-function round2Bin(n, bins) {
+function round2Bin(n, cat, bins, min, max) {
     let i = 0
-    while (i/bins < n) {i++};
-
-    return i/bins;
+    // Special case for loudness given that min=-60dB
+    if (cat == "loudness") {
+        while ((min-max)*i/bins > n) {i++};
+        return (min-max)*i/bins;
+    }
+    else {
+        while ((max-min)*i/bins < n) {i++};
+        return (max-min)*i/bins;
+    }
 }
     
 function compute_boxplot_data(songs){
