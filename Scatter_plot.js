@@ -10,6 +10,7 @@ let selected_song;
 let artistsPCA;
 let songsPCA;
 //PCA FROM https://www.npmjs.com/package/pca-js
+
 function prova(a){
     console.log("prova",a)
 
@@ -241,7 +242,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 }
             });
             //update boxplot
-            boxplot_songs_data=compute_boxplot_data(current_artist_songs)
+            let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
             update_boxplot(boxplot_songs_data)
 
             //CLICK ON ARTIST SCATTERPLOT
@@ -250,21 +251,20 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 selected_song=null
 
                 //all other artists return to base style
-                scatter_artists.
-                selectAll("circle")
-                .filter(function(d){
-                    if(selected_artist){
-                        //only non selected artists return to normal
-                        artist=d[2]
-                        return artist["artists"]!=selected_artist["artists"]
-                    }
-                    //nothing has been selected
-                    return true  
-                })
-                .transition()
-                .duration(200)
-                .attrs(base_attr)
-                .styles(base_style) 
+                scatter_artists.selectAll("circle")
+                    .filter(function(d){
+                        if(selected_artist){
+                            //only non selected artists return to normal
+                            const artist=d[2]
+                            return artist["artists"]!=selected_artist["artists"]
+                        }
+                        //nothing has been selected
+                        return true  
+                    })
+                    .transition()
+                    .duration(200)
+                    .attrs(base_attr)
+                    .styles(base_style) 
             }
 
             //CLICK ON SONG SCATTERPLOT
@@ -273,58 +273,58 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
 
                 //highlight artist of selected song
                 scatter_artists.selectAll("circle")
-                .each(function(d){
-                    artist=d[2]
-                    //if non selected artist stay normal
-                    if (artist["artists"]!=selected_song["artists"]) {
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(base_attr)
-                        .styles(base_style)
-                    }
-                    //if selected artist then change color
-                    else if (artist["artists"]==selected_song["artists"]) {
-                        d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(select_attr)
-                        .styles(select_style)
-                    }
-                
-                })
+                    .each(function(d){
+                        const artist=d[2]
+                        //if non selected artist stay normal
+                        if (artist["artists"]!=selected_song["artists"]) {
+                            d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(base_attr)
+                                .styles(base_style)
+                        }
+                        //if selected artist then change color
+                        else if (artist["artists"]==selected_song["artists"]) {
+                            d3.select(this)
+                                .transition()
+                                .duration(50)
+                                .attrs(select_attr)
+                                .styles(select_style)
+                        }
+                    
+                    })
 
                 //highlight song of same artist of the selected song
                 scatter_songs.selectAll("circle")
-                .each(function(d){
-                    song=d[2]
-                    if (song["artists"]==selected_song["artists"]) {
-                        //hihglight selected song
-                        if (song["id"]==selected_song["id"]) {
-                            d3.select(this)
-                            .transition()
-                            .duration(200)
-                            .attrs(highlight_attr)
-                            .styles(highlight_style)
+                    .each(function(d){
+                        const song=d[2]
+                        if (song["artists"]==selected_song["artists"]) {
+                            //hihglight selected song
+                            if (song["id"]==selected_song["id"]) {
+                                d3.select(this)
+                                    .transition()
+                                    .duration(200)
+                                    .attrs(highlight_attr)
+                                    .styles(highlight_style)
+                            }
+                            //same artist but not selected song
+                            else{
+                                d3.select(this)
+                                    .transition()
+                                    .duration(200)
+                                    .attrs(same_artist_attr)
+                                    .styles(same_artist_style)
+                            }
+
                         }
-                        //same artist but not selected song
                         else{
                             d3.select(this)
-                            .transition()
-                            .duration(200)
-                            .attrs(same_artist_attr)
-                            .styles(same_artist_style)
+                                .transition()
+                                .duration(200)
+                                .attrs(base_attr)
+                                .styles(base_style)
                         }
-
-                    }
-                    else{
-                        d3.select(this)
-                        .transition()
-                        .duration(200)
-                        .attrs(base_attr)
-                        .styles(base_style)
-                    }
-                })
+                    })
 
             }
              
@@ -332,12 +332,12 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .on('mouseover', function (d, i) {
             //on song scatter plot dot is highlighted only fif it not belng to selected artist  
             d3.select(this)
-            .transition()
-            .duration(50)
-            .attrs(highlight_attr)
-            .styles(highlight_style)  
+                .transition()
+                .duration(50)
+                .attrs(highlight_attr)
+                .styles(highlight_style)  
             
-            sel=d.originalTarget.__data__[2]
+            const sel=d.originalTarget.__data__[2]
             let text_artist=sel["artists"].replace(/[\[\]\'']+/g, '').split(',')
             if (text_artist.length>1) {
                 text_artist=text_artist[0]+" and others"
@@ -347,15 +347,15 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
 
                 function checkPosX(X){
                     
-                    bodyWidth=document.getElementsByTagName("body")[0].clientWidth
+                    const bodyWidth=document.getElementsByTagName("body")[0].clientWidth
                     if (X+100>bodyWidth) return X-100
                     else return X+5
                 }
 
 
-                height=30+10*Math.round((text_artist.length/20))
+                const tooltipHeight=30+10*Math.round((text_artist.length/20))
                 //console.log("artist: "+text_artist +" computed height: "+height)
-                artist=sel
+                const artist=sel
                 tooltip_div.transition()		
                     .duration(200)		
                     .style("opacity", .8);		
@@ -363,11 +363,11 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     .style("left", (checkPosX(d.pageX)) + "px")		
                     .style("top", (d.pageY+5) + "px")
                     //modify height
-                    .style("height", (height)+"px")
+                    .style("height", (tooltipHeight)+"px")
             
             }
             else{
-                song=sel
+                const song=sel
                 //shorten song name if too long
                 song_text=song["name"]
                 /*
@@ -376,7 +376,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                     song_text=song_text+"..."
                 }*/
                 //compute height bases on how many lines of text
-                height=40+20*Math.round((song_text.length/15))
+                const tooltipHeight=40+20*Math.round((song_text.length/15))
                 tooltip_div.transition()		
                     .duration(200)		
                     .style("opacity", .8);		
@@ -384,7 +384,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                             "Artist: "+ text_artist)	
                     .style("left", (d.pageX+5) + "px")		
                     .style("top", (d.pageY+5) + "px")
-                    .style("height", (height)+"px")	
+                    .style("height", (tooltipHeight)+"px")	
             
             }
         })
@@ -397,7 +397,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 .duration(500)		
                 .style("opacity", 0);	
            
-            element=d.originalTarget.__data__[2]
+            const element=d.originalTarget.__data__[2]
             //console.log("mouse out",element)
 
             

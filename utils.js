@@ -43,6 +43,7 @@ function round2Bin(n, bins) {
     while (i/bins < n) {i++};
 
     return i/bins;
+}
     
 function compute_boxplot_data(songs){
     //compute boxplot data for a given category
