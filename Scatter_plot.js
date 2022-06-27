@@ -1,13 +1,19 @@
 var cat_limits=[];
+let filterLimits = {"speechiness": [0, 1], "acousticness": [0, 1], "instrumentalness": [0, 1],
+    "liveness": [0, 1], "valence": [0, 1], "tempo": [0, 1], "danceability": [0, 1],
+     "energy": [0, 1], "loudness": [0, 1]};
 
 let scatter_artists;
 let scatter_songs;
 let selected_artist;
 let selected_song;
+let artistsPCA;
+let songsPCA;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     
+    let scatter_data;
 
     if (this_artist) {
         //group song by artist
@@ -46,17 +52,17 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
 
 
         //Compute new data using PCA
-        artist_PCA=getPCA(songByArtists["matrix_data"])
+        artistsPCA=getPCA(songByArtists["matrix_data"])
 
         //add some information to each element
-        for (var i = 0; i < artist_PCA.length; i++) {
+        for (var i = 0; i < artistsPCA.length; i++) {
             //mean of each category
-            //artist_PCA[i].push(songByArtists["matrix_data"][i])
+            //artistsPCA[i].push(songByArtists["matrix_data"][i])
             //artist name
-            artist_PCA[i].push(songByArtists["info"][i])
+            artistsPCA[i].push(songByArtists["info"][i])
         }
 
-        scatter_data=artist_PCA
+        scatter_data=artistsPCA
     }
     else{
         console.log("Viewing songs...")
@@ -354,10 +360,11 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 song=sel
                 //shorten song name if too long
                 song_text=song["name"]
+                /*
                 if(song_text.length>50){
                     song_text=song_text.substring(0,50)
                     song_text=song_text+"..."
-                }
+                }*/
                 //compute height bases on how many lines of text
                 height=40+20*Math.round((song_text.length/15))
                 div.transition()		
@@ -488,10 +495,36 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     
 }
 
-function updateScatterPlot() {
+function applyFilter(lowLimit, topLimit, cat) {
+    console.log(songsPCA)
+    /*
+    filterLimits[cat][0] = lowLimit;
+    filterLimits[cat][1] = topLimit;
+
+    console.log(scatter_songs.selectAll("circle")
+        .data(songsPCA)
+        .filter(function (d) {
+            for (const k in filterLimits) {
+                if (d[2][k] < filterLimits[k][0] || d[2][k] > filterLimits[k][1]) {
+                    return false;
+                }
+            }
+            return true;
+        })
+        .enter()
+            .append("circle")
+        .exit()
+            .remove()
+
+        .remove()  
+    )
+    */
+}
+/*
+function removeFilter(cat) {
 
 }
-
+*/
 function main() {
     const div_height = document.getElementById("scatter-plot-1").clientHeight;
     const div_width = document.getElementById("scatter-plot-1").clientWidth;
@@ -526,7 +559,7 @@ function main() {
             }
             console.log("limits:",cat_limits)
 
-            let lowLimit, topLimit = filterHistogram(data, 'energy');
+            createHistogram(data, 'energy', applyFilter);
 
             ScatterPlotMain(data, margin, width, height, svg1, false)
             ScatterPlotMain(data, margin, width, height, svg2, true)

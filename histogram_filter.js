@@ -1,4 +1,4 @@
-function filterHistogram(data, cat) {
+function createHistogram(data, cat, update) {
     const div_height = document.getElementById("filter-container").clientHeight;
     const div_width = document.getElementById("filter-container").clientWidth;
 
@@ -95,7 +95,12 @@ function filterHistogram(data, cat) {
             })
             .on("end", function(event) {
                 console.log(`I valori sono: ${lowLimit}, ${topLimit}`)
+                update(lowLimit, topLimit, cat)
             })
+            /*
+            .on("dblclicked", function(event) {
+                
+            })*/
 
         svg.append("g")
             .attr("class", "brush")
