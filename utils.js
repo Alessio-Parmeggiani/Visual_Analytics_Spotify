@@ -43,4 +43,35 @@ function round2Bin(n, bins) {
     while (i/bins < n) {i++};
 
     return i/bins;
+    
+function compute_boxplot_data(songs){
+    //compute boxplot data for a given category
+    var boxplot_data = []
+    for(var i=0;i<categories.length;i++){
+        //dtaa for this category
+        category_data={}
+        category_data.category=categories[i]
+        category_data.min = d3.min(songs, function(d) { return d[categories[i]]; });
+        category_data.min=norm_min_max(category_data.min, cat_limits[i][0], cat_limits[i][1])
+
+        category_data.max = d3.max(songs, function(d) { return d[categories[i]]; });
+        category_data.max=norm_min_max(category_data.max, cat_limits[i][0], cat_limits[i][1])
+
+        category_data.median = d3.median(songs, function(d) { return d[categories[i]]; });
+        category_data.median=norm_min_max(category_data.median, cat_limits[i][0], cat_limits[i][1])
+        
+        category_data.q1 = d3.quantile(songs, 0.25, function(d) { return d[categories[i]]; });
+        category_data.q1=norm_min_max(category_data.q1, cat_limits[i][0], cat_limits[i][1]) 
+        category_data.q3 = d3.quantile(songs, 0.75, function(d) { return d[categories[i]]; });
+        category_data.q3=norm_min_max(category_data.q3, cat_limits[i][0], cat_limits[i][1])
+        //interqauntile range (the box)
+        category_data.iqr = category_data.q3 - category_data.q1;
+
+        //baffi
+        category_data.upper = category_data.q3 + 1.5 * category_data.iqr;
+        category_data.lower = category_data.q1 - 1.5 * category_data.iqr;
+
+        boxplot_data.push(category_data);
+    }
+    return boxplot_data
 }

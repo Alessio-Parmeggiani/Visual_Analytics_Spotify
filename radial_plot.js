@@ -34,7 +34,7 @@ function updateRadialPlot(targetSong,named=true){
   .curve(d3.curveCatmullRom)
 
   radialPath
-  .attr('transform', `translate(${center.x},${center.y})`)
+  .attr('transform', `translate(${radial_plot_center.x},${radial_plot_center.y})`)
   .transition()
   .attr('d', radial(song))
   .attr('fill', 'none')
