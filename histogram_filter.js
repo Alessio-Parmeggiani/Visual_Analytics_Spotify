@@ -1,6 +1,6 @@
 function createHistogram(data, cat, update) {
-    const div_height = document.getElementById("filter-container").clientHeight;
-    const div_width = document.getElementById("filter-container").clientWidth;
+    const div_height = document.getElementById(`${cat}-filter-container`).clientHeight;
+    const div_width = document.getElementById(`${cat}-filter-container`).clientWidth;
 
     // set the dimensions and margins of the histogram
     const margin = {top: 10, right: 10, bottom: 25, left: 25},
@@ -33,7 +33,7 @@ function createHistogram(data, cat, update) {
         binsNum = 20;
     }
 
-    const svg = d3.select("#filter-container")
+    const svg = d3.select(`#${cat}-filter-container`)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -119,7 +119,7 @@ function createHistogram(data, cat, update) {
             })
             .on("end", function(event) {
                 console.log(`I valori sono: ${lowLimit}, ${topLimit}`)
-                //update(lowLimit, topLimit, cat)
+                update(lowLimit, topLimit, cat)
             })
 
         svg.append("g")

@@ -537,6 +537,8 @@ function main() {
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+    const filterBar = document.getElementById("filter-bar");
+
     //Read the data and plot the plots
     d3.csv("../tracks_small.csv",d3.autoType)
         .then( function(data){ 
@@ -546,14 +548,19 @@ function main() {
                 cat_limits.push(limits)
             }
             for (cat of categories) {
-                filterLimits[cat] = getMaxMin(data, cat) 
+                const filterContainer = document.createElement("div");
+                filterContainer.classList.add("filter-container");
+                filterContainer.id = `${cat}-filter-container`;
+                filterBar.appendChild(filterContainer);
+                createHistogram(data, cat, applyFilter);
+
+                filterLimits[cat] = getMaxMin(data, cat);
             }
 
             if (filterLimits['tempo'] > 220) alert("Trovata una canzone con tempo > 220, sistemare l'istogramma dei filtri")
 
             console.log("limits:",cat_limits)
 
-            createHistogram(data, 'tempo', applyFilter);
 
             ScatterPlotMain(data, margin, width, height, svg1, false)
             ScatterPlotMain(data, margin, width, height, svg2, true)

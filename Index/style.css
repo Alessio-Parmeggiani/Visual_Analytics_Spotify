@@ -61,10 +61,11 @@ svg {
 #filter-bar {
     grid-area: filter-bar;
     border-color: blue;
+    overflow: auto;
 }
 
-#filter-container {
-    height: 20%;
+.filter-container {
+    height: 25%;
 }
 
 #scatter-plots {
