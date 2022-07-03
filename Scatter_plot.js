@@ -17,12 +17,48 @@ let yLimits;
 let x;
 let y;
 
+let K_nearest=5;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function prova(a){
     console.log("prova",a)
 }
+function get_distance(x1,x2,y1,y2){
+    return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))
+}
 
+function get_k_nearest_elements(this_artist,selected_artist){
+    console.log("selecting similar to:",selected_artist)
+    if (this_artist) {
+        nearest_elements=[]
+        scatter_artists.selectAll("circle")
+        .each(function(d){
+            if (nearest_elements.length>=2){
+                nearest_elements.sort(function(a, b) {return a["distance"] - b["distance"];});
+            }
+            distance=get_distance(d[0],selected_artist[0],d[1],selected_artist[1])
+            //select K nearest elements of selected artist
+            if (nearest_elements.length<K_nearest){
+                nearest_elements.push({"data":d,"distance":distance})
+                return
+            }
+            //compare with nearest elements
+            for (let i=0;i<K_nearest;i++){
+                if (distance<nearest_elements[i]["distance"]){
+                    //add this element to the list
+                    nearest_elements.splice(i,0,{"data":d,"distance":distance})
+                    //delete last element of array
+                    if (nearest_elements.length>K_nearest){
+                        nearest_elements.pop()
+                    }
+                    break
+                }
+            }
+        })
+        console.log("nearest elements:",nearest_elements)
+        return nearest_elements
+    }
+}
 
 function onClick(this_artist) {
     // I use this structure in order use the this_artist variable defined in scatterPlotMain
@@ -35,6 +71,8 @@ function onClick(this_artist) {
         }
         else  console.log("selected song:",d.originalTarget.__data__[2])
         selected_artist=d.originalTarget.__data__[2]
+
+        nearest_elements=get_k_nearest_elements(this_artist,d.originalTarget.__data__)
 
         updateRadialPlot(d.originalTarget.__data__[2])
         showStats(d.originalTarget.__data__[2], this_artist)
@@ -82,6 +120,22 @@ function onClick(this_artist) {
                 .duration(200)
                 .attrs(base_attr)
                 .styles(base_style) 
+            
+                scatter_artists.selectAll("circle")
+                .filter(function(d){
+                    if(selected_artist){
+                        //only non selected artists return to normal
+                        const artist=d[2]
+                        //return true if element in nearest_elements
+                        return nearest_elements.some(function(e){return e["data"][2]["artists"]==artist["artists"]})
+                    }
+                    //nothing has been selected
+                    return true  
+                })
+                .transition()
+                .duration(200)
+                .attrs(highlight_attr)
+                .styles(base_style)
         }
 
         //CLICK ON SONG SCATTERPLOT
