@@ -7,17 +7,7 @@ let boxPlotSvg;
 //https://d3-graph-gallery.com/graph/boxplot_several_groups.html
 function update_boxplot(songs_data){
     console.log("update_boxplot",songs_data);
-    
-    /*
-    altor tentaivo
-    vertical_line=
-    boxPlotSvg
-    .selectAll("vertLines")
-    .data(songs_data)
-    .enter()
-    .append("line")
-    .attr("d",songs_data)
-    */
+
     vertical_line
     .data(songs_data)
     .attr("d",songs_data)
@@ -45,8 +35,6 @@ function update_boxplot(songs_data){
     .attr("stroke", "black")
     .style("fill", "#69b3a2")
     
-
-    
     // show median, min and max horizontal lines
     horizontal_line.data(songs_data)
     .attr("d",songs_data)
@@ -56,10 +44,10 @@ function update_boxplot(songs_data){
     .attr("y1", function(d){ return(y_scale(d.median))} )
     .attr("y2", function(d){ return(y_scale(d.median))} )
     .attr("stroke", "black")
-    
 
     
 }
+
 function boxPlotMain() {
 
     boxPlotSvg = d3.select('#other-graph')
@@ -71,7 +59,7 @@ function boxPlotMain() {
     const margin_left=50;
     const margin_right=20;
     const margin_top=10;
-    const margin_bottom=40;
+    const margin_bottom=80;
 
     x_scale = d3.scaleBand()
     .range([ margin_left, width-margin_right ])
@@ -82,6 +70,11 @@ function boxPlotMain() {
     boxPlotSvg.append("g")
     .attr("transform", "translate(0," + (height-margin_bottom) + ")")
     .call(d3.axisBottom(x_scale))
+    .selectAll("text")  
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-45)");
 
     // Show the Y scale
     y_scale = d3.scaleLinear()
@@ -93,7 +86,7 @@ function boxPlotMain() {
     .attr("transform", "translate("+(margin_left) + ",0)")
     .call(d3.axisLeft(y_scale))
 
-    let min=0;max=0;boxPlotCenter=0;q1=0;q3=0;median=0;
+
     let start_data=[]
     for(var i=0;i<categories.length;i++){
         sample_data={}
@@ -114,22 +107,23 @@ function boxPlotMain() {
     .data(start_data)
     .enter()
     .append("line")
-    .attr("x1", boxPlotCenter)
-    .attr("x2", boxPlotCenter)
-    .attr("y1", y_scale(min) )
-    .attr("y2", y_scale(max) )
+    .attr("x1", d=> x_scale(d.category))
+    .attr("x2", d=> x_scale(d.category))
+    .attr("y1", d=> y_scale(d.min) )
+    .attr("y2", d=> y_scale(d.max)  )
     .attr("stroke", "black")
 
+    let boxWidth=10;
     // Show the box
     box=boxPlotSvg
     .selectAll("boxes")
     .data(start_data)
     .enter()
     .append("rect")
-    .attr("x", boxPlotCenter - width/2)
-    .attr("y", y_scale(q3) )
-    .attr("height", (y_scale(q1)-y_scale(q3)) )
-    .attr("width", width )
+    .attr("x", d=> x_scale(d.category) - boxWidth/2)
+    .attr("y", d=> y_scale(d.q3) )
+    .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
+    .attr("width", boxWidth )
     .attr("stroke", "black")
     .style("fill", "#69b3a2")
 
@@ -139,9 +133,9 @@ function boxPlotMain() {
     .data(start_data)
     .enter()
     .append("line")
-    .attr("x1", boxPlotCenter-width/2)
-    .attr("x2", boxPlotCenter+width/2)
-    .attr("y1", function(d){ return(y_scale(d))} )
-    .attr("y2", function(d){ return(y_scale(d))} )
+    .attr("x1", d=> x_scale(d.category)-boxWidth/2)
+    .attr("x2", d=> x_scale(d.category)+boxWidth/2)
+    .attr("y1", function(d){ return(y_scale(d.median))} )
+    .attr("y2", function(d){ return(y_scale(d.median))} )
     .attr("stroke", "black")
 }
