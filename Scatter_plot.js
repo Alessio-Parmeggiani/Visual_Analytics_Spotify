@@ -18,6 +18,7 @@ let x;
 let y;
 
 let K_nearest=5;
+let nearest_elements;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 function prova(a){
@@ -27,38 +28,42 @@ function get_distance(x1,x2,y1,y2){
     return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))
 }
 
-function get_k_nearest_elements(this_artist,selected_artist){
-    console.log("selecting similar to:",selected_artist)
-    if (this_artist) {
-        nearest_elements=[]
-        scatter_artists.selectAll("circle")
-        .each(function(d){
-            if (nearest_elements.length>=2){
-                nearest_elements.sort(function(a, b) {return a["distance"] - b["distance"];});
-            }
-            distance=get_distance(d[0],selected_artist[0],d[1],selected_artist[1])
-            //select K nearest elements of selected artist
-            if (nearest_elements.length<K_nearest){
-                nearest_elements.push({"data":d,"distance":distance})
-                return
-            }
-            //compare with nearest elements
-            for (let i=0;i<K_nearest;i++){
-                if (distance<nearest_elements[i]["distance"]){
-                    //add this element to the list
-                    nearest_elements.splice(i,0,{"data":d,"distance":distance})
-                    //delete last element of array
-                    if (nearest_elements.length>K_nearest){
-                        nearest_elements.pop()
-                    }
-                    break
+function get_k_nearest_elements(this_artist,selected_elem){
+    console.log("selecting similar to:",selected_elem)
+    if (this_artist) { nearest_scatter=scatter_artists }
+    else { nearest_scatter=scatter_songs }
+    nearest_elements=[]
+    nearest_scatter.selectAll("circle")
+    .each(function(d){
+        if (nearest_elements.length>=2){
+            nearest_elements.sort(function(a, b) {return a["distance"] - b["distance"];});
+        }
+        distance=get_distance(d[0],selected_elem[0],d[1],selected_elem[1])
+        //ignore selected element
+        if (this_artist && d[2]["artists"]==selected_elem[2]["artists"]){ return }
+        if (!this_artist && d[2]["id"]==selected_elem[2]["id"]){ return }
+        //select K nearest elements of selected artist
+        if (nearest_elements.length<K_nearest){
+            nearest_elements.push({"data":d,"distance":distance})
+            return
+        }
+        //compare with nearest elements
+        for (let i=0;i<K_nearest;i++){
+            if (distance<nearest_elements[i]["distance"]){
+                //add this element to the list
+                nearest_elements.splice(i,0,{"data":d,"distance":distance})
+                //delete last element of array
+                if (nearest_elements.length>K_nearest){
+                    nearest_elements.pop()
                 }
+                break
             }
-        })
-        console.log("nearest elements:",nearest_elements)
-        return nearest_elements
-    }
+        }
+    })
+    console.log("nearest elements:",nearest_elements)
+    return nearest_elements
 }
+
 
 function onClick(this_artist) {
     // I use this structure in order use the this_artist variable defined in scatterPlotMain
@@ -107,35 +112,24 @@ function onClick(this_artist) {
 
             //all other artists return to base style
             scatter_artists.selectAll("circle")
-                .filter(function(d){
-                    if(selected_artist){
-                        //only non selected artists return to normal
-                        const artist=d[2]
-                        return artist["artists"]!=selected_artist["artists"]
+                .each(function(d){
+                    let artist=d[2]
+                    if (selected_artist){
+                        if (artist["artists"]!=selected_artist["artists"]){
+                            if (nearest_elements.some(e=> e["data"][2]["artists"]==artist["artists"])){
+                                d3.select(this).transition()
+                                .attrs(simil_attr)
+                                .styles(simil_style);
+                            }
+                            else {
+                            d3.select(this).transition()
+                            .attrs(base_attr)
+                            .styles(base_style);
+                            }
+                        }
                     }
-                    //nothing has been selected
-                    return true  
+
                 })
-                .transition()
-                .duration(200)
-                .attrs(base_attr)
-                .styles(base_style) 
-            
-                scatter_artists.selectAll("circle")
-                .filter(function(d){
-                    if(selected_artist){
-                        //only non selected artists return to normal
-                        const artist=d[2]
-                        //return true if element in nearest_elements
-                        return nearest_elements.some(function(e){return e["data"][2]["artists"]==artist["artists"]})
-                    }
-                    //nothing has been selected
-                    return true  
-                })
-                .transition()
-                .duration(200)
-                .attrs(highlight_attr)
-                .styles(base_style)
         }
 
         //CLICK ON SONG SCATTERPLOT
@@ -169,7 +163,12 @@ function onClick(this_artist) {
             scatter_songs.selectAll("circle")
                 .each(function(d){
                     const song=d[2]
-                    if (song["artists"]==selected_song["artists"]) {
+                    if (nearest_elements.some(e=> e["data"][2]["id"]==song["id"])){
+                        d3.select(this).transition()
+                        .attrs(simil_attr)
+                        .styles(simil_style);
+                    }
+                    else if (song["artists"]==selected_song["artists"]) {
                         //hihglight selected song
                         if (song["id"]==selected_song["id"]) {
                             d3.select(this)
@@ -283,6 +282,20 @@ function onMouseOut(this_artist) {
                 .styles(base_style)
             return
         }
+        
+        //if song/artist is similar to selected artist, then it is highlighted in correct color
+        if (
+            (this_artist && nearest_elements.some(e=> e["data"][2]["artists"]==element["artists"]))
+         || (!this_artist && nearest_elements.some(e=> e["data"][2]["id"]==element["id"]))
+        ){
+            d3.select(this)
+            .transition()
+            .duration(50)
+            .attrs(simil_attr)
+            .styles(simil_style)
+            return
+        }
+
         
         //if an artist is selected, distinguish between
         //highlighted: element clicked or cursor is passing over

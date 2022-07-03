@@ -12,7 +12,7 @@ let highlight_style={
     "fill":"red",
 }
 let highlight_attr={
-    "r":7,
+    "r":8,
     "stroke": "black",
     "stroke-width":3,
 }
@@ -25,11 +25,11 @@ let select_attr={
     "stroke": "red",
     "stroke-width":1,
 }
-let select_simil_style={
+let simil_style={
     "opacity": 1,
-    "fill":"green",
+    "fill":"yellow",
 }
-let select_simil_attr={
+let simil_attr={
     "r":7,
     "stroke": "red",
     "stroke-width":1,
@@ -39,7 +39,7 @@ let same_artist_style={
     "fill":"grey",
 }
 let same_artist_attr={
-    "r":7,
+    "r":5,
     "stroke": "red",
     "stroke-width":1,
 }
