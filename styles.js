@@ -7,6 +7,8 @@ let base_attr={
     "r":3,
     "stroke": "none",
 }
+
+//clicked element
 let highlight_style={
     "opacity": 1,
     "fill":"red",
@@ -16,6 +18,19 @@ let highlight_attr={
     "stroke": "black",
     "stroke-width":3,
 }
+
+//mouse over element
+let over_style={
+    "opacity": 1,
+    "fill":"green",
+}
+let over_attr={
+    "r":8,
+    "stroke": "black",
+    "stroke-width":3,
+}
+
+//songs of clicked artist or artist of clicked song
 let select_style={
     "opacity": 1,
     "fill":"blue",
@@ -25,6 +40,8 @@ let select_attr={
     "stroke": "red",
     "stroke-width":1,
 }
+
+//similar artists/songs to clicked
 let simil_style={
     "opacity": 1,
     "fill":"yellow",
@@ -34,8 +51,10 @@ let simil_attr={
     "stroke": "red",
     "stroke-width":1,
 }
+
+//songs of the same artist of clicked song
 let same_artist_style={
-    "opacity": 1,
+    "opacity": 0.8,
     "fill":"grey",
 }
 let same_artist_attr={
