@@ -593,8 +593,9 @@ function main() {
     const filterBar = document.getElementById("filter-bar");
 
     //Read the data and plot the plots
-    d3.csv("../tracks_small.csv",d3.autoType)
+    d3.csv("../tracks_mid_1k.csv",d3.autoType)
         .then( function(data){ 
+            console.log("data loaded")
             //get max and min for categories of radial plot (to nromalize)
             for(var i=0;i<categories.length;i++){
                 const limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
@@ -614,7 +615,7 @@ function main() {
 
             console.log("limits:",cat_limits)
 
-
+            console.log("plot ready")
             ScatterPlotMain(data, margin, width, height, svg1, false)
             ScatterPlotMain(data, margin, width, height, svg2, true)
 
