@@ -566,6 +566,7 @@ function applyFilter(lowLimit, topLimit, cat) {
             .on('mouseout', onMouseOut(false))
 }
 
+
 function main() {
     const div_height = document.getElementById("scatter-plot-1").clientHeight;
     const div_width = document.getElementById("scatter-plot-1").clientWidth;
@@ -621,6 +622,7 @@ function main() {
 
             radialPlotMain()
             boxPlotMain()
+            similarityPlot()
             
             })
         .catch((error) => console.log(error))
