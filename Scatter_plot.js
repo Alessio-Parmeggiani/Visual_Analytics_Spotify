@@ -627,7 +627,7 @@ function main() {
 
             radialPlotMain()
             boxPlotMain()
-            //similarityPlot()
+            similarityPlot()
             
             })
         .catch((error) => console.log(error))

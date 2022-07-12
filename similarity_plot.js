@@ -67,9 +67,9 @@ function similarityPlot(){
     .data(start_data)
     .enter()
     .append("circle")
-        .attr("cx", function (d,i) { return i*50; } )
-        .attr("cy", function (d) { return 50; } )
+        .attr("cx", function (d,i) { return (i+1)*150; } )
+        .attr("cy", function (d) { return 75; } )
         .attrs(base_attr)
-        .attr("r",1)
+        .attr("r",50)
         .styles(base_style)
 }

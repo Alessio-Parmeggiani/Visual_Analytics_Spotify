@@ -90,6 +90,10 @@ svg {
     margin: 4px;
 }
 
+#simil-plots {
+    grid-area: simil-plots;
+    border-color: lightblue;
+}
 #graphs {
     grid-area: graphs;
     border-color: green;
@@ -100,9 +104,10 @@ svg {
 #container {
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
-    grid-template-rows: 60% 40%;
+    grid-template-rows: 40% 20% 40%;
     grid-template-areas:
         "filter-bar scatter-plots scatter-plots scatter-plots"
+        "filter-bar simil-plots simil-plots simil-plots"
         "stats-bar graphs graphs graphs";
     width: 100%;
     height: 100%;

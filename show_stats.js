@@ -29,7 +29,12 @@ function showStats(data, view_artist) {
     for (const elem of stats) {
         p = document.createElement("p");
         p.classList.add("stat-element");
-        p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + data[elem];
+        if (elem != "name" && elem != "album") {
+            p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + (Math.round(data[elem] * 100) / 100).toFixed(2);
+        }
+        else {
+            p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + data[elem];
+        }
         container.appendChild(p);
     }
 }
