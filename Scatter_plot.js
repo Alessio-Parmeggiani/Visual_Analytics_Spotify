@@ -85,6 +85,7 @@ function onClick(this_artist) {
         
         //get K nearest elements 
         nearest_elements=get_k_nearest_elements(this_artist,d.originalTarget.__data__)
+        //updateSimilarityPlot(d.originalTarget.__data__[2],nearest_elements,this_artist)
         
         updateRadialPlot(d.originalTarget.__data__[2])
         showStats(d.originalTarget.__data__[2], this_artist)

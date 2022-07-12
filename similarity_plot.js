@@ -1,7 +1,7 @@
 let simil_svg;
 let simil_plot;
 
-function updateSimilarityPlot(main_element,simil_data){
+function updateSimilarityPlot(main_element,simil_data,simil_artist_plot=true){
 
     simil_plot=svg.append('g')
 
@@ -24,6 +24,35 @@ function updateSimilarityPlot(main_element,simil_data){
         return distance
     })
     .styles(base_style)
+    .on('click', function(d) {
+        if (simil_artist_plot) {
+            scatter_artists.selectAll("circle")
+            .each(function(current_artist){
+                artist=current_artist[2]
+                if (artist["artists"]==d["artists"]) {
+                    d3.select(this).transition()
+                    .attrs(select_attr)
+                    .styles(select_style);
+                    return
+                }
+            });
+        }
+        else{
+            scatter_songs.selectAll("circle")
+            .each(function(current_song){
+                song=current_song[2]
+                if (song["id"]==d["id"]) {
+                    d3.select(this).transition()
+                    .attrs(select_attr)
+                    .styles(select_style);
+                    return
+                }
+            });
+        }
+    })
+
+
+
 }
 function similarityPlot(){
     simil_svg=d3.select('#simil-graph').append('svg');
