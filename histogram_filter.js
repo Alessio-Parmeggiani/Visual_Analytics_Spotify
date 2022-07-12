@@ -3,7 +3,7 @@ function createHistogram(data, cat, update) {
     const div_width = document.getElementById(`${cat}-filter-container`).clientWidth;
 
     // set the dimensions and margins of the histogram
-    const margin = {top: 10, right: 30, bottom: 25, left: 35},
+    const margin = {top: 10, right: 20, bottom: 25, left: 35},
     width = div_width - margin.left - margin.right,
     height = div_height - margin.top - margin.bottom;
 

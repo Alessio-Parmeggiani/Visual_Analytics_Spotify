@@ -61,7 +61,7 @@ svg {
 #filter-bar {
     grid-area: filter-bar;
     border-color: blue;
-    overflow: auto;
+    overflow-y: scroll;
 }
 
 .filter-container {
