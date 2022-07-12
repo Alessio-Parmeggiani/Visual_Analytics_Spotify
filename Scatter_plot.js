@@ -555,6 +555,8 @@ function applyFilter(lowLimit, topLimit, cat) {
         return true;
     })
 
+    // Same thing as create scatter plot a few lines above this
+    // If that changes this should change too, they must be the same
     scatter_songs.selectAll("circle")
         .data(filteredSongs)
         .join("circle")
@@ -604,9 +606,11 @@ function main() {
                 cat_limits.push(limits)
             }
             for (cat of categories) {
+                const filterName = document.createTextNode(`${capitalize(cat)}`)
                 const filterContainer = document.createElement("div");
                 filterContainer.classList.add("filter-container");
                 filterContainer.id = `${cat}-filter-container`;
+                filterBar.appendChild(filterName);
                 filterBar.appendChild(filterContainer);
                 createHistogram(data, cat, applyFilter);
 

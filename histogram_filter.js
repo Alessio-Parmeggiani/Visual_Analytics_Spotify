@@ -3,7 +3,7 @@ function createHistogram(data, cat, update) {
     const div_width = document.getElementById(`${cat}-filter-container`).clientWidth;
 
     // set the dimensions and margins of the histogram
-    const margin = {top: 10, right: 10, bottom: 25, left: 25},
+    const margin = {top: 10, right: 20, bottom: 25, left: 35},
     width = div_width - margin.left - margin.right,
     height = div_height - margin.top - margin.bottom;
 
@@ -106,20 +106,43 @@ function createHistogram(data, cat, update) {
 
                 // update and move labels
                 brushLabelL
-                    .attr("x", s[0])
+                    .attr("x", [lowLimit].map(x)[0])
                     .text(`${lowLimit}`)
                 brushLabelR
-                    .attr("x", s[1])
+                    .attr("x", [topLimit].map(x)[0])
                     .text(`${topLimit}`)
 
                 // moving the brush to one of the bins
                 d3.select(this).call(brush.move, [lowLimit, topLimit].map(x))
 
+                // Lowering opacity of histogram bars not selected
+                svg.selectAll("rect")
+                    .style("opacity", function(d) {
+                        return (d.x0 >= lowLimit && d.x1 <= topLimit) ? "1" : "0.4"
+                    })
+
                 update(lowLimit, topLimit, cat)
             })
             .on("end", function(event) {
+                // If I click outside of the brush, reset filter
+                if (event.selection == null) {
+                    brushLabelL
+                        .attr("x", [lowLimit].map(x)[0])
+                        .text("")
+                    brushLabelR
+                        .attr("x", [topLimit].map(x)[0])
+                        .text("")
+
+                    lowLimit = catMin;
+                    topLimit = catMax;
+
+                    svg.selectAll("rect")
+                        .style("opacity", "1")
+
+                    update(lowLimit, topLimit, cat)
+                }
+
                 console.log(`I valori sono: ${lowLimit}, ${topLimit}`)
-                update(lowLimit, topLimit, cat)
             })
 
         svg.append("g")

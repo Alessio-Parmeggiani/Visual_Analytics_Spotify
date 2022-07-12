@@ -53,12 +53,12 @@ function round2Bin(n, cat, bins, min, max) {
     let i = 0
     // Special case for loudness given that min=-60dB
     if (cat == "loudness") {
-        while ((min-max)*i/bins > n) {i++};
-        return (min-max)*i/bins;
+        while ((min-max)*i/bins >= n) {i++};
+        return (min-max)*(i-1)/bins;    // i-1 so that the selection starts from the bar that was clicked, not from the following one
     }
     else {
-        while ((max-min)*i/bins < n) {i++};
-        return (max-min)*i/bins;
+        while ((max-min)*i/bins <= n) {i++};
+        return (max-min)*(i-1)/bins;
     }
 }
     
