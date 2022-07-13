@@ -42,7 +42,7 @@ function getHistValues(data, bins, category, min, max) {
             }))
         }
     }
-    console.log(vals);
+    //console.log(vals);
     return vals;
 }
 

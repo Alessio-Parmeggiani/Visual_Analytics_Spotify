@@ -61,7 +61,7 @@ function createHistogram(data, cat, update) {
 
         let bins = histogram(data);
         let histArr = getHistValues(data, binsNum, cat, catMin, catMax);
-        console.log(`histArr: ${histArr}`)
+        //console.log(`histArr: ${histArr}`)
 
         // the y axis represents the number of samples that have value for that
         // category in the bin

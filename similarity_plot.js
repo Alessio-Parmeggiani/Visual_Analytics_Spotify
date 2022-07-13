@@ -12,7 +12,7 @@ function isSame(elem1,elem2,artist){
 
 function updateSimilarityPlot(simil_data,artist_plot){
 
-    console.log("simil:",simil_data)
+    //console.log("simil:",simil_data)
     //simil_plot=simil_svg.append('g')
 
     let max_size=40;
@@ -33,7 +33,7 @@ function updateSimilarityPlot(simil_data,artist_plot){
     .data(simil_data)
     //.attr("d",simil_data)
     .attr("r",function(d){
-        console.log("distance:",d["distance"],"became: ", simil_scale(d["distance"]))
+        //console.log("distance:",d["distance"],"became: ", simil_scale(d["distance"]))
         return simil_scale(d["distance"])})
     .styles(simil_plot_style)
     //.style("fill", "red")
@@ -78,7 +78,7 @@ function similarityPlot(){
                 selecting_scatter.selectAll(".similar")
                     .each(function(scatter_elem){
                         
-                        console.log("comparing:",scatter_elem,"with",d)
+                        //console.log("comparing:",scatter_elem,"with",d)
                         
                         if (isSame(d,scatter_elem[2],!selected_song)){
                             d3.select(this)
@@ -101,7 +101,7 @@ function similarityPlot(){
 
                 selecting_scatter.selectAll(".similar")
                     .each(function(scatter_elem){                      
-                        console.log("comparing:",scatter_elem,"with",d)
+                        //console.log("comparing:",scatter_elem,"with",d)
                         if (!isSame(d,scatter_elem[2],!selected_song)){
                             d3.select(this)
                             .transition()
@@ -140,7 +140,7 @@ function similarityPlot(){
                 .each(function(current_artist){
                     console.log("current_artist:",current_artist)
                     artist=current_artist[2]
-                    console.log("comparing:",artist["artists"],"with:",d["artists"])
+                    //console.log("comparing:",artist["artists"],"with:",d["artists"])
                     if (artist["artists"]==d["artists"]) {
                         d3.select(this).transition()
                         .attrs(highlight_attr)
