@@ -1,7 +1,9 @@
+let base_color="#69b3a2"
+
 //Scatterplot styles
 let base_style={
     "opacity": 0.5,
-    "fill":"#69b3a2",
+    "fill":base_color,
 }
 let base_attr={
     "r":3,
@@ -61,4 +63,14 @@ let same_artist_attr={
     "r":5,
     "stroke": "red",
     "stroke-width":1,
+}
+
+let inactive_style={
+    "opacity": 0.2,
+    "fill":"grey",
+}
+
+let simil_plot_style={
+    "opacity":1,
+    "fill":base_color
 }

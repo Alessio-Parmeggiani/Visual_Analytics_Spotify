@@ -12,8 +12,16 @@ let songsPCA;
 
 let tooltip_div;
 
+let xLimitsSongs;
+let yLimitsSongs;
+
+let xLimitArtists;
+let yLimitArtists;
+
 let xLimits;
 let yLimits;
+
+
 let x;
 let y;
 
@@ -85,7 +93,7 @@ function onClick(this_artist) {
         
         //get K nearest elements 
         nearest_elements=get_k_nearest_elements(this_artist,d.originalTarget.__data__)
-        //updateSimilarityPlot(d.originalTarget.__data__[2],nearest_elements,this_artist)
+        updateSimilarityPlot(nearest_elements,this_artist)
         
         updateRadialPlot(d.originalTarget.__data__[2])
         showStats(d.originalTarget.__data__[2], this_artist)
@@ -119,17 +127,19 @@ function onClick(this_artist) {
             scatter_artists.selectAll("circle")
                 .each(function(d){
                     let artist=d[2]
+                    d3.select(this).attr("class","circle");
                     if (selected_artist){
                         if (artist["artists"]!=selected_artist["artists"]){
                             if (nearest_elements.some(e=> e["data"][2]["artists"]==artist["artists"])){
                                 d3.select(this).transition()
                                 .attrs(simil_attr)
-                                .styles(simil_style);
+                                .styles(simil_style)
+                                .attr("class","similar")
                             }
                             else {
                             d3.select(this).transition()
                             .attrs(base_attr)
-                            .styles(base_style);
+                            .styles(base_style)
                             }
                         }
                     }
@@ -145,6 +155,8 @@ function onClick(this_artist) {
             //highlight artist of selected song
             scatter_artists.selectAll("circle")
                 .each(function(d){
+                    d3.select(this).attr("class","circle");
+
                     const artist=d[2]
                     //if non selected artist stay normal
                     if (artist["artists"]!=selected_song["artists"]) {
@@ -172,11 +184,13 @@ function onClick(this_artist) {
                 .each(function(d){
                     let song_style=base_style
                     let song_attr=base_attr
+                    d3.select(this).attr("class","circle")
                     const song=d[2]
                     //similar song
                     if (nearest_elements.some(e=> e["data"][2]["id"]==song["id"])){
                         song_style=simil_style
                         song_attr=simil_attr
+                        d3.select(this).attr("class","similar")
                     }
                     //song of same artist
                     //clicked - same artist
@@ -400,6 +414,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         }
 
         scatter_data=artistsPCA
+        xLimitsArtists=getMaxMin(scatter_data, 0)
+        yLimitsArtists=getMaxMin(scatter_data, 1)
+        console.log("limitsArtists:",xLimitsArtists,yLimitsArtists)
     }
     else{
         console.log("Viewing songs...")
@@ -424,10 +441,20 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
             songsPCA[i].push(data[i])
         }
         scatter_data=songsPCA
+        yLimitsSongs=getMaxMin(scatter_data, 1)
+        xLimitsSongs=getMaxMin(scatter_data, 0)
+        console.log("limitsSongs:",xLimitsSongs,yLimitsSongs)
+    }
+    if (this_artist) {
+        xLimits=xLimitsArtists
+        yLimits=yLimitsArtists
+    }
+    else{
+        xLimits=xLimitsSongs
+        yLimits=yLimitsSongs
     }
 
-    xLimits=getMaxMin(scatter_data, 0)
-    yLimits=getMaxMin(scatter_data, 1)
+    console.log("xLimits:",xLimits,"yLimits:",yLimits)
 
     // Add X and Y axis
     x = d3.scaleLinear()
