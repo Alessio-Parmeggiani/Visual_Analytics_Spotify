@@ -33,6 +33,7 @@ function update_boxplot(songs_data,simil_data){
         .attr("y1", d=> y_scale(d.min) )
         .attr("y2", d=> y_scale(d.max)  )
         .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
 
         //verticalLine.exit().remove()
         
@@ -50,6 +51,7 @@ function update_boxplot(songs_data,simil_data){
         .attr("width", similBoxWidth )
         .attr("stroke", "black")
         .style("fill", current_color)
+        .attr("stroke-width", 0.5)
         
         // show median, min and max horizontal lines
         similHorizontalLines[i].data(current_data)
@@ -60,6 +62,7 @@ function update_boxplot(songs_data,simil_data){
         .attr("y1", function(d){ return(y_scale(d.median))} )
         .attr("y2", function(d){ return(y_scale(d.median))} )
         .attr("stroke", "black")
+        .attr("stroke-width", 0.5)
     }
 
     verticalLine
@@ -71,6 +74,7 @@ function update_boxplot(songs_data,simil_data){
     .attr("y1", d=> y_scale(d.min) )
     .attr("y2", d=> y_scale(d.max)  )
     .attr("stroke", "black")
+    .attr("stroke-width", 2)
     
     // Show the box
     
@@ -95,6 +99,7 @@ function update_boxplot(songs_data,simil_data){
     .attr("y1", function(d){ return(y_scale(d.median))} )
     .attr("y2", function(d){ return(y_scale(d.median))} )
     .attr("stroke", "black")
+    .attr("stroke-width", 2)
 
     
 }
