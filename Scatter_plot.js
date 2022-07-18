@@ -326,13 +326,16 @@ function onMouseOut(this_artist) {
         if (
             (this_artist && nearest_elements.some(e=> e["data"][2]["artists"]==element["artists"]))
          || (!this_artist && nearest_elements.some(e=> e["data"][2]["id"]==element["id"]))
-        ){
-            d3.select(this)
-            .transition()
-            .duration(50)
-            .attrs(simil_attr)
-            .styles(simil_style)
-            return
+        ){  
+            if ((selected_song && !this_artist) || (!selected_song && this_artist)) {
+          
+                d3.select(this)
+                .transition()
+                .duration(50)
+                .attrs(simil_attr)
+                .styles(simil_style)
+                return
+            }
         }
 
         
