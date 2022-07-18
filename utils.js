@@ -66,9 +66,19 @@ function compute_boxplot_data(songs){
     //compute boxplot data for a given category
     var boxplot_data = []
     for(var i=0;i<categories.length;i++){
+
+
         //dtaa for this category
         category_data={}
         category_data.category=categories[i]
+        //if null songs then all 0 values
+        if(!songs){
+            category_data.min=0
+            category_data.max=0
+            category_data.median=0
+            category_data.q1=0
+            category_data.q3=0
+        }
         category_data.min = d3.min(songs, function(d) { return d[categories[i]]; });
         category_data.min=norm_min_max(category_data.min, cat_limits[i][0], cat_limits[i][1])
 
@@ -82,9 +92,9 @@ function compute_boxplot_data(songs){
         category_data.q1=norm_min_max(category_data.q1, cat_limits[i][0], cat_limits[i][1]) 
         category_data.q3 = d3.quantile(songs, 0.75, function(d) { return d[categories[i]]; });
         category_data.q3=norm_min_max(category_data.q3, cat_limits[i][0], cat_limits[i][1])
+        
         //interqauntile range (the box)
         category_data.iqr = category_data.q3 - category_data.q1;
-
         //baffi
         category_data.upper = category_data.q3 + 1.5 * category_data.iqr;
         category_data.lower = category_data.q1 - 1.5 * category_data.iqr;

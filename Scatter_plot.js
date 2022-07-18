@@ -29,6 +29,8 @@ let K_nearest=5;
 let nearest_elements;
 //PCA FROM https://www.npmjs.com/package/pca-js
 
+//https://observablehq.com/@d3/color-schemes
+let simil_colors=["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
 
 function get_distance(x1,x2,y1,y2){
     return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))
@@ -93,14 +95,18 @@ function onClick(this_artist) {
         
         //get K nearest elements 
         nearest_elements=get_k_nearest_elements(this_artist,d.originalTarget.__data__)
-        updateSimilarityPlot(nearest_elements,this_artist)
+        //updateSimilarityPlot(nearest_elements,this_artist)
         
-        updateRadialPlot(d.originalTarget.__data__[2])
+        //console.log("updating radial plot with:",d.originalTarget.__data__[2])
+        updateRadialPlot(d.originalTarget.__data__[2],nearest_elements)
         showStats(d.originalTarget.__data__[2], this_artist)
 
         //get songs of this artist 
         //needed for boxplot
         current_artist_songs=[]
+        //initialize array of K_nearest empty arrays
+        let similar_artists_songs= new Array(K_nearest).fill([]).map(() => new Array(1).fill([]));
+
         scatter_songs.selectAll("circle")
         .each(function(d){
             song=d[2]
@@ -113,10 +119,26 @@ function onClick(this_artist) {
                     .styles(select_style);
                 }
             }
+            else {
+            //if song artist is in the nearest elements add to corresponding array
+                for (let k=0;k<K_nearest;k++){
+                    if (song["artists"]==nearest_elements[k]["data"][2]["artists"]){
+                        similar_artists_songs[k].push(song)
+                    }
+                }
+            }
         });
         //update boxplot
+        console.log("current artist songs:",current_artist_songs)
+        console.log("similar artists songs:",similar_artists_songs)
+        let similar_boxplot_songs_data=[]
+        for (let i=0;i<K_nearest;i++){
+            let similar_boxplot_song_data=compute_boxplot_data(similar_artists_songs[i])
+            similar_boxplot_songs_data.push(similar_boxplot_song_data)
+        }
         let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
-        update_boxplot(boxplot_songs_data)
+
+        update_boxplot(boxplot_songs_data,similar_boxplot_songs_data)
 
         //CLICK ON ARTIST SCATTERPLOT
         if (this_artist) {
@@ -654,7 +676,7 @@ function main() {
 
             radialPlotMain()
             boxPlotMain()
-            similarityPlot()
+            //similarityPlot()
             
             })
         .catch((error) => console.log(error))

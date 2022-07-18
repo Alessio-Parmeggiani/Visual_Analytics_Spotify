@@ -1,14 +1,68 @@
-let vertical_line;
-let horizontal_line;
+let verticalLine;
+let horizontalLine;
 let box;
+
+//box, verticalLine, horizontalLine for similar elements
+let similVerticalLines=[];
+let similHorizontalLines=[];
+let similBoxes=[];
+
+
 let x_scale;
 let y_scale;
 let boxPlotSvg;
 //https://d3-graph-gallery.com/graph/boxplot_several_groups.html
-function update_boxplot(songs_data){
+function update_boxplot(songs_data,simil_data){
     console.log("update_boxplot",songs_data);
+    let boxWidth=15;
+    let similBoxWidth=5;
 
-    vertical_line
+    for (var i=0;i<K_nearest;i++){
+        
+        let offset_x=i*(boxWidth+similBoxWidth)+1;
+        offset_x=boxWidth/2+ i*5 +5
+        let current_data=simil_data[i];
+        let current_color=simil_colors[i];
+
+        similVerticalLines[i]
+        .data(current_data)
+        .attr("d",current_data)
+        .transition()
+        .attr("x1", d=> x_scale(d.category)+offset_x)
+        .attr("x2", d=> x_scale(d.category)+offset_x)
+        .attr("y1", d=> y_scale(d.min) )
+        .attr("y2", d=> y_scale(d.max)  )
+        .attr("stroke", "black")
+
+        //verticalLine.exit().remove()
+        
+        
+        // Show the box
+        similBoxes[i]
+        .data(current_data)
+        .attr("d",current_data)
+        .transition()
+        .attr("x", d=>  { return x_scale(d.category) - similBoxWidth/2 +offset_x})
+        .attr("y", d=> y_scale(d.q3) )
+        .attr("height", d=> {
+            return Math.max((y_scale(d.q1)-y_scale(d.q3)),5) 
+        })
+        .attr("width", similBoxWidth )
+        .attr("stroke", "black")
+        .style("fill", current_color)
+        
+        // show median, min and max horizontal lines
+        similHorizontalLines[i].data(current_data)
+        .attr("d",current_data)
+        .transition()
+        .attr("x1", d=>{return x_scale(d.category)-similBoxWidth/2 +offset_x})
+        .attr("x2", d=>{return x_scale(d.category)+similBoxWidth/2 +offset_x})
+        .attr("y1", function(d){ return(y_scale(d.median))} )
+        .attr("y2", function(d){ return(y_scale(d.median))} )
+        .attr("stroke", "black")
+    }
+
+    verticalLine
     .data(songs_data)
     .attr("d",songs_data)
     .transition()
@@ -17,9 +71,6 @@ function update_boxplot(songs_data){
     .attr("y1", d=> y_scale(d.min) )
     .attr("y2", d=> y_scale(d.max)  )
     .attr("stroke", "black")
-
-    //vertical_line.exit().remove()
-    let boxWidth=10;
     
     // Show the box
     
@@ -36,7 +87,7 @@ function update_boxplot(songs_data){
     .style("fill", "#69b3a2")
     
     // show median, min and max horizontal lines
-    horizontal_line.data(songs_data)
+    horizontalLine.data(songs_data)
     .attr("d",songs_data)
     .transition()
     .attr("x1", d=>{return x_scale(d.category)-boxWidth/2})
@@ -102,7 +153,7 @@ function boxPlotMain() {
         start_data.push(sample_data)
     }
     // Show the main vertical line
-    vertical_line=boxPlotSvg
+    verticalLine=boxPlotSvg
     .selectAll("vertLines")
     .data(start_data)
     .enter()
@@ -112,6 +163,20 @@ function boxPlotMain() {
     .attr("y1", d=> y_scale(d.min) )
     .attr("y2", d=> y_scale(d.max)  )
     .attr("stroke", "black")
+
+    for (var i = 0; i < K_nearest; i++) {
+        let similVerticalLine=boxPlotSvg
+        .selectAll("vertLines")
+        .data(start_data)
+        .enter()
+        .append("line")
+        .attr("x1", d=> x_scale(d.category))
+        .attr("x2", d=> x_scale(d.category))
+        .attr("y1", d=> y_scale(d.min) )
+        .attr("y2", d=> y_scale(d.max)  )
+        .attr("stroke", "black")
+        similVerticalLines.push(similVerticalLine)
+    }
 
     let boxWidth=10;
     // Show the box
@@ -127,8 +192,24 @@ function boxPlotMain() {
     .attr("stroke", "black")
     .style("fill", "#69b3a2")
 
+    for(var i=0;i<K_nearest;i++){
+        let similBox=boxPlotSvg
+        .selectAll("boxes")
+        .data(start_data)
+        .enter()
+        .append("rect")
+        .attr("x", d=> x_scale(d.category) - boxWidth/2)
+        .attr("y", d=> y_scale(d.q3) )
+        .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
+        .attr("width", boxWidth )
+        .attr("stroke", "black")
+        .style("fill", "#69b3a2");
+        similBoxes.push(similBox)
+    }
+
+
     // show median, min and max horizontal lines
-    horizontal_line=boxPlotSvg
+    horizontalLine=boxPlotSvg
     .selectAll("medianLines")
     .data(start_data)
     .enter()
@@ -138,4 +219,18 @@ function boxPlotMain() {
     .attr("y1", function(d){ return(y_scale(d.median))} )
     .attr("y2", function(d){ return(y_scale(d.median))} )
     .attr("stroke", "black")
+
+    for(var i=0;i<K_nearest;i++){
+        let similHorizontalLine=boxPlotSvg
+        .selectAll("medianLines")
+        .data(start_data)
+        .enter()
+        .append("line")
+        .attr("x1", d=> x_scale(d.category)-boxWidth/2)
+        .attr("x2", d=> x_scale(d.category)+boxWidth/2)
+        .attr("y1", function(d){ return(y_scale(d.median))} )
+        .attr("y2", function(d){ return(y_scale(d.median))} )
+        .attr("stroke", "black");
+        similHorizontalLines.push(similHorizontalLine)
+    }
 }

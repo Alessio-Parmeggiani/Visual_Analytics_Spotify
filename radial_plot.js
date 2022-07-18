@@ -1,9 +1,11 @@
 var radialPath;
+var similRadialPaths=[];
 var cat_radial_scale;
 var radial_plot_center;
 
 //this is called when I click a pint in the scatter plot
-function updateRadialPlot(targetSong,named=true){
+function updateRadialPlot(targetSong,simil,named=true){
+  //console.log("UPDATE RADIAL PLOT\n\n")
   var song=[]
   //console.log("limits", cat_limits)
   for(var i=0;i<categories.length;i++){
@@ -18,8 +20,29 @@ function updateRadialPlot(targetSong,named=true){
     song.push( 
         {category: categories[i],value: value}) 
   }
-  console.log("radial plot updated with values:", song)
+  //console.log("radial plot updated with values:", song)
   song.push(song[0])
+
+  let simil_songs=[]
+  for (var j=0;j<simil.length;j++){
+    let simil_song=[]
+    let processed_song=simil[j]["data"][2]
+    for(var i=0;i<categories.length;i++){
+      var value=0
+      if (named){
+        value=norm_min_max(processed_song[categories[i]], cat_limits[i][0], cat_limits[i][1])
+      }
+      else {
+        value=processed_song[i]
+      }
+        
+      simil_song.push( 
+          {category: categories[i], value: value}) 
+    }
+    simil_song.push(simil_song[0])
+    simil_songs.push(simil_song)
+  }
+
 
 
   radial=d3.radialLine()
@@ -30,27 +53,29 @@ function updateRadialPlot(targetSong,named=true){
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
   .curve(d3.curveCatmullRom)
 
+  
+
+  for (var simil_idx=0;simil_idx<simil.length;simil_idx++){
+    similRadialPaths[simil_idx]
+    .attr('transform', `translate(${radial_plot_center.x},${radial_plot_center.y})`)
+    .transition()
+    .attr('d', radial(simil_songs[simil_idx]))
+    .attr('fill', 'none')
+    .attr('stroke', simil_colors[simil_idx])
+    .attr('stroke-width', 3)
+  }
+  
   radialPath
   .attr('transform', `translate(${radial_plot_center.x},${radial_plot_center.y})`)
   .transition()
   .attr('d', radial(song))
   .attr('fill', 'none')
   .attr('stroke', 'red')
-  .attr('stroke-width', 3)
+  .attr('stroke-width', 4)
+  
 }
   
-/*
-  //create random song
-  function create_song(categories) {
-    var song=[]
-    for(var i=0;i<categories.length;i++){
-      song.push( 
-        {category:categories[i],
-        value:Math.random()})
-    }
-    return song
-  }
-*/
+
 
 function radialPlotMain() {
   const svg = d3.select('#radial-graph')
@@ -60,11 +85,11 @@ function radialPlotMain() {
   const div_width = document.getElementById("radial-graph").clientWidth;
 
   const radius = Math.min(div_width/2-(div_width*0.1), div_height/2-(div_height*0.15));
-  console.log(radius);
+  //console.log(radius);
   radial_plot_center= {x: div_width/2, y: div_height/2};
   center=radial_plot_center;
 
-  //first song all 0
+  //initialize plot with empty data
   var song=[]
     for(var i=0;i<categories.length;i++){
       song.push( 
@@ -73,7 +98,17 @@ function radialPlotMain() {
       })
     }
   song.push(song[0])
-  
+
+  let simil_songs=[]
+  for (var j=0;j<K_nearest;j++){
+    let simil_song=[]
+    for(var i=0;i<categories.length;i++){
+      simil_song.push({category: categories[i], value: 0}) 
+    }
+    simil_song.push(simil_song[0])
+    simil_songs.push(simil_song)
+  }
+
 
   //create circle plot
   //secondo me questo non serve a niente per fare i cerchi
@@ -94,7 +129,7 @@ function radialPlotMain() {
   }
 
 
-  console.log("cat limits",cat_limits)
+  //console.log("cat limits",cat_limits)
   //create a linear scale for each category
   cat_radial_scale=[]
   for (let i=0;i<song.length-1;i++){
@@ -165,9 +200,15 @@ function radialPlotMain() {
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
   .curve(d3.curveCatmullRom)
 
-  //add again first value so plot closes
-  song.push(song[0])
-  
+    //add similar songs to plot
+  for (let i=0; i<K_nearest; i++){
+    let similRadialPath=svg.append('path')
+    .datum(simil_songs[i])
+    .attr('d', radial);
+
+    similRadialPaths.push(similRadialPath)
+  }
+
   //add radial plot to page
   radialPath=svg.append('path')
     .datum(song)
