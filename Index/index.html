@@ -15,6 +15,9 @@
         <script defer src="..\boxplot.js"></script>
         <script defer src="..\similarity_plot.js"></script>
         <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
         
     </head>
     <body>
@@ -37,7 +40,14 @@
             </div>
             <div id="stats-bar" class="block">
                 Stats
-                <div id="stats-container"></div>
+                <div id="stats-container">
+                    <div id="main-stats" class="stats"></div>
+                    <div id="1-stats" class="stats"></div>
+                    <div id="2-stats" class="stats"></div>
+                    <div id="3-stats" class="stats"></div>
+                    <div id="4-stats" class="stats"></div>
+                    <div id="5-stats" class="stats"></div>
+                </div>
             </div>
             <div id="graphs" class="block">
                 <div id="radial-graph"></div>

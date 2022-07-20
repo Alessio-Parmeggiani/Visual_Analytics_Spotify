@@ -1,5 +1,13 @@
-function showStats(data, view_artist) {
-    let container = document.getElementById("stats-container");
+function showStats(data, index, view_artist) {
+    let container;
+
+    if (index == 0) {
+        container = document.getElementById("main-stats");
+    }
+    else {
+        container = document.getElementById(`${index}-stats`);
+    }
+    
     let stats = [];
 
     container.innerHTML = "";
@@ -29,7 +37,7 @@ function showStats(data, view_artist) {
     for (const elem of stats) {
         p = document.createElement("p");
         p.classList.add("stat-element");
-        if (elem != "name" && elem != "album") {
+        if (elem != "name" && elem != "album" && elem != "year") {
             p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + (Math.round(data[elem] * 100) / 100).toFixed(2);
         }
         else {

@@ -6,6 +6,7 @@ body {
     margin: 0;
     scrollbar-width: none;
     background-color: antiquewhite;
+    overflow: hidden;
 }
 
 #search-form {
@@ -43,12 +44,14 @@ svg {
 }
 
 #radial-graph {
-    width: 50%;
+    grid-area: radial-graph;
+    /*width: 50%;*/
     border-right: 3px solid green;
 }
 
 #other-graph {
-    width: 50%;
+    grid-area: other-graph;
+    /*width: 50%;*/
 }
 
 .block {
@@ -65,7 +68,7 @@ svg {
 }
 
 .filter-container {
-    height: 25%;
+    height: 40%;
 }
 
 #scatter-plots {
@@ -78,12 +81,24 @@ svg {
 #stats-bar {
     grid-area: stats-bar;
     border-color: orange;
-    overflow: auto;
-    padding: 5px;
+    overflow: hidden;
+    padding: 5px 0px 0px 0px;
 }
 
 #stats-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.stats {
     text-align: left;
+    width: 16.66%;
+    border-top: 3px solid orange;
+    border-right: 3px solid orange;
+    overflow: auto;
 }
 
 .stat-element {
@@ -97,18 +112,20 @@ svg {
 #graphs {
     grid-area: graphs;
     border-color: green;
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 25% 75%;
+    grid-template-rows: 100%;
+    grid-template-areas: "radial-graph other-graph";
 }
 
 #container {
     display: grid;
     grid-template-columns: 25% 25% 25% 25%;
-    grid-template-rows: 40% 20% 40%;
+    grid-template-rows: 40% 35% 25%;
     grid-template-areas:
         "filter-bar scatter-plots scatter-plots scatter-plots"
-        "filter-bar simil-plots simil-plots simil-plots"
-        "stats-bar graphs graphs graphs";
+        "graphs graphs graphs graphs"
+        "stats-bar stats-bar stats-bar stats-bar";
     width: 100%;
     height: 100%;
 }

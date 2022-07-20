@@ -93,10 +93,18 @@ function onClick(this_artist) {
         
         //get K nearest elements 
         nearest_elements=get_k_nearest_elements(this_artist,d.originalTarget.__data__)
+        console.log("I nearest elements sono:")
+        console.log(nearest_elements)
         updateSimilarityPlot(nearest_elements,this_artist)
         
         updateRadialPlot(d.originalTarget.__data__[2])
-        showStats(d.originalTarget.__data__[2], this_artist)
+        // Show stats for the selected song and for the 5 closest ones
+        showStats(d.originalTarget.__data__[2], 0, this_artist)
+        showStats(nearest_elements[0]["data"][2], 1, this_artist)
+        showStats(nearest_elements[1]["data"][2], 2, this_artist)
+        showStats(nearest_elements[2]["data"][2], 3, this_artist)
+        showStats(nearest_elements[3]["data"][2], 4, this_artist)
+        showStats(nearest_elements[4]["data"][2], 5, this_artist)
 
         //get songs of this artist 
         //needed for boxplot
@@ -573,12 +581,15 @@ function applyFilter(lowLimit, topLimit, cat) {
     filterLimits[cat][0] = lowLimit;
     filterLimits[cat][1] = topLimit;
 
+    //let filteredArtists = []
+
     const filteredSongs = d3.filter(songsPCA, function(d) {
         for (const k in filterLimits) {
             if (d[2][k] < filterLimits[k][0] || d[2][k] > filterLimits[k][1]) {
                 return false;
             }
         }
+        //filteredArtists.push(d[2]["artists"])
         return true;
     })
 
@@ -600,9 +611,9 @@ function applyFilter(lowLimit, topLimit, cat) {
 function main() {
     const div_height = document.getElementById("scatter-plot-1").clientHeight;
     const div_width = document.getElementById("scatter-plot-1").clientWidth;
-
+    
     // set the dimensions and margins of the graph
-    const margin = {top: 10, right: 20, bottom: 60, left: 60},
+    const margin = {top: 10, right: 20, bottom: 20, left: 20},
     width = div_width - margin.left - margin.right,
     height = div_height - margin.top - margin.bottom;
     
