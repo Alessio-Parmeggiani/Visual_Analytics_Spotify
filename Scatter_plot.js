@@ -164,6 +164,11 @@ function onClick(this_artist) {
                             .styles(base_style)
                             }
                         }
+                        else {
+                            d3.select(this).transition()
+                            .attrs(highlight_attr)
+                            .styles(highlight_style)
+                        }
                     }
 
                 })
