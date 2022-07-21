@@ -27,6 +27,8 @@ let y;
 
 let K_nearest=5;
 let nearest_elements;
+
+let searchArray = [];
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 
@@ -658,6 +660,12 @@ function main() {
             if (filterLimits['tempo'] > 220) alert("Trovata una canzone con tempo > 220, sistemare l'istogramma dei filtri")
 
             console.log("limits:",cat_limits)
+
+            // Building searchArray for the searchbar
+            
+            for (el of data) {
+                searchArray.push(el)
+            }
 
             console.log("plot ready")
             ScatterPlotMain(data, margin, width, height, svg1, false)

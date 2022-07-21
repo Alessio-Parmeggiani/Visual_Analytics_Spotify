@@ -56,8 +56,16 @@ function capitalizeAll(s) {
     if (typeof s !== 'string') return '';
     let ss = s.split(' ');
     let ret = "";
-    for (const word of ss) {
-        ret += capitalize(word) + " ";
+    for (let word of ss) {
+        // Need this in search.js, because I use this function to capitalize names of searched artists
+        // Names have areas marked with <mark> indicating the correspondence to the searched string
+        if (word[0] == "<") {
+            word = capitalize(word.replaceAll(/<mark>/g, ""));
+            ret += "<mark>" + word + " ";
+        }
+        else {
+            ret += capitalize(word) + " ";
+        }
     }
     return ret.slice(0, -1);
 }

@@ -17,9 +17,13 @@ body {
 
 #search-input {
     width: 100%;
-    box-sizing: border-box; /* this is needed otherwise its width would be that of the parent PLUS padding and border size */
+    /*box-sizing: border-box;*/ /* this is needed otherwise its width would be that of the parent PLUS padding and border size */
     border-radius: 3px;
     margin-right: 10px;
+}
+
+.autoComplete_wrapper {
+    width: 100%;
 }
 
 #scatter-plot-container {

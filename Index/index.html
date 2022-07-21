@@ -4,14 +4,17 @@
         <title>Visual Analytics Project</title>
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.02.min.css">
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
         <script defer src="..\pca.js"></script>
         <script defer src="..\utils.js"></script>
         <script defer src="..\styles.js"></script>
         <script defer src="..\show_stats.js"></script>
         <script defer src="..\histogram_filter.js"></script>
         <script defer src="..\Scatter_plot.js"></script>
+        <script defer src="..\search.js"></script>
         <script defer src="..\boxplot.js"></script>
         <script defer src="..\similarity_plot.js"></script>
         <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
@@ -27,8 +30,8 @@
             </div>
             <div id="scatter-plots" class="block">
                 <form id="search-form">
-                    <input type="text" id="search-input" placeholder="Search...">
-                    <button type="submit">Search</button>
+                    <input type="search" id="search-input" placeholder="Search...">
+                    <!--<button type="submit">Search</button>-->
                 </form>
                 <div id="scatter-plot-container">
                     <div id="scatter-plot-1" class="scatter-plot"></div>
