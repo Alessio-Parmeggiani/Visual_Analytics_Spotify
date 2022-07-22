@@ -30,18 +30,12 @@ const config = {
         element: (item, data) => {
             item.style = "font-weight: 800"
             if (data.key == "name") {
-                item.innerHTML = `${data.match} - Song`
+                item.innerHTML = `${data.match}  -  <span style="opacity:0.5;">Song</span>`
             }
             else {
-                let artists = ""
-                let artistsList = data.match.replaceAll(/\[|\]|\'/g, '').split(',');
+                let artists = formatArtists(data.match)
 
-                for (const artist of artistsList) {
-                    artists += capitalizeAll(artist) + ", ";
-                    console.log(artist);
-                }
-                console.log(data.match)
-                item.innerHTML = `${artists.slice(0, -2)} - Artist`
+                item.innerHTML = `${artists}  -  <span style="opacity:0.5;">Artist</span>`
             }
         }
     },
@@ -62,21 +56,25 @@ console.log(searchArray)
 // Function executed when a search result is selected
 autoCompleteJS.input.addEventListener("selection", function (event) {
 	const feedback = event.detail;
-	autoCompleteJS.input.blur();
 	// Prepare User's Selected Value
 	const selection = feedback.selection.value[feedback.selection.key];
-	// Replace Input value with the selected value
-	autoCompleteJS.input.value = selection;
-	// Console log autoComplete data feedback
-	console.log(feedback);
-    const this_artist = feedback.selection.key == "artists" ? true : false;
-    onClickSearch(feedback.selection.value, this_artist);
 
-    // Qui dentro bisognerà mettere la funzione che viene attivata quando si clicca su un pallino nello scatter plot,
-    // perché vogliamo che cliccare un pallino nello scatter plot o cercare la canzone dalla barra della ricerca dia lo stesso risultato
+    let this_artist = false;
+    // Replace Input value with the selected value
+    if (feedback.selection.key == "artists") {
+        this_artist = true;
+        autoCompleteJS.input.value = formatArtists(selection);
+    }
+    else {
+        autoCompleteJS.input.value = selection;
+    }
+    
+    // Start the same procedure that is triggered when a datapoint is clicked in the plots
+    onClickSearch(feedback.selection.value, this_artist);
 });
 
-
+// Exactly the same onClick function in Scatter_plot.js with a few modifications to make
+// it work with search results
 function onClickSearch(searchedElement, this_artist) {
     // To compute the nearest neighbors I neeed the PCA coordinates, but I don't have them in searchArray,
     // so I'll need to get them from songsPCA or artistsPCA
@@ -110,13 +108,14 @@ function onClickSearch(searchedElement, this_artist) {
     scatter_songs.selectAll("circle").transition().duration(100)
     .attrs(base_attr)
     .styles(base_style)
-
-
+    
     //get K nearest elements 
     nearest_elements=get_k_nearest_elements(this_artist, elemWithPCACoords)
-    updateSimilarityPlot(nearest_elements,this_artist)
+    console.log("I nearest elements sono:")
+    console.log(nearest_elements)
     
-    updateRadialPlot(selected_artist)
+    updateRadialPlot(selected_artist, nearest_elements)
+    // Show stats for the selected song and for the 5 closest ones
     showStats(selected_artist, 0, this_artist)
     showStats(nearest_elements[0]["data"][2], 1, this_artist)
     showStats(nearest_elements[1]["data"][2], 2, this_artist)
@@ -126,7 +125,10 @@ function onClickSearch(searchedElement, this_artist) {
 
     //get songs of this artist 
     //needed for boxplot
-    current_artist_songs=[]
+    let current_artist_songs=[]
+    //initialize array of K_nearest empty arrays
+    let similar_artists_songs= new Array(K_nearest).fill([]).map(() => new Array(1).fill([]));
+
     scatter_songs.selectAll("circle")
     .each(function(d){
         song=d[2]
@@ -139,10 +141,26 @@ function onClickSearch(searchedElement, this_artist) {
                 .styles(select_style);
             }
         }
+        else {
+        //if song artist is in the nearest elements add to corresponding array
+            for (let k=0;k<K_nearest;k++){
+                if (song["artists"]==nearest_elements[k]["data"][2]["artists"]){
+                    similar_artists_songs[k].push(song)
+                }
+            }
+        }
     });
     //update boxplot
+    console.log("current artist songs:",current_artist_songs)
+    console.log("similar artists songs:",similar_artists_songs)
+    let similar_boxplot_songs_data=[]
+    for (let i=0;i<K_nearest;i++){
+        let similar_boxplot_song_data=compute_boxplot_data(similar_artists_songs[i])
+        similar_boxplot_songs_data.push(similar_boxplot_song_data)
+    }
     let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
-    update_boxplot(boxplot_songs_data)
+
+    update_boxplot(boxplot_songs_data,similar_boxplot_songs_data)
 
     //CLICK ON ARTIST SCATTERPLOT
     if (this_artist) {
@@ -171,7 +189,7 @@ function onClickSearch(searchedElement, this_artist) {
                     else {
                         d3.select(this).transition()
                         .attrs(highlight_attr)
-                        .style(highlight_style)
+                        .styles(highlight_style)
                     }
                 }
 
@@ -245,5 +263,5 @@ function onClickSearch(searchedElement, this_artist) {
             })
 
     }
-        
+     
 }

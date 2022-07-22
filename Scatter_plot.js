@@ -111,7 +111,7 @@ function onClick(this_artist) {
 
         //get songs of this artist 
         //needed for boxplot
-        current_artist_songs=[]
+        let current_artist_songs=[]
         //initialize array of K_nearest empty arrays
         let similar_artists_songs= new Array(K_nearest).fill([]).map(() => new Array(1).fill([]));
 

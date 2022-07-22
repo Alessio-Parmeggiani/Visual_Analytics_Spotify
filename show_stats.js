@@ -24,14 +24,9 @@ function showStats(data, index, view_artist) {
     // Write artist names
     let p = document.createElement("p");
     p.classList.add("stat-element");
-    let artists = "";
-    let artistsList = data["artists"].replaceAll(/\[|\]|\'/g, '').split(',');
+    let artists = formatArtists(data["artists"])
 
-    for (const artist of artistsList) {
-        artists += capitalizeAll(artist) + ", ";
-        console.log(artist);
-    }
-    p.innerHTML = `<span style="font-weight: bold">Artists: </span>` + artists.slice(0, -2);
+    p.innerHTML = `<span style="font-weight: bold">Artists: </span>` + artists;
     container.appendChild(p);
 
     for (const elem of stats) {
@@ -52,6 +47,10 @@ function capitalize(s) {
     return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+/**
+ * Capitalizes all words in a sentence. Handles the case in which there is 
+ * a <mark> tag in the string (happens when using autoComplete.js)
+ */
 function capitalizeAll(s) {
     if (typeof s !== 'string') return '';
     let ss = s.split(' ');
@@ -68,4 +67,20 @@ function capitalizeAll(s) {
         }
     }
     return ret.slice(0, -1);
+}
+
+/**
+ * Takes a string representing an array of artists and formats it in a readable
+ * format
+ */
+function formatArtists(s) {
+    let artists = "";
+    let artistsList = s.replaceAll(/\[|\]|\'/g, '').split(',');
+
+    for (const artist of artistsList) {
+        artists += capitalizeAll(artist) + ", ";
+        console.log(artist);
+    }
+
+    return artists.slice(0, -2)
 }
