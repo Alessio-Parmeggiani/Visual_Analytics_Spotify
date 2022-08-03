@@ -4,28 +4,30 @@ var cat_radial_scale;
 var radial_plot_center;
 
 //this is called when I click a pint in the scatter plot
-function updateRadialPlot(targetSong,simil,named=true){
+function updateRadialPlot(targetSong,simil,this_artist,named=true){
   //console.log("UPDATE RADIAL PLOT\n\n")
-  var song=[]
+  var song={"original":targetSong,"radial_data":[]}
   //console.log("limits", cat_limits)
+  var targetSongNoCoords=targetSong[2];
   for(var i=0;i<categories.length;i++){
     var value=0
     if (named){
-      value=norm_min_max(targetSong[categories[i]], cat_limits[i][0], cat_limits[i][1])
+      value=norm_min_max(targetSongNoCoords[categories[i]], cat_limits[i][0], cat_limits[i][1])
     }
     else {
-      value=targetSong[i]
+      value=targetSongNoCoords[i]
     }
       
-    song.push( 
+    song.radial_data.push( 
         {category: categories[i],value: value}) 
   }
   //console.log("radial plot updated with values:", song)
-  song.push(song[0])
+  song.radial_data.push(song.radial_data[0])
 
   let simil_songs=[]
   for (var j=0;j<simil.length;j++){
-    let simil_song=[]
+    let simil_song={"original":simil[j]["data"],"radial_data":[]}
+
     let processed_song=simil[j]["data"][2]
     for(var i=0;i<categories.length;i++){
       var value=0
@@ -36,12 +38,13 @@ function updateRadialPlot(targetSong,simil,named=true){
         value=processed_song[i]
       }
         
-      simil_song.push( 
+      simil_song.radial_data.push( 
           {category: categories[i], value: value}) 
     }
-    simil_song.push(simil_song[0])
+    simil_song.radial_data.push(simil_song.radial_data[0])
     simil_songs.push(simil_song)
   }
+  console.log("simil songs",simil_songs)
 
 
 
@@ -52,30 +55,50 @@ function updateRadialPlot(targetSong,simil,named=true){
     return cat_radial_scale[i](d.value) } )
   .angle((d, i) => (2*Math.PI / (categories.length)) * i)
   .curve(d3.curveCatmullRom)
+  
+  
 
   
 
   for (var simil_idx=0;simil_idx<simil.length;simil_idx++){
     similRadialPaths[simil_idx]
     .attr('transform', `translate(${radial_plot_center.x},${radial_plot_center.y})`)
+    .datum(simil_songs[simil_idx].original)
     .transition()
-    .attr('d', radial(simil_songs[simil_idx]))
+    .attr('d', radial(simil_songs[simil_idx].radial_data))
     .attr('fill', 'none')
     .attr('stroke', simil_colors[simil_idx])
     .attr('stroke-width', 3)
+    
   }
   
   radialPath
   .attr('transform', `translate(${radial_plot_center.x},${radial_plot_center.y})`)
+  .datum(song.original)
   .transition()
-  .attr('d', radial(song))
+  .attr('d', radial(song.radial_data))
   .attr('fill', 'none')
   .attr('stroke', 'red')
   .attr('stroke-width', 4)
-  
+
+
+  d3.selectAll(".radialPath").on("click", function(d) {
+    radialClick(d,this_artist)
+  })
+  .on("mouseover", function(d) {
+    d3.select(this).attr('stroke-width', 5)
+   })
+   .on("mouseout", function(d) {
+    d3.select(this).attr('stroke-width', 3)
+   });
+
 }
   
-
+function radialClick(d,this_artist){
+  //console.log("radial click",d)
+  console.log("radial click",d)
+  onClick(this_artist,d.originalTarget.__data__)
+}
 
 function radialPlotMain() {
   const svg = d3.select('#radial-graph')
@@ -113,6 +136,7 @@ function radialPlotMain() {
   //create circle plot
   //secondo me questo non serve a niente per fare i cerchi
   // ne fa sempre 5 indipendentemente da maxValue
+  /*
   const maxValue = 1;
   const radialScale = d3.scaleLinear()
     .domain([0, maxValue]) 
@@ -127,6 +151,7 @@ function radialPlotMain() {
       .style('stroke', '#aaa')
       .style('fill', 'none');
   }
+  */
 
 
   //console.log("cat limits",cat_limits)
@@ -204,7 +229,9 @@ function radialPlotMain() {
   for (let i=0; i<K_nearest; i++){
     let similRadialPath=svg.append('path')
     .datum(simil_songs[i])
-    .attr('d', radial);
+    .attr('d', radial)
+    .attr("class", "radialPath")
+
 
     similRadialPaths.push(similRadialPath)
   }
@@ -213,7 +240,12 @@ function radialPlotMain() {
   radialPath=svg.append('path')
     .datum(song)
     .attr('d', radial)
-  
+    .attr("class", "radialPath")
+
+    
+  d3.selectAll(".radialPath").on("click", function(d) {
+    radialClick(d)
+  });
 }
 
 

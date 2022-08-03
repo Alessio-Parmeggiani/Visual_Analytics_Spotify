@@ -12,7 +12,7 @@ function showStats(data, index, view_artist) {
 
     container.innerHTML = "";
 
-    console.log(data);
+    //console.log(data);
 
     if (!view_artist) {
         stats = ["name", "album", "year", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
@@ -79,7 +79,7 @@ function formatArtists(s) {
 
     for (const artist of artistsList) {
         artists += capitalizeAll(artist) + ", ";
-        console.log(artist);
+        //console.log(artist);
     }
 
     return artists.slice(0, -2)
