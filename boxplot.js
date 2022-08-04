@@ -110,10 +110,12 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     .attr("stroke-width", 2)
 
     
-  d3.selectAll(".boxPlot").on("click", function(d) {
+  d3.selectAll(".boxPlot")
+  /*.on("click", function(d) {
     //console.log("clicked",d);
     onClick(this_artist,d.originalTarget.__data__.original)
   })
+  */
   .on("mouseover", function(d) {
     d3.select(this).attr('stroke-width', 5)
    })
@@ -126,11 +128,17 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     onClick(this_artist,d.originalTarget.__data__.original.data)
   })
   .on("mouseover", function(d) {
-    d3.select(this).attr('stroke-width', 3)
+    d3.select(this)
+    .transition(50)
+    .attr('stroke-width', 3)
+    .attr("width", similBoxWidth*1.5 )
     //onMouseOver(this_artist,d.originalTarget.__data__.original.data)
    })
    .on("mouseout", function(d) {
-    d3.select(this).attr('stroke-width', 0.5)
+    d3.select(this)
+    .transition(50)
+    .attr('stroke-width', 0.5)
+    .attr("width", similBoxWidth )
    });
 }
 
@@ -220,6 +228,8 @@ function boxPlotMain() {
     .data(start_data)
     .enter()
     .append("rect")
+    .attr("rx", 1)
+    .attr("ry", 1)
     .attr("x", d=> x_scale(d.category) - boxWidth/2)
     .attr("y", d=> y_scale(d.q3) )
     .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
@@ -234,6 +244,8 @@ function boxPlotMain() {
         .data(start_data)
         .enter()
         .append("rect")
+        .attr("rx", 1)
+        .attr("ry", 1)
         .attr("x", d=> x_scale(d.category) - boxWidth/2)
         .attr("y", d=> y_scale(d.q3) )
         .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
