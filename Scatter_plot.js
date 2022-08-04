@@ -545,10 +545,11 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .domain([yLimits[0],yLimits[1]])
         .range([ height, 0]);
 
+    /*
     //axis don't indicate anything if we usa PCA, useless
     var xAxis_ = d3.axisBottom(x).ticks(0, ".0f")
     var yAxis_=d3.axisLeft(y).ticks(0, ".0f")
-
+    
     var xAxis=svg.append("g")
     .attr("transform", `translate(0, ${height})`)
     .attr('id', "axis--x")
@@ -557,6 +558,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     var yAxis=svg.append("g")
     .attr('id', "axis--y")
     .call(yAxis_);
+    */
 
     // everything out of this area won't be drawn
     var clip = svg.append("defs").append("svg:clipPath")
@@ -617,8 +619,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     }
 
     function zoom() {
-        xAxis.transition().call(xAxis_);
-        yAxis.transition().call(yAxis_);
+        //xAxis.transition().call(xAxis_);
+        //yAxis.transition().call(yAxis_);
         scatter.selectAll("circle").transition()
         .attr("cx", function (d) { return x(d[0]); })
         .attr("cy", function (d) { return y(d[1]); });
