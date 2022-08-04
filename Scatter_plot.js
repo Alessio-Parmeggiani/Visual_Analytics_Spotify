@@ -147,7 +147,7 @@ function onClick(this_artist,d) {
     }
     let boxplot_songs_data=compute_boxplot_data(current_artist_songs)
 
-    update_boxplot(boxplot_songs_data,similar_boxplot_songs_data,d,nearest_elements)
+    update_boxplot(boxplot_songs_data,similar_boxplot_songs_data,d,nearest_elements,this_artist)
 
     //CLICK ON ARTIST SCATTERPLOT
     if (this_artist) {
