@@ -54,6 +54,7 @@ let simil_attr={
     "stroke-width":1,
 }
 
+
 //songs of the same artist of clicked song
 let same_artist_style={
     "opacity": 0.8,
@@ -74,3 +75,4 @@ let simil_plot_style={
     "opacity":1,
     "fill":base_color
 }
+

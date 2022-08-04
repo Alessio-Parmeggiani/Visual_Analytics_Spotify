@@ -167,7 +167,18 @@ function onClick(this_artist,d) {
                             .styles(simil_style)
                             .attr("class","similar")
                         }
-                        else {
+                        let is_simil=false
+                        for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
+                            if( artist["artists"]==nearest_elements[simil_idx]["data"][2]["artists"]){
+                                is_simil=true
+                                d3.select(this).transition()
+                                .attrs(simil_attr)
+                                .styles(simil_style)
+                                .style("fill",simil_colors[simil_idx])
+                                .attr("class","similar")
+                            }
+                        }
+                        if(!is_simil){
                         d3.select(this).transition()
                         .attrs(base_attr)
                         .styles(base_style)
@@ -223,23 +234,38 @@ function onClick(this_artist,d) {
                 d3.select(this).attr("class","circle")
                 const song=d[2]
                 //similar song
+                /*
                 if (nearest_elements.some(e=> e["data"][2]["id"]==song["id"])){
                     song_style=simil_style
                     song_attr=simil_attr
                     d3.select(this).attr("class","similar")
-                }
-                //song of same artist
-                //clicked - same artist
-                else if (song["artists"]==selected_song["artists"]) {
-                    //clicked
-                    if (song["id"]==selected_song["id"]) {
-                        song_style=highlight_style
-                        song_attr=highlight_attr
+                }*/
+                let is_simil=false
+                for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
+                    if( song["id"]==nearest_elements[simil_idx]["data"][2]["id"]){
+                        is_simil=true
+                        d3.select(this).attr("class","similar");
+
+                        song_style=simil_style
+                        song_style.fill=simil_colors[simil_idx];
+                        console.log("song style",song_style)
+                        song_attr=simil_attr
                     }
-                    //same artist but not selected song
-                    else{
-                        song_style=same_artist_style
-                        song_attr=same_artist_attr
+                }
+                if(!is_simil){
+                    //song of same artist
+                    //clicked - same artist
+                    if (song["artists"]==selected_song["artists"]) {
+                        //clicked
+                        if (song["id"]==selected_song["id"]) {
+                            song_style=highlight_style
+                            song_attr=highlight_attr
+                        }
+                        //same artist but not selected song
+                        else{
+                            song_style=same_artist_style
+                            song_attr=same_artist_attr
+                        }
                     }
                 }
                 d3.select(this)
@@ -247,8 +273,9 @@ function onClick(this_artist,d) {
                 .duration(200)
                 .attrs(song_attr)
                 .styles(song_style);
+            
             })
-
+                
     }
          
     
@@ -328,7 +355,7 @@ function onMouseOut(this_artist) {
         }
         
         //if song/artist is similar to selected artist, then it is highlighted in correct color
-        if (
+        /*if (
             (this_artist && nearest_elements.some(e=> e["data"][2]["artists"]==element["artists"]))
          || (!this_artist && nearest_elements.some(e=> e["data"][2]["id"]==element["id"]))
         ){  
@@ -341,7 +368,23 @@ function onMouseOut(this_artist) {
                 .styles(simil_style)
                 return
             }
+        }*/
+        for(var simil_idx=0; simil_idx<K_nearest; simil_idx++){
+            if( (this_artist && element["artists"]==nearest_elements[simil_idx]["data"][2]["artists"])
+            || (!this_artist && element["id"]==nearest_elements[simil_idx]["data"][2]["id"])){
+                if ((selected_song && !this_artist) || (!selected_song && this_artist)) {
+        
+                    d3.select(this)
+                    .transition()
+                    .duration(50)
+                    .attrs(simil_attr)
+                    .styles(simil_style)
+                    .style("fill",simil_colors[simil_idx])
+                    return
+                }
+            }
         }
+        
 
         
         //if an artist is selected, distinguish between
