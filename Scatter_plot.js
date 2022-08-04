@@ -1,6 +1,6 @@
 var cat_limits=[];
-const categories = ["speechiness","acousticness","instrumentalness","liveness","valence","tempo",
-"danceability","energy","loudness"]
+const categories = ["tempo","danceability","liveness","energy","valence","loudness",
+"acousticness","instrumentalness","speechiness"]
 let filterLimits = {};
 
 let scatter_artists;

@@ -69,8 +69,20 @@ function createHistogram(data, cat, update) {
             .domain([0, d3.max(histArr)])
             .range([height, 0]);
 
+        // define ticks
+        const numTicks = 7
+        let step = Math.round(d3.max(histArr)/(numTicks))
+        let tickArr = []
+        for (let i=0; i<numTicks; i++) {
+            if (step*i < d3.max(histArr)) {
+                tickArr.push(step*i)
+            }
+        }
+        tickArr.push(d3.max(histArr))
+
         svg.append("g")
-            .call(d3.axisLeft(y));
+            .call(d3.axisLeft(y)
+                .tickValues(tickArr));
 
         svg.selectAll("rect")
             .data(bins)
