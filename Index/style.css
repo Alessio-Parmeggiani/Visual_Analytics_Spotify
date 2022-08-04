@@ -214,3 +214,18 @@ svg {
     padding: 10px;
     box-sizing: border-box;
 }
+
+.tooltip {
+    position: absolute;			
+    text-align: center;			
+    width: 150px;					
+    height: fit-content;					
+    padding: 2px;				
+    font-size: 13px;
+    font-weight: 500;		
+    background: #f0f0f0;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;
+    text-overflow: ellipsis;
+}

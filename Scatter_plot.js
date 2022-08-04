@@ -263,10 +263,8 @@ function onMouseOver(this_artist) {
             .styles(over_style)  
     
         const sel=d.originalTarget.__data__[2]
-        let text_artist=sel["artists"].replace(/[\[\]\'']+/g, '').split(',')
-        if (text_artist.length>1) {
-            text_artist=text_artist[0]+" and others"
-        }
+        let text_artist=formatArtists(sel["artists"])
+
         //Tooltip
         if (this_artist) {
             function checkPosX(X){
@@ -276,17 +274,13 @@ function onMouseOver(this_artist) {
                 else return X+5
             }
 
-            const tooltipHeight=30+10*Math.round((text_artist.length/20))
-            //console.log("artist: "+text_artist +" computed height: "+height)
             const artist=sel
             tooltip_div.transition()		
                 .duration(200)		
                 .style("opacity", .8);		
-            tooltip_div	.html( "Artist:"+ text_artist+"<br/>" )	
+            tooltip_div.html(`<span style="font-weight: bold">Artist:</span> ${text_artist}`)	
                 .style("left", (checkPosX(d.pageX)) + "px")		
                 .style("top", (d.pageY+5) + "px")
-                //modify height
-                .style("height", (tooltipHeight)+"px")
         }
         else{
             const song=sel
@@ -302,12 +296,9 @@ function onMouseOver(this_artist) {
             tooltip_div.transition()		
                 .duration(200)		
                 .style("opacity", .8);		
-            tooltip_div	.html( "Song: "+ song_text+"<br/>"+
-                        "Artist: "+ text_artist)	
+            tooltip_div.html(`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`)	
                 .style("left", (d.pageX+5) + "px")		
-                .style("top", (d.pageY+5) + "px")
-                .style("height", (tooltipHeight)+"px")	
-        
+                .style("top", (d.pageY+5) + "px")        
         }
     }
 }
