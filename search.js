@@ -1,5 +1,5 @@
 const config = {
-    placeHolder: "Search for songs...",
+    placeHolder: "\u2315  Search for songs or artists...",
     selector: "#search-input",
     data: {
         src: searchArray,
