@@ -12,7 +12,7 @@ let x_scale;
 let y_scale;
 let boxPlotSvg;
 //https://d3-graph-gallery.com/graph/boxplot_several_groups.html
-function update_boxplot(songs_data,simil_data){
+function update_boxplot(songs_data,simil_data,original_data,original_similar_data,this_artist){
     console.log("update_boxplot",songs_data);
     let boxWidth=15;
     let similBoxWidth=5;
@@ -23,6 +23,8 @@ function update_boxplot(songs_data,simil_data){
         offset_x=boxWidth/2+ i*5 +5
         let current_data=simil_data[i];
         let current_color=simil_colors[i];
+
+       
 
         similVerticalLines[i]
         .data(current_data)
@@ -36,25 +38,32 @@ function update_boxplot(songs_data,simil_data){
         .attr("stroke-width", 0.5)
 
         //verticalLine.exit().remove()
-        
+        //qui occhio a come vede gli array, per ogni d devo passare un elmento non tutti
+        let custom_data={"data":current_data,"original":original_similar_data[i]};
+        /*let custom_data=[];
+        for (var j=0;j<current_data.length;j++){
+            custom_data.push({"data":current_data[j],"original":original_similar_data[i]});
+        }*/
         
         // Show the box
         similBoxes[i]
-        .data(current_data)
-        .attr("d",current_data)
+        .datum(custom_data)
         .transition()
-        .attr("x", d=>  { return x_scale(d.category) - similBoxWidth/2 +offset_x})
-        .attr("y", d=> y_scale(d.q3) )
-        .attr("height", d=> {
-            return Math.max((y_scale(d.q1)-y_scale(d.q3)),5) 
+        .attr("x", function(d,i)  {
+            return x_scale(d.data[i].category) - similBoxWidth/2 +offset_x})
+        .attr("y", function(d,i){return y_scale(d.data[i].q3) })
+        .attr("height", function(d,i){ 
+            return Math.max((y_scale(d.data[i].q1)-y_scale(d.data[i].q3)),5) 
         })
         .attr("width", similBoxWidth )
         .attr("stroke", "black")
         .style("fill", current_color)
         .attr("stroke-width", 0.5)
         
+        
         // show median, min and max horizontal lines
-        similHorizontalLines[i].data(current_data)
+        similHorizontalLines[i]
+        .data(current_data)
         .attr("d",current_data)
         .transition()
         .attr("x1", d=>{return x_scale(d.category)-similBoxWidth/2 +offset_x})
@@ -77,18 +86,17 @@ function update_boxplot(songs_data,simil_data){
     .attr("stroke-width", 2)
     
     // Show the box
-    
-    box.data(songs_data)
-    .attr("d",songs_data)
+    let custom_data={"data":songs_data,"original":original_data};
+    box.datum(custom_data)
     .transition()
-    .attr("x", d=>  { return x_scale(d.category) - boxWidth/2})
-    .attr("y", d=> y_scale(d.q3) )
-    .attr("height", d=> {
-        return Math.max((y_scale(d.q1)-y_scale(d.q3)),5) 
+    .attr("x", function(d,i)  {return x_scale(d.data[i].category) - boxWidth/2})
+    .attr("y", function(d,i){return y_scale(d.data[i].q3) })
+    .attr("height", function(d,i){ 
+        return Math.max((y_scale(d.data[i].q1)-y_scale(d.data[i].q3)),5) 
     })
     .attr("width", boxWidth )
     .attr("stroke", "black")
-    .style("fill", "#69b3a2")
+    .style("fill", highlight_color)
     
     // show median, min and max horizontal lines
     horizontalLine.data(songs_data)
@@ -102,6 +110,36 @@ function update_boxplot(songs_data,simil_data){
     .attr("stroke-width", 2)
 
     
+  d3.selectAll(".boxPlot")
+  /*.on("click", function(d) {
+    //console.log("clicked",d);
+    onClick(this_artist,d.originalTarget.__data__.original)
+  })
+  */
+  .on("mouseover", function(d) {
+    d3.select(this).attr('stroke-width', 5)
+   })
+   .on("mouseout", function(d) {
+    d3.select(this).attr('stroke-width', 1)
+   });
+
+   d3.selectAll(".boxPlotSimil").on("click", function(d) {
+    //.log("clicked",d);
+    onClick(this_artist,d.originalTarget.__data__.original.data)
+  })
+  .on("mouseover", function(d) {
+    d3.select(this)
+    .transition(50)
+    .attr('stroke-width', 3)
+    .attr("width", similBoxWidth*1.5 )
+    //onMouseOver(this_artist,d.originalTarget.__data__.original.data)
+   })
+   .on("mouseout", function(d) {
+    d3.select(this)
+    .transition(50)
+    .attr('stroke-width', 0.5)
+    .attr("width", similBoxWidth )
+   });
 }
 
 function boxPlotMain() {
@@ -190,12 +228,15 @@ function boxPlotMain() {
     .data(start_data)
     .enter()
     .append("rect")
+    .attr("rx", 1)
+    .attr("ry", 1)
     .attr("x", d=> x_scale(d.category) - boxWidth/2)
     .attr("y", d=> y_scale(d.q3) )
     .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
     .attr("width", boxWidth )
     .attr("stroke", "black")
-    .style("fill", "#69b3a2")
+    .style("fill", highlight_color)
+    .attr("class", "boxPlot")
 
     for(var i=0;i<K_nearest;i++){
         let similBox=boxPlotSvg
@@ -203,12 +244,16 @@ function boxPlotMain() {
         .data(start_data)
         .enter()
         .append("rect")
+        .attr("rx", 1)
+        .attr("ry", 1)
         .attr("x", d=> x_scale(d.category) - boxWidth/2)
         .attr("y", d=> y_scale(d.q3) )
         .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
         .attr("width", boxWidth )
         .attr("stroke", "black")
-        .style("fill", "#69b3a2");
+        .style("fill", "#69b3a2")
+        .attr("class", "boxPlotSimil");
+
         similBoxes.push(similBox)
     }
 
