@@ -573,6 +573,11 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cy", function (d) { return y(d[1]); });
     }
 
+    // Added this to zoom out once as the page starts, otherwise it starts with a little zoom
+    x.domain(d3.extent(scatter_data, function (d) { return d[0]; })).nice();
+    y.domain(d3.extent(scatter_data, function (d) { return d[1]; })).nice();
+    zoom()
+
     tooltip_div = d3.select("body").append("div")	
         .attr("class", "tooltip")				
         .style("opacity", 0);
