@@ -5,8 +5,10 @@ body {
     height: 100vh;
     margin: 0;
     scrollbar-width: none;
-    background-color: antiquewhite;
+    background-color: #f0f0f0;
     overflow: hidden;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
 }
 
 #search-form {
@@ -18,12 +20,13 @@ body {
 #search-input {
     width: 100%;
     /*box-sizing: border-box;*/ /* this is needed otherwise its width would be that of the parent PLUS padding and border size */
-    border-radius: 3px;
+    border-radius: 30px;
     margin-right: 10px;
 }
 
 .autoComplete_wrapper {
     width: 100%;
+    border-radius: 30px;
 }
 
 #scatter-plot-container {
@@ -35,10 +38,10 @@ body {
 
 .scatter-plot {
     width: 50%;
-    border-top: 3px solid orangered;
+    /*border-top: 3px solid orangered;*/
 }
 #scatter-plot-1 {
-    border-right: 3px solid orangered;
+    /*border-right: 3px solid orangered;*/
 }
 
 
@@ -50,7 +53,7 @@ svg {
 #radial-graph {
     grid-area: radial-graph;
     /*width: 50%;*/
-    border-right: 3px solid green;
+    /*border-right: 3px solid green;*/
 }
 
 #other-graph {
@@ -59,50 +62,126 @@ svg {
 }
 
 .block {
-    border: 4px solid;
-    border-radius: 3px;
-    margin: 5px;
+    /*border: 4px solid;*/
+    border-radius: 25px;
+    margin: 10px;
     text-align: center;
+    background-color: white;
+    scrollbar-width: thin;
+    scrollbar-color: #e3e3e3 transparent;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+#filter-bar-container {
+    grid-area: filter-bar;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#filter-bar-container h3 {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    text-align: left;
+    padding-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 1.5rem;
 }
 
 #filter-bar {
-    grid-area: filter-bar;
-    border-color: blue;
+    /*grid-area: filter-bar;*/
+    /*border-color: blue;*/
+    height: 100%;
+    margin-right: 0;
     overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #e3e3e3 transparent;
 }
 
 .filter-container {
-    height: 40%;
+    height: 50%;
 }
 
 #scatter-plots {
     grid-area: scatter-plots;
-    border-color: orangered;
+    /*border-color: orangered;*/
     display: flex;
     flex-direction: column;
 }
 
 #stats-bar {
     grid-area: stats-bar;
-    border-color: orange;
+    /*border-color: orange;*/
     overflow: hidden;
     padding: 5px 0px 0px 0px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+#stats-bar h3 {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    text-align: left;
+    padding-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 1.5rem;
 }
 
 #stats-container {
     display: flex;
+    box-sizing: border-box;
     flex-direction: row;
     height: 100%;
     overflow: hidden;
-    margin-top: 5px;
+}
+
+.stats-and-bar {
+    width: 16.66%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+
+.stats-color-bar {
+    border-radius: 7px;
+    flex: 0 0 5px;
+    margin: 0 5px;
+}
+
+#main-stats-color-bar {
+    background-color: red;
+}
+/* CSS identifiers can't start with a digit, so you have to use the unicode encoding of the digit*/
+#\31-stats-color-bar {
+    background-color: rgb(127, 201, 127);
+}
+#\32-stats-color-bar {
+    background-color: rgb(190, 174, 212);
+}
+#\33-stats-color-bar {
+    background-color: rgb(253, 192, 134);
+}
+#\34-stats-color-bar {
+    background-color: rgb(255, 255, 153);
+}
+#\35-stats-color-bar {
+    background-color: rgb(56, 108, 176);
 }
 
 .stats {
     text-align: left;
-    width: 16.66%;
+    width: 100%;
+    /*
     border-top: 3px solid orange;
-    border-right: 3px solid orange;
+    border-right: 3px solid orange;*/
     overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #e3e3e3 transparent;
+    padding-left: 5px;
 }
 
 .stat-element {
@@ -115,7 +194,7 @@ svg {
 }
 #graphs {
     grid-area: graphs;
-    border-color: green;
+    /*border-color: green;*/
     display: grid;
     grid-template-columns: 25% 75%;
     grid-template-rows: 100%;
@@ -132,4 +211,6 @@ svg {
         "stats-bar stats-bar stats-bar stats-bar";
     width: 100%;
     height: 100%;
+    padding: 10px;
+    box-sizing: border-box;
 }

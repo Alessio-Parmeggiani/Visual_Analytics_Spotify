@@ -20,13 +20,15 @@
         <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"> 
         
     </head>
     <body>
         <div id="container">
-            <div id="filter-bar" class="block">
-                Filters
+            <div id="filter-bar-container" class="block">
+                <h3>Filters</h3>
+                <div id="filter-bar">
+                </div>
             </div>
             <div id="scatter-plots" class="block">
                 <form id="search-form">
@@ -42,14 +44,32 @@
                 <div id="simil-graph"></div>
             </div>
             <div id="stats-bar" class="block">
-                Stats
+                <h3>Stats</h3>
                 <div id="stats-container">
-                    <div id="main-stats" class="stats"></div>
-                    <div id="1-stats" class="stats"></div>
-                    <div id="2-stats" class="stats"></div>
-                    <div id="3-stats" class="stats"></div>
-                    <div id="4-stats" class="stats"></div>
-                    <div id="5-stats" class="stats"></div>
+                    <div class="stats-and-bar">
+                        <div id="main-stats-color-bar"class="stats-color-bar"></div>
+                        <div id="main-stats" class="stats"></div>
+                    </div>
+                    <div class="stats-and-bar">
+                        <div id="1-stats-color-bar" class="stats-color-bar"></div>
+                        <div id="1-stats" class="stats"></div>
+                    </div>
+                    <div class="stats-and-bar">
+                        <div id="2-stats-color-bar" class="stats-color-bar"></div>
+                        <div id="2-stats" class="stats"></div>
+                    </div>
+                    <div class="stats-and-bar">
+                        <div id="3-stats-color-bar" class="stats-color-bar"></div>
+                        <div id="3-stats" class="stats"></div>
+                    </div>
+                    <div class="stats-and-bar">
+                        <div id="4-stats-color-bar" class="stats-color-bar"></div>
+                        <div id="4-stats" class="stats"></div>
+                    </div>
+                    <div class="stats-and-bar">
+                        <div id="5-stats-color-bar" class="stats-color-bar"></div>
+                        <div id="5-stats" class="stats"></div>
+                    </div>
                 </div>
             </div>
             <div id="graphs" class="block">
