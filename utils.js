@@ -103,3 +103,9 @@ function compute_boxplot_data(songs){
     }
     return boxplot_data
 }
+
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };

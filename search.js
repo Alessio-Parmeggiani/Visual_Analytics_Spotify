@@ -97,7 +97,8 @@ function onClickSearch(searchedElement, this_artist) {
             }
         }
     }
-    
+    onClick(this_artist, elemWithPCACoords);
+    return
     //some debug info
     if (this_artist) {
         console.log("selected artist:", selected_artist)

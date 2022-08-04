@@ -205,15 +205,27 @@ function radialPlotMain() {
     });
 
     const angle_rad=i * Math.PI*2  / categories.length;
-    const x = center.x + radius*1.2 * Math.sin(angle_rad);
-    const y = center.y + radius*1.2 * -Math.cos(angle_rad);
+    const x = center.x + radius*1.3 * Math.sin(angle_rad);
+    const y = center.y + radius*1.3 * -Math.cos(angle_rad);
     //console.log("label angle",angle_rad,categories[i])
+    let text_rotate=10
+    //if (i%2!=0) text_rotate=10
+    console.log("text ",categories[i],"rotate",text_rotate)
     //add label
     svg.append('text')
       .text(categories[i])
-      .attr('text-anchor', 'middle')
+      .style('text-anchor', 'middle')
+      .style("font-size", "10px")
+      //.attr('transform', `translate(${x},${y})`)
       .attr('x', x)
       .attr('y', y)
+      .attr("class", "radial-category-label")
+      
+    svg.selectAll(".radial-category-label")
+    //.style("text-anchor", "end")
+    .attr('transform', (d,i)=>{
+      return 'rotate(0)';})
+
   }
 
   //create the plot

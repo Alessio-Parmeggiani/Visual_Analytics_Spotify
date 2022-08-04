@@ -12,6 +12,8 @@ let songsPCA;
 
 let tooltip_div;
 
+let highlighted_element;
+
 let xLimitsSongs;
 let yLimitsSongs;
 
@@ -20,7 +22,6 @@ let yLimitArtists;
 
 let xLimits;
 let yLimits;
-
 
 let x;
 let y;
@@ -161,12 +162,7 @@ function onClick(this_artist,d) {
                 d3.select(this).attr("class","circle");
                 if (selected_artist){
                     if (artist["artists"]!=selected_artist["artists"]){
-                        if (nearest_elements.some(e=> e["data"][2]["artists"]==artist["artists"])){
-                            d3.select(this).transition()
-                            .attrs(simil_attr)
-                            .styles(simil_style)
-                            .attr("class","similar")
-                        }
+
                         let is_simil=false
                         for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
                             if( artist["artists"]==nearest_elements[simil_idx]["data"][2]["artists"]){
@@ -176,6 +172,8 @@ function onClick(this_artist,d) {
                                 .styles(simil_style)
                                 .style("fill",simil_colors[simil_idx])
                                 .attr("class","similar")
+
+                                d3.select(this).moveToFront()
                             }
                         }
                         if(!is_simil){
@@ -188,6 +186,8 @@ function onClick(this_artist,d) {
                         d3.select(this).transition()
                         .attrs(highlight_attr)
                         .styles(highlight_style)
+
+                        highlighted_element=d3.select(this)
                     }
                 }
 
@@ -244,6 +244,9 @@ function onClick(this_artist,d) {
                 for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
                     if( song["id"]==nearest_elements[simil_idx]["data"][2]["id"]){
                         is_simil=true
+                        
+                        d3.select(this).moveToFront()
+
                         d3.select(this).attr("class","similar");
 
                         song_style=simil_style
@@ -260,6 +263,8 @@ function onClick(this_artist,d) {
                         if (song["id"]==selected_song["id"]) {
                             song_style=highlight_style
                             song_attr=highlight_attr
+                            highlighted_element=d3.select(this)
+                            
                         }
                         //same artist but not selected song
                         else{
@@ -273,12 +278,11 @@ function onClick(this_artist,d) {
                 .duration(200)
                 .attrs(song_attr)
                 .styles(song_style);
-            
             })
                 
     }
          
-    
+    highlighted_element.moveToFront()
 }
 
 function onMouseOver(this_artist) {

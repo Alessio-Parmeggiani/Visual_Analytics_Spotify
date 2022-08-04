@@ -1,5 +1,5 @@
 let base_color="#69b3a2"
-
+let highlight_color="red"
 //Scatterplot styles
 let base_style={
     "opacity": 0.5,
@@ -13,7 +13,7 @@ let base_attr={
 //clicked element
 let highlight_style={
     "opacity": 1,
-    "fill":"red",
+    "fill":highlight_color,
 }
 let highlight_attr={
     "r":8,

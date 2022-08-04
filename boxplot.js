@@ -96,7 +96,7 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     })
     .attr("width", boxWidth )
     .attr("stroke", "black")
-    .style("fill", "#69b3a2")
+    .style("fill", highlight_color)
     
     // show median, min and max horizontal lines
     horizontalLine.data(songs_data)
@@ -235,7 +235,7 @@ function boxPlotMain() {
     .attr("height", d=> y_scale(d.q1)-y_scale(d.q3) )
     .attr("width", boxWidth )
     .attr("stroke", "black")
-    .style("fill", "#69b3a2")
+    .style("fill", highlight_color)
     .attr("class", "boxPlot")
 
     for(var i=0;i<K_nearest;i++){
