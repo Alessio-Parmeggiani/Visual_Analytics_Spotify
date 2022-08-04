@@ -97,10 +97,32 @@ svg {
     overflow-y: scroll;
     scrollbar-width: thin;
     scrollbar-color: #e3e3e3 transparent;
+    overflow-x: hidden;
 }
 
 .filter-container {
     height: 50%;
+}
+
+.filter-name-container {
+    padding-left: 10px;
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+    grid-template-areas: "name none limits";
+    padding-top: 5px;
+}
+
+.filter-name {
+    grid-area: name;
+    text-align: start;
+    position: relative;
+}
+
+.filter-limits {
+    grid-area: limits;
+    text-align: end;
+    opacity: 0.5;
+    align-self: end;
 }
 
 #scatter-plots {

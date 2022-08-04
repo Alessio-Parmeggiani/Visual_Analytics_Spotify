@@ -281,6 +281,7 @@ function onMouseOver(this_artist) {
             tooltip_div.html(`<span style="font-weight: bold">Artist:</span> ${text_artist}`)	
                 .style("left", (checkPosX(d.pageX)) + "px")		
                 .style("top", (d.pageY+5) + "px")
+                .style("width", 150 + "px")
         }
         else{
             const song=sel
@@ -292,13 +293,13 @@ function onMouseOver(this_artist) {
                 song_text=song_text+"..."
             }*/
             //compute height bases on how many lines of text
-            const tooltipHeight=40+20*Math.round((song_text.length/15))
             tooltip_div.transition()		
                 .duration(200)		
                 .style("opacity", .8);		
             tooltip_div.html(`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`)	
                 .style("left", (d.pageX+5) + "px")		
                 .style("top", (d.pageY+5) + "px")        
+                .style("width", 150 + "px")     
         }
     }
 }
@@ -670,12 +671,69 @@ function main() {
                 cat_limits.push(limits)
             }
             for (cat of categories) {
-                const filterName = document.createTextNode(`${capitalize(cat)}`)
+                const nameContainer = document.createElement("div");
+                nameContainer.classList.add("filter-name-container");
+
+                const limits = document.createElement("span");
+                limits.classList.add("filter-limits");
+                limits.id = `${cat}-limits`;
+
+                let description = "";
+                if (cat == "acousticness") {
+                    description = "<span style=\"font-weight: bold\">Acousticness</span> is a confidence measure from 0.0 to 1.0 of whether the track is acoustic. 1.0 represents high confidence the track is acoustic."
+                }
+                else if (cat == "danceability") {
+                    description = "<span style=\"font-weight: bold\">Danceability</span> describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity. A value of 0.0 is least danceable and 1.0 is most danceable."
+                }
+                else if (cat == "energy") {
+                    description = "<span style=\"font-weight: bold\">Energy</span> is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. For example, death metal has high energy, while a Bach prelude scores low on the scale. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy."
+                }
+                else if (cat == "instrumentalness") {
+                    description = "<span style=\"font-weight: bold\">Instrumentalness</span> predicts whether a track contains no vocals. \"Ooh\" and \"aah\" sounds are treated as instrumental in this context. Rap or spoken word tracks are clearly \"vocal\". The closer the instrumentalness value is to 1.0, the greater likelihood the track contains no vocal content. Values above 0.5 are intended to represent instrumental tracks, but confidence is higher as the value approaches 1.0."
+                }
+                else if (cat == "liveness") {
+                    description = "<span style=\"font-weight: bold\">Liveness</span> detects the presence of an audience in the recording. Higher liveness values represent an increased probability that the track was performed live. A value above 0.8 provides strong likelihood that the track is live."
+                }
+                else if (cat == "loudness") {
+                    description = "The overall <span style=\"font-weight: bold\">loudness</span> of a track in decibels (dB). Loudness values are averaged across the entire track and are useful for comparing relative loudness of tracks. Loudness is the quality of a sound that is the primary psychological correlate of physical strength (amplitude). Values typically range between -60 and 0 db."
+                }
+                else if (cat == "speechiness") {
+                    description = "<span style=\"font-weight: bold\">Speechiness</span> detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value. Values above 0.66 describe tracks that are probably made entirely of spoken words. Values between 0.33 and 0.66 describe tracks that may contain both music and speech, either in sections or layered, including such cases as rap music. Values below 0.33 most likely represent music and other non-speech-like tracks."
+                }
+                else if (cat == "tempo") {
+                    description = "The overall estimated <span style=\"font-weight: bold\">tempo</span> of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration."
+                }
+                else if (cat == "valence") {
+                    description = "<span style=\"font-weight: bold\">Valence</span> is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry)."
+                }
+                const filterName = document.createElement("div");
+                filterName.innerHTML = capitalize(cat);
+                filterName.style.fontWeight = "bold";
+                filterName.classList.add("filter-name");
+                filterName.addEventListener('mouseover', (event) => {
+                    tooltip_div.transition()		
+                        .duration(200)		
+                        .style("opacity", 1);                    	
+                    tooltip_div.html(description)
+                        .style("width", 250 + "px")
+                        .style("left", (event.clientX+5) + "px")		
+                        .style("top", (event.clientY+5) + "px");
+                })
+                filterName.addEventListener("mouseout", (event) => {
+                    tooltip_div.transition()		
+                        .duration(500)		
+                        .style("opacity", 0);	
+                })
+
                 const filterContainer = document.createElement("div");
                 filterContainer.classList.add("filter-container");
                 filterContainer.id = `${cat}-filter-container`;
-                filterBar.appendChild(filterName);
+
+                nameContainer.appendChild(limits);
+                nameContainer.appendChild(filterName);
+                filterBar.appendChild(nameContainer)
                 filterBar.appendChild(filterContainer);
+
                 createHistogram(data, cat, applyFilter);
 
                 filterLimits[cat] = getMaxMin(data, cat);

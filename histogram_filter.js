@@ -7,6 +7,8 @@ function createHistogram(data, cat, update) {
     width = div_width - margin.left - margin.right,
     height = div_height - margin.top - margin.bottom;
 
+    const limitsSpan = document.getElementById(`${cat}-limits`)
+
     let lowLimit;
     let topLimit;
 
@@ -94,6 +96,7 @@ function createHistogram(data, cat, update) {
                 .attr("height", function(d) { return height - y(d.length); })
                 .style("fill", "#69b3a2");
 
+        /*
         let brushLabelL = svg.append("text")
                     .attr("id", "brush-label-L")
                     .attr("x", 0)
@@ -103,6 +106,7 @@ function createHistogram(data, cat, update) {
                     .attr("id", "brush-label-R")
                     .attr("x", 0)
                     .attr("y", height+25)
+        */
 
         let brush = d3.brushX()
             .extent([[0, 0], [width, height]])
@@ -116,6 +120,7 @@ function createHistogram(data, cat, update) {
                 lowLimit = round2Bin(x.invert(s[0]), cat, binsNum, catMin, catMax);
                 topLimit = round2Bin(x.invert(s[1]), cat, binsNum, catMin, catMax);
 
+                /*
                 // update and move labels
                 brushLabelL
                     .attr("x", [lowLimit].map(x)[0])
@@ -123,6 +128,9 @@ function createHistogram(data, cat, update) {
                 brushLabelR
                     .attr("x", [topLimit].map(x)[0])
                     .text(`${topLimit}`)
+                */
+
+                limitsSpan.innerHTML = `[${lowLimit}, ${topLimit}]`
 
                 // moving the brush to one of the bins
                 d3.select(this).call(brush.move, [lowLimit, topLimit].map(x))
@@ -138,12 +146,16 @@ function createHistogram(data, cat, update) {
             .on("end", function(event) {
                 // If I click outside of the brush, reset filter
                 if (event.selection == null) {
+                    /*
                     brushLabelL
                         .attr("x", [lowLimit].map(x)[0])
                         .text("")
                     brushLabelR
                         .attr("x", [topLimit].map(x)[0])
                         .text("")
+                    */
+
+                    limitsSpan.innerHTML = ""
 
                     lowLimit = catMin;
                     topLimit = catMax;
