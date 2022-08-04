@@ -127,6 +127,8 @@ function onClick(this_artist,d) {
                 d3.select(this).transition()
                 .attrs(select_attr)
                 .styles(select_style);
+
+                d3.select(this).moveToFront()
             }
         }
         else {
