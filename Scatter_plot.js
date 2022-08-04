@@ -635,7 +635,9 @@ function applyFilter(lowLimit, topLimit, cat) {
             .attr("cy", function (d) { return y(d[1]); } )
             .attrs(base_attr)
             .styles(base_style)
-            .on('click', onClick(false))
+            .on('click', function(d) {
+                console.log("selected element on scatter:",d)
+                return onClick(false,d.originalTarget.__data__)})
             .on('mouseover', onMouseOver(false))
             .on('mouseout', onMouseOut(false))
 }
