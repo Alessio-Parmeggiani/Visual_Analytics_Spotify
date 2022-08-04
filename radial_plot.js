@@ -136,7 +136,7 @@ function radialPlotMain() {
   //create circle plot
   //secondo me questo non serve a niente per fare i cerchi
   // ne fa sempre 5 indipendentemente da maxValue
-  /*
+  
   const maxValue = 1;
   const radialScale = d3.scaleLinear()
     .domain([0, maxValue]) 
@@ -151,7 +151,7 @@ function radialPlotMain() {
       .style('stroke', '#aaa')
       .style('fill', 'none');
   }
-  */
+  
 
 
   //console.log("cat limits",cat_limits)
