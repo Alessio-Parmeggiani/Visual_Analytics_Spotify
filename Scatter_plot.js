@@ -304,7 +304,7 @@ function onMouseOver(this_artist) {
             function checkPosX(X){
                 
                 const bodyWidth=document.getElementsByTagName("body")[0].clientWidth
-                if (X+100>bodyWidth) return X-100
+                if (X+150>bodyWidth) return X-150
                 else return X+5
             }
 
@@ -662,7 +662,8 @@ function applyFilter(lowLimit, topLimit, cat) {
     filterLimits[cat][0] = lowLimit;
     filterLimits[cat][1] = topLimit;
 
-    //let filteredArtists = []
+    // Artists that have at least one unfiltered song in the songs graph are displayed
+    let displayedArtists = []
 
     const filteredSongs = d3.filter(songsPCA, function(d) {
         for (const k in filterLimits) {
@@ -670,8 +671,19 @@ function applyFilter(lowLimit, topLimit, cat) {
                 return false;
             }
         }
-        //filteredArtists.push(d[2]["artists"])
+        displayedArtists.push(d[2]["artists"])
         return true;
+    })
+
+    // displayedArtists has a lot of duplicates, we build another array that doesn't have them and we use it to filter the artists
+    let artistsNonDuplicates = [];
+
+    const filteredArtists = d3.filter(artistsPCA, function(d) {
+        if (displayedArtists.includes(d[2]["artists"]) && !artistsNonDuplicates.includes(d[2]["artists"])) {
+            artistsNonDuplicates.push(d[2]["artists"]);
+            return true;
+        }
+        return false;
     })
 
     // Same thing as create scatter plot a few lines above this
@@ -688,6 +700,20 @@ function applyFilter(lowLimit, topLimit, cat) {
                 return onClick(false,d.originalTarget.__data__)})
             .on('mouseover', onMouseOver(false))
             .on('mouseout', onMouseOut(false))
+
+    // Do the same for scatter_artists where data is filteredArtists
+    scatter_artists.selectAll("circle")
+        .data(filteredArtists)
+        .join("circle")
+            .attr("cx", function (d) { return x(d[0]); } )
+            .attr("cy", function (d) { return y(d[1]); } )
+            .attrs(base_attr)
+            .styles(base_style)
+            .on('click', function(d) {
+                console.log("selected element on scatter:",d)
+                return onClick(true,d.originalTarget.__data__)})
+            .on('mouseover', onMouseOver(true))
+            .on('mouseout', onMouseOut(true))
 }
 
 
