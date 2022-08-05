@@ -717,6 +717,59 @@ function main() {
 
     const filterBar = document.getElementById("filter-bar");
 
+    document.getElementById("1-stats")
+    .addEventListener("click", function(){
+        console.log("clicchetto 1")
+        if(nearest_elements) {
+            let this_artist=true
+            if(selected_song) this_artist=false
+            onClick(this_artist,nearest_elements[0].data)
+        }          
+    })   
+    document.getElementById("1-stats").addEventListener("mouseover", function(){
+        console.log("mouseover 1")
+        //change width of element
+        document.getElementById("1-stats").style.width = "100%";
+    })
+    document.getElementById("2-stats")
+    .addEventListener("click", function(){
+        console.log("clicchetto 2")
+        if(nearest_elements) {
+            let this_artist=true
+            if(selected_song) this_artist=false
+            onClick(this_artist,nearest_elements[1].data)
+        }          
+    })   
+    document.getElementById("3-stats")
+    .addEventListener("click", function(){
+        console.log("clicchetto 3")
+        if(nearest_elements) {
+            let this_artist=true
+            if(selected_song) this_artist=false
+            onClick(this_artist,nearest_elements[2].data)
+        }          
+    })   
+    document.getElementById("4-stats")
+    .addEventListener("click", function(){
+        console.log("clicchetto 4")
+        if(nearest_elements) {
+            let this_artist=true
+            if(selected_song) this_artist=false
+            onClick(this_artist,nearest_elements[3].data)
+        }          
+    })   
+    document.getElementById("5-stats")
+    .addEventListener("click", function(){
+        console.log("clicchetto 5")
+        if(nearest_elements) {
+            let this_artist=true
+            if(selected_song) this_artist=false
+            onClick(this_artist,nearest_elements[4].data)
+        }          
+    })         
+    
+
+
     //Read the data and plot the plots
     d3.csv("../tracks_mid_1k.csv",d3.autoType)
         .then( function(data){ 
@@ -804,6 +857,26 @@ function main() {
             for (el of data) {
                 searchArray.push(el)
             }
+
+            //CLICK ON STAT BOX
+            /*
+            let stats=[]
+            for(var k=1;k<=K_nearest;k++){
+                let stat=document.getElementById(k+"-stats")
+                stat.addEventListener("click", function(){
+                    console.log("clicchetto",k)
+                    
+                    if(nearest_elements) {
+                        let this_artist=true
+                        if(selected_song) this_artist=false
+                        onClick(this_artist,nearest_elements[k])
+                    }                   
+                    
+                })
+                stats.push(stat)
+            }
+            */
+
 
             console.log("plot ready")
             ScatterPlotMain(data, margin, width, height, svg1, false)
