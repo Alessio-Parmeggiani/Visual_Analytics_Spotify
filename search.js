@@ -29,13 +29,53 @@ const config = {
         highlight: true,
         element: (item, data) => {
             item.style = "font-weight: 800"
-            if (data.key == "name") {
-                item.innerHTML = `${data.match}  -  <span style="opacity:0.5;">Song</span>`
-            }
-            else {
-                let artists = formatArtists(data.match)
+            const res = data.match.replaceAll(/<mark>|<\/mark>/g, "")
 
-                item.innerHTML = `${artists}  -  <span style="opacity:0.5;">Artist</span>`
+            // in this case no filter has ever been applied => all songs are good
+            if (displayedSongs.length == 0){
+                if (data.key == "name") {
+                    item.innerHTML = `${data.match}  <span style="font-weight:400;">-  Song</span>`
+                }
+                else {
+                    let artists = formatArtists(data.match)
+    
+                    item.innerHTML = `${artists}  <span style="font-weight:400;">-  Artist</span>`
+                }
+            }
+            // in this all songs have been filtered out
+            else if (displayedSongs == ["--No songs--"]) {
+                if (data.key == "name") {
+                    item.innerHTML = `<span style="opacity:0.5;">${data.match}  <span style="font-weigth: 400">-  Song  -  <span style="color:#fff;background:#000">FILTERED OUT</span></span></span>`
+                }
+                else {
+                    let artists = formatArtists(data.match)
+    
+                    item.innerHTML = `<span style="opacity:0.5;">${artists}  <span style="font-weigth: 400">-  Artist  -  <span style="color:#fff;background:#000">FILTERED OUT</span></span></span>`
+                }
+                item.classList.add("disabled");
+            }      
+            else {
+                if (displayedSongs.includes(res) || artistsNonDuplicates.includes(res)) {
+                    if (data.key == "name") {
+                        item.innerHTML = `${data.match}  <span style="font-weight:400;">-  Song</span>`
+                    }
+                    else {
+                        let artists = formatArtists(data.match)
+        
+                        item.innerHTML = `${artists}  <span style="font-weight:400;">-  Artist</span>`
+                    }
+                }
+                else {
+                    if (data.key == "name") {
+                        item.innerHTML = `<span style="opacity:0.5;">${data.match}  <span style="font-weight: 400">-  Song  -  <span style="color:#fff;background:#000">FILTERED OUT</span></span></span>`
+                    }
+                    else {
+                        let artists = formatArtists(data.match)
+        
+                        item.innerHTML = `<span style="opacity:0.5;">${artists}  <span style="font-weight: 400">-  Artist  -  <span style="color:#fff;background:#000">FILTERED OUT</span></span></span>`
+                    }
+                    item.classList.add("disabled");
+                }
             }
         }
     },

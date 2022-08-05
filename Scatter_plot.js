@@ -30,6 +30,10 @@ let K_nearest=5;
 let nearest_elements;
 
 let searchArray = [];
+
+let displayedArtists = [];
+let displayedSongs = [];
+let artistsNonDuplicates = [];
 //PCA FROM https://www.npmjs.com/package/pca-js
 
 //https://observablehq.com/@d3/color-schemes
@@ -662,29 +666,35 @@ function applyFilter(lowLimit, topLimit, cat) {
     filterLimits[cat][0] = lowLimit;
     filterLimits[cat][1] = topLimit;
 
-    // Artists that have at least one unfiltered song in the songs graph are displayed
-    let displayedArtists = []
-
+    displayedArtists = [];
+    displayedSongs = [];
     const filteredSongs = d3.filter(songsPCA, function(d) {
         for (const k in filterLimits) {
             if (d[2][k] < filterLimits[k][0] || d[2][k] > filterLimits[k][1]) {
                 return false;
             }
         }
-        displayedArtists.push(d[2]["artists"])
+        // Artists that have at least one unfiltered song in the songs graph are displayed
+        displayedSongs.push(d[2]["name"]);
+        displayedArtists.push(d[2]["artists"]);
         return true;
     })
 
-    // displayedArtists has a lot of duplicates, we build another array that doesn't have them and we use it to filter the artists
-    let artistsNonDuplicates = [];
-
+    artistsNonDuplicates = [];
     const filteredArtists = d3.filter(artistsPCA, function(d) {
         if (displayedArtists.includes(d[2]["artists"]) && !artistsNonDuplicates.includes(d[2]["artists"])) {
+            // displayedArtists has a lot of duplicates, we build another array that doesn't have them and we use it to filter the artists
             artistsNonDuplicates.push(d[2]["artists"]);
             return true;
         }
         return false;
     })
+
+    // We should distinguish the case when displayedSongs is empty because the function applyFilter has never been called yet from the case
+    // where it is empty because all songs have been filtered out when applying filters. This is necessary for the search, to correctly display elements that have been filtered out
+    if (displayedSongs == []) {
+        displayedSongs.push("--No songs--");
+    }
 
     // Same thing as create scatter plot a few lines above this
     // If that changes this should change too, they must be the same

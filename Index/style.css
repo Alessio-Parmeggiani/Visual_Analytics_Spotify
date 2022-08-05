@@ -276,3 +276,7 @@ svg {
     pointer-events: none;
     text-overflow: ellipsis;
 }
+
+.disabled {
+    pointer-events: none;
+}
