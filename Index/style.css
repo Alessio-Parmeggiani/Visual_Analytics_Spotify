@@ -11,6 +11,16 @@ body {
     font-weight: 400;
 }
 
+.title {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    text-align: left;
+    padding-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 1.4rem;
+}
+
 #search-form {
     display: flex;
     flex-direction: row;
@@ -29,19 +39,43 @@ body {
     border-radius: 30px;
 }
 
+
+#scatter-plots {
+    grid-area: scatter-plots;
+    /*border-color: orangered;*/
+    display: flex;
+    flex-direction: column;
+}
+
 #scatter-plot-container {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    box-sizing: border-box;
     height: 100%;
+    overflow: hidden;
+}
+
+.scatter-plot-and-name-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
 }
 
 .scatter-plot {
-    width: 50%;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     /*border-top: 3px solid orangered;*/
 }
-#scatter-plot-1 {
-    /*border-right: 3px solid orangered;*/
+
+.scatter-plot-title {
+    align-self: flex-start;
+    margin-top: 0;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    font-family: 'Baloo 2';
+    font-weight: 800;
+    font-size: 1.4rem;
 }
 
 
@@ -84,16 +118,6 @@ svg {
     flex-direction: column;
 }
 
-#filter-bar-container h3 {
-    font-family: 'Baloo 2', cursive;
-    font-weight: 800;
-    text-align: left;
-    padding-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-size: 1.5rem;
-}
-
 #filter-bar {
     /*grid-area: filter-bar;*/
     /*border-color: blue;*/
@@ -130,13 +154,6 @@ svg {
     align-self: end;
 }
 
-#scatter-plots {
-    grid-area: scatter-plots;
-    /*border-color: orangered;*/
-    display: flex;
-    flex-direction: column;
-}
-
 #stats-bar {
     grid-area: stats-bar;
     /*border-color: orange;*/
@@ -146,16 +163,6 @@ svg {
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
-}
-
-#stats-bar h3 {
-    font-family: 'Baloo 2', cursive;
-    font-weight: 800;
-    text-align: left;
-    padding-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    font-size: 1.5rem;
 }
 
 #stats-container {

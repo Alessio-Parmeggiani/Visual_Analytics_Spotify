@@ -26,7 +26,7 @@
     <body>
         <div id="container">
             <div id="filter-bar-container" class="block">
-                <h3>Filters</h3>
+                <h3 class="title">Filters</h3>
                 <div id="filter-bar">
                 </div>
             </div>
@@ -36,8 +36,14 @@
                     <!--<button type="submit">Search</button>-->
                 </form>
                 <div id="scatter-plot-container">
-                    <div id="scatter-plot-1" class="scatter-plot"></div>
-                    <div id="scatter-plot-2" class="scatter-plot"></div>
+                    <div class="scatter-plot-and-name-container">
+                        <h3 class="scatter-plot-title">Songs</h3>
+                        <div id="scatter-plot-1" class="scatter-plot"></div>
+                    </div>
+                    <div class="scatter-plot-and-name-container">
+                        <h3 class="scatter-plot-title">Artists</h3>
+                        <div id="scatter-plot-2" class="scatter-plot"></div>
+                    </div>
                 </div>	
             </div>
             <div id="simil-plots" class="block">
@@ -45,7 +51,7 @@
             </div>
             <div id="stats-bar" class="block">
                 <div style="display:flex; flex-direction:row;">
-                    <h3 id="stats-h3">Stats <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h3>
+                    <h3 id="stats-h3" class="title">Stats <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h3>
                     <span style="align-self:center; padding-left:30px; opacity:0.8;">Search for a song, an artist, or click on a point in the scatter plot</span>
                 </div>
                 <div id="stats-container">
