@@ -89,8 +89,19 @@ function updateRadialPlot(targetSong,simil,this_artist,named=true){
     d3.select(this).attr('stroke-width', 5)
    })
    .on("mouseout", function(d) {
+    d3.select(this).attr('stroke-width', 4)
+   });
+  
+   d3.selectAll(".similRadialPath").on("click", function(d) {
+    radialClick(d,this_artist)
+  })
+  .on("mouseover", function(d) {
+    d3.select(this).attr('stroke-width', 4)
+   })
+   .on("mouseout", function(d) {
     d3.select(this).attr('stroke-width', 3)
    });
+
 
 }
   
@@ -242,7 +253,7 @@ function radialPlotMain() {
     let similRadialPath=svg.append('path')
     .datum(simil_songs[i])
     .attr('d', radial)
-    .attr("class", "radialPath")
+    .attr("class", "similRadialPath")
 
 
     similRadialPaths.push(similRadialPath)
