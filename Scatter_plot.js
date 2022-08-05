@@ -717,6 +717,22 @@ function main() {
 
     const filterBar = document.getElementById("filter-bar");
 
+    const statsHeader = document.getElementById("stats-h3");
+    statsHeader.addEventListener('mouseover', (event) => {
+        tooltip_div.transition()		
+            .duration(200)		
+            .style("opacity", 1);                    	
+        tooltip_div.html("This section reports the statistics of the selected song and the 5 most similar songs. Each song is associated to a color, which is always the same in every graph. If one song is particularly interesting, by clicking on its stats it's possible to find songs similar to that one.")
+            .style("width", 250 + "px")
+            .style("left", (event.clientX+5) + "px")		
+            .style("top", (event.clientY+5) + "px");
+    })
+    statsHeader.addEventListener("mouseout", (event) => {
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    })
+
     document.getElementById("1-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 1")
@@ -725,13 +741,7 @@ function main() {
             if(selected_song) this_artist=false
             onClick(this_artist,nearest_elements[0].data)
         }          
-    })   
-    document.getElementById("1-stats").addEventListener("mouseover", function(){
-        document.getElementById("1-stats").style.backgroundColor = "#f0f0f0";
-    })
-    document.getElementById("1-stats").addEventListener("mouseout", function(){
-        document.getElementById("1-stats").style.backgroundColor = "white";
-    })
+    })  
     document.getElementById("2-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 2")
@@ -741,12 +751,6 @@ function main() {
             onClick(this_artist,nearest_elements[1].data)
         }          
     })   
-    document.getElementById("2-stats").addEventListener("mouseover", function(){
-        document.getElementById("2-stats").style.backgroundColor = "#f0f0f0";
-    })
-    document.getElementById("2-stats").addEventListener("mouseout", function(){
-        document.getElementById("2-stats").style.backgroundColor = "white";
-    })
     document.getElementById("3-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 3")
@@ -756,12 +760,6 @@ function main() {
             onClick(this_artist,nearest_elements[2].data)
         }          
     })   
-    document.getElementById("3-stats").addEventListener("mouseover", function(){
-        document.getElementById("3-stats").style.backgroundColor = "#f0f0f0";
-    })
-    document.getElementById("3-stats").addEventListener("mouseout", function(){
-        document.getElementById("3-stats").style.backgroundColor = "white";
-    })
     document.getElementById("4-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 4")
@@ -770,13 +768,7 @@ function main() {
             if(selected_song) this_artist=false
             onClick(this_artist,nearest_elements[3].data)
         }          
-    })   
-    document.getElementById("4-stats").addEventListener("mouseover", function(){
-        document.getElementById("4-stats").style.backgroundColor = "#f0f0f0";
-    })
-    document.getElementById("4-stats").addEventListener("mouseout", function(){
-        document.getElementById("4-stats").style.backgroundColor = "white";
-    })
+    }) 
     document.getElementById("5-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 5")
@@ -785,13 +777,7 @@ function main() {
             if(selected_song) this_artist=false
             onClick(this_artist,nearest_elements[4].data)
         }          
-    })         
-    document.getElementById("5-stats").addEventListener("mouseover", function(){
-        document.getElementById("5-stats").style.backgroundColor = "#f0f0f0";
-    })
-    document.getElementById("5-stats").addEventListener("mouseout", function(){
-        document.getElementById("5-stats").style.backgroundColor = "white";
-    })
+    })       
     
 
 
@@ -804,6 +790,8 @@ function main() {
                 const limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
                 cat_limits.push(limits)
             }
+
+            // Initialize filters
             for (cat of categories) {
                 const nameContainer = document.createElement("div");
                 nameContainer.classList.add("filter-name-container");

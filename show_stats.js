@@ -15,25 +15,21 @@ function showStats(data, index, view_artist) {
     //console.log(data);
 
     if (!view_artist) {
-        stats = ["name", "album", "year", "speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
+        stats = ["name", "artists", "album", "year", "tempo", "danceability", "liveness", "energy", "valence", "loudness", "acousticness", "instrumentalness", "speechiness"];
     }
     else {
-        stats = ["speechiness", "acousticness", "instrumentalness", "liveness", "valence", "tempo", "danceability", "energy", "loudness"];
+        stats = ["artists", "tempo", "danceability", "liveness", "energy", "valence", "loudness", "acousticness", "instrumentalness", "speechiness"];
     }
-
-    // Write artist names
-    let p = document.createElement("p");
-    p.classList.add("stat-element");
-    let artists = formatArtists(data["artists"])
-
-    p.innerHTML = `<span style="font-weight: bold">Artists: </span>` + artists;
-    container.appendChild(p);
 
     for (const elem of stats) {
         p = document.createElement("p");
         p.classList.add("stat-element");
-        if (elem != "name" && elem != "album" && elem != "year") {
+        if (elem != "name" && elem != "album" && elem != "year" && elem != "artists") {
             p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + (Math.round(data[elem] * 100) / 100).toFixed(2);
+        }
+        else if (elem == "artists") {
+            const artists = formatArtists(data["artists"])
+            p.innerHTML = `<span style="font-weight: bold">Artists: </span>` + artists;
         }
         else {
             p.innerHTML = `<span style="font-weight: bold">${capitalize(elem)}</span>` + ": " + data[elem];
