@@ -209,6 +209,7 @@ svg {
     scrollbar-width: thin;
     scrollbar-color: #e3e3e3 transparent;
     padding-left: 5px;
+    background-color: white ;
 }
 
 .stat-element {

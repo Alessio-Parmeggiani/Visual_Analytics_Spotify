@@ -727,9 +727,10 @@ function main() {
         }          
     })   
     document.getElementById("1-stats").addEventListener("mouseover", function(){
-        console.log("mouseover 1")
-        //change width of element
-        document.getElementById("1-stats").style.width = "100%";
+        document.getElementById("1-stats").style.backgroundColor = "#f0f0f0";
+    })
+    document.getElementById("1-stats").addEventListener("mouseout", function(){
+        document.getElementById("1-stats").style.backgroundColor = "white";
     })
     document.getElementById("2-stats")
     .addEventListener("click", function(){
@@ -740,6 +741,12 @@ function main() {
             onClick(this_artist,nearest_elements[1].data)
         }          
     })   
+    document.getElementById("2-stats").addEventListener("mouseover", function(){
+        document.getElementById("2-stats").style.backgroundColor = "#f0f0f0";
+    })
+    document.getElementById("2-stats").addEventListener("mouseout", function(){
+        document.getElementById("2-stats").style.backgroundColor = "white";
+    })
     document.getElementById("3-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 3")
@@ -749,6 +756,12 @@ function main() {
             onClick(this_artist,nearest_elements[2].data)
         }          
     })   
+    document.getElementById("3-stats").addEventListener("mouseover", function(){
+        document.getElementById("3-stats").style.backgroundColor = "#f0f0f0";
+    })
+    document.getElementById("3-stats").addEventListener("mouseout", function(){
+        document.getElementById("3-stats").style.backgroundColor = "white";
+    })
     document.getElementById("4-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 4")
@@ -758,6 +771,12 @@ function main() {
             onClick(this_artist,nearest_elements[3].data)
         }          
     })   
+    document.getElementById("4-stats").addEventListener("mouseover", function(){
+        document.getElementById("4-stats").style.backgroundColor = "#f0f0f0";
+    })
+    document.getElementById("4-stats").addEventListener("mouseout", function(){
+        document.getElementById("4-stats").style.backgroundColor = "white";
+    })
     document.getElementById("5-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 5")
@@ -767,6 +786,12 @@ function main() {
             onClick(this_artist,nearest_elements[4].data)
         }          
     })         
+    document.getElementById("5-stats").addEventListener("mouseover", function(){
+        document.getElementById("5-stats").style.backgroundColor = "#f0f0f0";
+    })
+    document.getElementById("5-stats").addEventListener("mouseout", function(){
+        document.getElementById("5-stats").style.backgroundColor = "white";
+    })
     
 
 
