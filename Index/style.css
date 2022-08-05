@@ -72,6 +72,11 @@ svg {
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
+.question-mark {
+    height: 0.7em;
+    opacity: 0.8;
+}
+
 #filter-bar-container {
     grid-area: filter-bar;
     overflow: hidden;
@@ -107,8 +112,8 @@ svg {
 .filter-name-container {
     padding-left: 10px;
     display: grid;
-    grid-template-columns: 33% 33% 33%;
-    grid-template-areas: "name none limits";
+    grid-template-columns: 50% 50%;
+    grid-template-areas: "name limits";
     padding-top: 5px;
 }
 
