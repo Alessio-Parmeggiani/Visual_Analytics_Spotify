@@ -1,5 +1,9 @@
 let base_color="#69b3a2"
 let highlight_color="red"
+
+//https://observablehq.com/@d3/color-schemes
+let simil_colors=["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
+
 //Scatterplot styles
 let base_style={
     "opacity": 0.5,

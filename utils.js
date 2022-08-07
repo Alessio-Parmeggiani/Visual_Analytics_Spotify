@@ -1,3 +1,45 @@
+function get_distance(x1,x2,y1,y2){
+    return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))
+}
+
+function get_k_nearest_elements(this_artist,selected_elem){
+    console.log("selecting similar to:",selected_elem)
+    let nearest_scatter=null;
+    if (this_artist) { nearest_scatter=scatter_artists }
+    else { nearest_scatter=scatter_songs }
+    let nearest_elements=[]
+    nearest_scatter.selectAll("circle")
+    .each(function(d){
+        if (nearest_elements.length>=2){
+            nearest_elements.sort(function(a, b) {return a["distance"] - b["distance"];});
+        }
+        let distance=get_distance(d[0],selected_elem[0],d[1],selected_elem[1])
+        //ignore selected element
+        if (this_artist && d[2]["artists"]==selected_elem[2]["artists"]){ return }
+        if (!this_artist && d[2]["id"]==selected_elem[2]["id"]){ return }
+        //select K nearest elements of selected artist
+        if (nearest_elements.length<K_nearest){
+            nearest_elements.push({"data":d,"distance":distance})
+            return
+        }
+        //compare with nearest elements
+        for (let i=0;i<K_nearest;i++){
+            if (distance<nearest_elements[i]["distance"]){
+                //add this element to the list
+                nearest_elements.splice(i,0,{"data":d,"distance":distance})
+                //delete last element of array
+                if (nearest_elements.length>K_nearest){
+                    nearest_elements.pop()
+                }
+                break
+            }
+        }
+    })
+    console.log("nearest elements:",nearest_elements)
+    return nearest_elements
+}
+
+
 function getMaxMin(data, key) {
     let max = d3.max(data, d => d[key]);
     let min = d3.min(data, d => d[key]);
