@@ -14,6 +14,7 @@ let boxPlotSvg;
 //https://d3-graph-gallery.com/graph/boxplot_several_groups.html
 function update_boxplot(songs_data,simil_data,original_data,original_similar_data,this_artist){
     console.log("update_boxplot",songs_data);
+    console.log("update_boxplot simil",simil_data);
     let boxWidth=15;
     let similBoxWidth=5;
 
@@ -24,11 +25,8 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
         let current_data=simil_data[i];
         let current_color=simil_colors[i];
 
-       
-
         similVerticalLines[i]
         .data(current_data)
-        .attr("d",current_data)
         .transition()
         .attr("x1", d=> x_scale(d.category)+offset_x)
         .attr("x2", d=> x_scale(d.category)+offset_x)
@@ -64,7 +62,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
         // show median, min and max horizontal lines
         similHorizontalLines[i]
         .data(current_data)
-        .attr("d",current_data)
         .transition()
         .attr("x1", d=>{return x_scale(d.category)-similBoxWidth/2 +offset_x})
         .attr("x2", d=>{return x_scale(d.category)+similBoxWidth/2 +offset_x})
@@ -76,7 +73,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
 
     verticalLine
     .data(songs_data)
-    .attr("d",songs_data)
     .transition()
     .attr("x1", d=> x_scale(d.category))
     .attr("x2", d=> x_scale(d.category))
@@ -100,7 +96,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     
     // show median, min and max horizontal lines
     horizontalLine.data(songs_data)
-    .attr("d",songs_data)
     .transition()
     .attr("x1", d=>{return x_scale(d.category)-boxWidth/2})
     .attr("x2", d=>{return x_scale(d.category)+boxWidth/2})

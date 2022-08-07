@@ -221,7 +221,7 @@ function radialPlotMain() {
     //console.log("label angle",angle_rad,categories[i])
     let text_rotate=10
     //if (i%2!=0) text_rotate=10
-    console.log("text ",categories[i],"rotate",text_rotate)
+    //console.log("text ",categories[i],"rotate",text_rotate)
     //add label
     svg.append('text')
       .text(categories[i])

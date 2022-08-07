@@ -81,25 +81,36 @@ function onClick(this_artist,d) {
     scatter_songs.selectAll("circle")
     .each(function(d){
         song=d[2]
-        if (song["artists"]==selected_artist["artists"]) {
+        if (song["artists"]==selected_artist["artists"]
+            || song["co_artists"].indexOf(selected_artist["artists"])>-1){
             current_artist_songs.push(song)
             //song selected by clicking on artist
             if (this_artist) {
                 d3.select(this).transition()
-                .attrs(select_attr)
-                .styles(select_style);
+                let chose_attr=select_attr
+                let chose_style=select_style;
+                
+                if(song["co_artists"].indexOf(selected_artist["artists"])>-1){
+                    chose_attr=select_co_attr
+                    chose_style=select_co_style
+                }
+
+                d3.select(this).transition()
+                .attrs(chose_attr)
+                .styles(chose_style);
 
                 d3.select(this).moveToFront()
             }
         }
-        else {
+        
         //if song artist is in the nearest elements add to corresponding array
-            for (let k=0;k<K_nearest;k++){
-                if (song["artists"]==nearest_elements[k]["data"][2]["artists"]){
-                    similar_artists_songs[k].push(song)
-                }
+        for (let k=0;k<K_nearest;k++){
+            if (song["artists"]==nearest_elements[k]["data"][2]["artists"] ||
+                song["co_artists"].indexOf(nearest_elements[k]["data"][2]["artists"])>-1){
+                similar_artists_songs[k].push(song)
             }
         }
+        
     });
     //update boxplot
     console.log("current artist songs:",current_artist_songs)
@@ -167,9 +178,10 @@ function onClick(this_artist,d) {
             .each(function(d){
                 d3.select(this).attr("class","circle");
 
-                const artist=d[2]
+                let artist=d[2]
                 //if non selected artist stay normal
-                if (artist["artists"]!=selected_song["artists"]) {
+                if (artist["artists"]!=selected_song["artists"] ||
+                    selected_song["co_artists"].indexOf(artist["artists"])>-1) {
                     d3.select(this)
                         .transition()
                         .duration(50)
@@ -178,6 +190,13 @@ function onClick(this_artist,d) {
                 }
                 //if selected artist then change color
                 else if (artist["artists"]==selected_song["artists"]) {
+                    d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(select_attr)
+                        .styles(select_style)
+                }
+                else if (selected_song["co_artists"].indexOf(artist["artists"])>-1) {
                     d3.select(this)
                         .transition()
                         .duration(50)
@@ -214,27 +233,34 @@ function onClick(this_artist,d) {
 
                         song_style=simil_style
                         song_style.fill=simil_colors[simil_idx];
-                        console.log("song style",song_style)
+                        //console.log("song style",song_style)
                         song_attr=simil_attr
                     }
                 }
                 if(!is_simil){
                     //song of same artist
                     //clicked - same artist
-                    if (song["artists"]==selected_song["artists"]) {
-                        //clicked
-                        if (song["id"]==selected_song["id"]) {
-                            song_style=highlight_style
-                            song_attr=highlight_attr
-                            highlighted_element=d3.select(this)
-                            
-                        }
-                        //same artist but not selected song
-                        else{
-                            song_style=same_artist_style
-                            song_attr=same_artist_attr
-                        }
+                
+                    //clicked
+                    if (song["id"]==selected_song["id"]) {
+                        song_style=highlight_style
+                        song_attr=highlight_attr
+                        highlighted_element=d3.select(this)
+                        
                     }
+                    //same artist but not selected song
+                    else if (song["artists"]==selected_song["artists"]){
+                        song_style=same_artist_style
+                        song_attr=same_artist_attr
+                    }
+                    //same co artist but not same artist
+                    else if ( song["co_artists"].indexOf(selected_song["artists"])>-1 ||
+                    selected_song["co_artists"].indexOf(song["artists"])>-1) {
+                        console.log("same co artist")
+                        song_style=same_co_artist_style
+                        song_attr=same_co_artist_attr
+                    }
+
                 }
                 d3.select(this)
                 .transition()
@@ -363,7 +389,8 @@ function onMouseOut(this_artist) {
         //song selected remain selected
         //difference between song selected by clicking on artist or 
         //selection by clicking on other song of same artist
-        if (element["artists"]==selected_artist["artists"]) {
+        if (element["artists"]==selected_artist["artists"] ||
+            (element["co_artists"] && element["co_artists"].indexOf(selected_artist["artists"])>-1)) {
             if (selected_song){
                 //selection by clicking on song
                 if (this_artist){
@@ -384,6 +411,11 @@ function onMouseOut(this_artist) {
                 else{
                     target_attr=select_attr
                     target_style=select_style
+
+                    if (element["co_artists"].indexOf(selected_artist["artists"])>-1){
+                        target_attr=select_co_attr
+                        target_style=select_co_style
+                    }
                 }
             }
 
@@ -393,6 +425,7 @@ function onMouseOut(this_artist) {
                 target_style=highlight_style
             }
         }
+        
 
         //apply target style
         d3.select(this)
@@ -413,6 +446,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         songByArtists_=d3.groups(data, d=>d["artists"])
         console.log("Grouped songs",songByArtists_)
 
+        songByArtists_=groupByArtist(data)
+        console.log("my Grouped songs",songByArtists_)
+
         //create new matrix with for each artist 6 values that are the mean of the 
         //caetgories for each song
 
@@ -424,6 +460,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         //for each artist create a new array that contains
         //the means of the categories for their songs
         for(var i=0;i<songByArtists_.length;i++){
+            //if(songByArtists_[i][1].length<2){ continue}
+            //don't consider artist with only one song
             artist_data=[]  
             additional_data={}
             additional_data["artists"]=songByArtists_[i][0]

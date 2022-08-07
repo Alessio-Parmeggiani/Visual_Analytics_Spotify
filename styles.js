@@ -46,6 +46,15 @@ let select_attr={
     "stroke": "red",
     "stroke-width":1,
 }
+let select_co_style={
+    "opacity": 1,
+    "fill":"blue",
+}
+let select_co_attr={
+    "r":6,
+    "stroke": "blue",
+    "stroke-width":1,
+}
 
 //similar artists/songs to clicked
 let simil_style={
@@ -67,6 +76,16 @@ let same_artist_style={
 let same_artist_attr={
     "r":5,
     "stroke": "red",
+    "stroke-width":1,
+}
+
+let same_co_artist_style={
+    "opacity": 0.8,
+    "fill":base_color,
+}
+let same_co_artist_attr={
+    "r":3,
+    "stroke": "none",
     "stroke-width":1,
 }
 

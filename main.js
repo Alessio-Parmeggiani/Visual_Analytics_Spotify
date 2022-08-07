@@ -46,6 +46,7 @@ function main() {
             .style("opacity", 0);	
     })
 
+    //Click on stat box
     document.getElementById("1-stats")
     .addEventListener("click", function(){
         console.log("clicchetto 1")
@@ -183,25 +184,23 @@ function main() {
             for (el of data) {
                 searchArray.push(el)
             }
+            
+            console.log("changing artists")
+            for(var id=0; id<data.length;id++){
+                //if a song has more than one artist, remove the other
+                //console.log(data[id].artists)
+                let artists=parseArtists(data[id].artists)
+                data[id]["co_artists"]=[]
+                data[id].artists=artists[0]
+                if(artists.length>1){
+                    for(var i=1;i<artists.length;i++){
+                        data[id]["co_artists"].push(artists[i])
+                    }
+                    //console.log(data[id])
+                }
 
-            //CLICK ON STAT BOX
-            /*
-            let stats=[]
-            for(var k=1;k<=K_nearest;k++){
-                let stat=document.getElementById(k+"-stats")
-                stat.addEventListener("click", function(){
-                    console.log("clicchetto",k)
-                    
-                    if(nearest_elements) {
-                        let this_artist=true
-                        if(selected_song) this_artist=false
-                        onClick(this_artist,nearest_elements[k])
-                    }                   
-                    
-                })
-                stats.push(stat)
             }
-            */
+            
 
 
             console.log("plot ready")
