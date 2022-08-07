@@ -153,7 +153,7 @@ function boxPlotMain() {
     const margin_left=50;
     const margin_right=20;
     const margin_top=10;
-    const margin_bottom=80;
+    const margin_bottom=40;
 
     x_scale = d3.scaleBand()
     .range([ margin_left, width-margin_right ])
@@ -167,8 +167,8 @@ function boxPlotMain() {
     .selectAll("text")  
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", "rotate(-45)");
+    .attr("dy", "0.5em")
+    .attr("transform", "rotate(-15)");
 
     // Show the Y scale
     y_scale = d3.scaleLinear()
