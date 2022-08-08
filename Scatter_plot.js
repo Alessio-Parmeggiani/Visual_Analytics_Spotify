@@ -285,6 +285,8 @@ function onMouseOver(this_artist) {
     
         const sel=d.originalTarget.__data__[2]
         let text_artist=formatArtists(sel["artists"])
+        let text_coartist=""
+        if (sel["co_artists"]) text_coartist=sel["co_artists"].join(", ")
 
         //Tooltip
         if (this_artist) {
@@ -317,7 +319,9 @@ function onMouseOver(this_artist) {
             tooltip_div.transition()		
                 .duration(200)		
                 .style("opacity", .8);		
-            tooltip_div.html(`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`)	
+            let tooltip_text=`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`
+            if(text_coartist) tooltip_text=tooltip_text+`<br/><span style="font-weight: bold">Co-artist:</span> ${text_coartist}`
+            tooltip_div.html(`${tooltip_text}`)	
                 .style("left", (d.pageX+5) + "px")		
                 .style("top", (d.pageY+5) + "px")        
                 .style("width", 150 + "px")     
