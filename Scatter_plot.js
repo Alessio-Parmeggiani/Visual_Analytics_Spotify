@@ -67,10 +67,14 @@ function onClick(this_artist,d) {
     // Show stats for the selected song and for the 5 closest ones
     showStats(d[2], 0, this_artist)
     showStats(nearest_elements[0]["data"][2], 1, this_artist)
-    showStats(nearest_elements[1]["data"][2], 2, this_artist)
-    showStats(nearest_elements[2]["data"][2], 3, this_artist)
-    showStats(nearest_elements[3]["data"][2], 4, this_artist)
-    showStats(nearest_elements[4]["data"][2], 5, this_artist)
+    if (nearest_elements.length>1) 
+        showStats(nearest_elements[1]["data"][2], 2, this_artist)
+    if (nearest_elements.length>2)
+        showStats(nearest_elements[2]["data"][2], 3, this_artist)
+    if (nearest_elements.length>3)
+        showStats(nearest_elements[3]["data"][2], 4, this_artist)
+    if (nearest_elements.length>4)
+        showStats(nearest_elements[4]["data"][2], 5, this_artist)
 
     //get songs of this artist 
     //needed for boxplot
