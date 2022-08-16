@@ -6,6 +6,8 @@ let scatter_artists;
 let scatter_songs;
 let selected_artist;
 let selected_song;
+let selected_artist_coord;
+let selected_song_coord;
 let artistsPCA;
 let songsPCA;
 
@@ -45,6 +47,7 @@ function onClick(this_artist,d) {
     
     //an artist is selected both if click on songs and artists
     selected_artist=d[2]
+    selected_artist_coord=d
     console.log("SELECTED ELEMENT",d)
     
     //some debug info
@@ -108,7 +111,8 @@ function onClick(this_artist,d) {
         }
         
         //if song artist is in the nearest elements add to corresponding array
-        for (let k=0;k<K_nearest;k++){
+        for (let k=0;k<nearest_elements.length;k++){
+            if (!nearest_elements[k]) continue
             if (song["artists"]==nearest_elements[k]["data"][2]["artists"] ||
                 song["co_artists"].indexOf(nearest_elements[k]["data"][2]["artists"])>-1){
                 similar_artists_songs[k].push(song)
@@ -132,6 +136,7 @@ function onClick(this_artist,d) {
     if (this_artist) {
         //now an artist is selected, not a song
         selected_song=null
+        selected_song_coord=null
 
         //all other artists return to base style
         scatter_artists.selectAll("circle")
@@ -142,7 +147,8 @@ function onClick(this_artist,d) {
                     if (artist["artists"]!=selected_artist["artists"]){
 
                         let is_simil=false
-                        for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
+                        for(var simil_idx=0;simil_idx<nearest_elements.length;simil_idx++){
+                            if (!nearest_elements[simil_idx]) continue
                             if( artist["artists"]==nearest_elements[simil_idx]["data"][2]["artists"]){
                                 is_simil=true
                                 d3.select(this).transition()
@@ -176,6 +182,7 @@ function onClick(this_artist,d) {
     else{
 
         selected_song=d[2]
+        selected_song_coord=d
 
         //highlight artist of selected song
         scatter_artists.selectAll("circle")
@@ -371,7 +378,8 @@ function onMouseOut(this_artist) {
                 return
             }
         }*/
-        for(var simil_idx=0; simil_idx<K_nearest; simil_idx++){
+        for(var simil_idx=0; simil_idx<nearest_elements.length; simil_idx++){
+            if (!nearest_elements[simil_idx]) continue
             if( (this_artist && element["artists"]==nearest_elements[simil_idx]["data"][2]["artists"])
             || (!this_artist && element["id"]==nearest_elements[simil_idx]["data"][2]["id"])){
                 if ((selected_song && !this_artist) || (!selected_song && this_artist)) {
@@ -701,6 +709,7 @@ function applyFilter(lowLimit, topLimit, cat) {
 
     // Same thing as create scatter plot a few lines above this
     // If that changes this should change too, they must be the same
+    
     scatter_songs.selectAll("circle")
         .data(filteredSongs)
         .join("circle")
@@ -713,7 +722,7 @@ function applyFilter(lowLimit, topLimit, cat) {
                 return onClick(false,d.originalTarget.__data__)})
             .on('mouseover', onMouseOver(false))
             .on('mouseout', onMouseOut(false))
-
+    
     // Do the same for scatter_artists where data is filteredArtists
     scatter_artists.selectAll("circle")
         .data(filteredArtists)
@@ -727,5 +736,15 @@ function applyFilter(lowLimit, topLimit, cat) {
                 return onClick(true,d.originalTarget.__data__)})
             .on('mouseover', onMouseOver(true))
             .on('mouseout', onMouseOut(true))
+
+    if (selected_song){
+        console.log("filtro song:",selected_song_coord)
+        onClick(false,selected_song_coord)
+    }
+    else if (selected_artist){
+        console.log("filtro artist:",selected_artist_coord)
+        onClick(true,selected_artist_coord)
+    }
+
 }
 

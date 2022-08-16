@@ -18,7 +18,8 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     let boxWidth=15;
     let similBoxWidth=5;
 
-    for (var i=0;i<K_nearest;i++){
+    for (var i=0;i<original_similar_data.length;i++){
+        //if(!original_similar_data[i]) continue;
         
         let offset_x=i*(boxWidth+similBoxWidth)+1;
         offset_x=boxWidth/2+ i*5 +5

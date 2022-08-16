@@ -127,20 +127,28 @@ function compute_boxplot_data(songs){
         category_data.category=categories[i]
         //if null songs then all 0 values
 
-        if (songs) {
+        if (songs.length>0) {
             category_data.min = d3.min(songs, function(d) { return d[categories[i]]; });
             category_data.min=norm_min_max(category_data.min, cat_limits[i][0], cat_limits[i][1])
+
+            if (!category_data.min) category_data.min=0
 
             category_data.max = d3.max(songs, function(d) { return d[categories[i]]; });
             category_data.max=norm_min_max(category_data.max, cat_limits[i][0], cat_limits[i][1])
 
+            if (!category_data.max) category_data.max=0
+
             category_data.median = d3.median(songs, function(d) { return d[categories[i]]; });
             category_data.median=norm_min_max(category_data.median, cat_limits[i][0], cat_limits[i][1])
+
+            if (!category_data.median) category_data.median=0
             
             category_data.q1 = d3.quantile(songs, 0.25, function(d) { return d[categories[i]]; });
             category_data.q1=norm_min_max(category_data.q1, cat_limits[i][0], cat_limits[i][1]) 
+            if (!category_data.q1) category_data.q1=0
             category_data.q3 = d3.quantile(songs, 0.75, function(d) { return d[categories[i]]; });
             category_data.q3=norm_min_max(category_data.q3, cat_limits[i][0], cat_limits[i][1])
+            if (!category_data.q3) category_data.q3=0
             
             //interqauntile range (the box)
             category_data.iqr = category_data.q3 - category_data.q1;
@@ -167,7 +175,9 @@ function compute_boxplot_data(songs){
 
 d3.selection.prototype.moveToFront = function() {
     return this.each(function(){
-      this.parentNode.appendChild(this);
+        if (this.parentNode) {
+            this.parentNode.appendChild(this);
+        }
     });
   };
 
