@@ -78,6 +78,18 @@ body {
     font-size: 1.4rem;
 }
 
+.scatter-plot-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.color-key {
+    margin: 0 10px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
 
 svg {
     height: 100%;
@@ -186,24 +198,39 @@ svg {
     margin: 0 5px;
 }
 
+#stats-bar-header {
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#selected-color {
+    height: 2.5em;
+}
+
+#color-hierarchy {
+    height: 3em;
+    margin-right: 15px;
+}
+
 #main-stats-color-bar {
-    background-color: red;
+    background-color: #d73027;
 }
 /* CSS identifiers can't start with a digit, so you have to use the unicode encoding of the digit*/
 #\31-stats-color-bar {
-    background-color: rgb(127, 201, 127);
+    background-color: #fc8d59;
 }
 #\32-stats-color-bar {
-    background-color: rgb(190, 174, 212);
+    background-color: #fee090;
 }
 #\33-stats-color-bar {
-    background-color: rgb(253, 192, 134);
+    background-color: #e0f3f8;
 }
 #\34-stats-color-bar {
-    background-color: rgb(255, 255, 153);
+    background-color: #91bfdb;
 }
 #\35-stats-color-bar {
-    background-color: rgb(56, 108, 176);
+    background-color: #4575b4;
 }
 
 .stats {

@@ -1,5 +1,5 @@
 let base_color="#69b3a2"
-let highlight_color="red"
+let highlight_color="#d73027"
 //Scatterplot styles
 let base_style={
     "opacity": 0.5,
@@ -18,7 +18,7 @@ let highlight_style={
 let highlight_attr={
     "r":8,
     "stroke": "black",
-    "stroke-width":3,
+    "stroke-width":2,
 }
 
 //mouse over element
@@ -29,13 +29,13 @@ let over_style={
 let over_attr={
     "r":8,
     "stroke": "black",
-    "stroke-width":3,
+    "stroke-width":2,
 }
 
 //songs of clicked artist or artist of clicked song
 let select_style={
     "opacity": 1,
-    "fill":"blue",
+    "fill":"#FF66D8",
 }
 let select_attr={
     "r":7,
@@ -50,7 +50,7 @@ let simil_style={
 }
 let simil_attr={
     "r":7,
-    "stroke": "red",
+    "stroke": "black",
     "stroke-width":1,
 }
 

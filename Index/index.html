@@ -37,11 +37,21 @@
                 </form>
                 <div id="scatter-plot-container">
                     <div class="scatter-plot-and-name-container">
-                        <h3 class="scatter-plot-title">Songs</h3>
+                        <div class="scatter-plot-header">
+                            <div>
+                                <h3 class="scatter-plot-title">Songs</h3>
+                            </div>
+                            <h4 class="color-key" id="songs-color-key">Color key <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
+                        </div>
                         <div id="scatter-plot-1" class="scatter-plot"></div>
                     </div>
                     <div class="scatter-plot-and-name-container">
-                        <h3 class="scatter-plot-title">Artists</h3>
+                        <div class="scatter-plot-header">
+                            <div>
+                                <h3 class="scatter-plot-title">Artists</h3>
+                            </div>
+                            <h4 class="color-key" id="artists-color-key">Color key <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
+                        </div>
                         <div id="scatter-plot-2" class="scatter-plot"></div>
                     </div>
                 </div>	
@@ -50,9 +60,10 @@
                 <div id="simil-graph"></div>
             </div>
             <div id="stats-bar" class="block">
-                <div style="display:flex; flex-direction:row;">
+                <div id="stats-bar-header">
                     <h3 id="stats-h3" class="title">Stats <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h3>
                     <span style="align-self:center; padding-left:30px; opacity:0.8;">Search for a song, an artist, or click on a point in the scatter plot</span>
+                    <img id="color-hierarchy" src="../images/selected_and_hierarchy.jpg" alt="Color hierarchy description">
                 </div>
                 <div id="stats-container">
                     <div class="stats-and-bar">

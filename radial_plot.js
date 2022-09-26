@@ -78,7 +78,7 @@ function updateRadialPlot(targetSong,simil,this_artist,named=true){
   .transition()
   .attr('d', radial(song.radial_data))
   .attr('fill', 'none')
-  .attr('stroke', 'red')
+  .attr('stroke', '#d73027')
   .attr('stroke-width', 4)
 
 

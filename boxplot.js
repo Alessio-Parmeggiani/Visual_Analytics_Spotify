@@ -117,7 +117,7 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
   })
   */
   .on("mouseover", function(d) {
-    d3.select(this).attr('stroke-width', 5)
+    d3.select(this).attr('stroke-width', 3)
    })
    .on("mouseout", function(d) {
     d3.select(this).attr('stroke-width', 1)
@@ -130,7 +130,7 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
   .on("mouseover", function(d) {
     d3.select(this)
     .transition(50)
-    .attr('stroke-width', 3)
+    .attr('stroke-width', 2)
     .attr("width", similBoxWidth*1.5 )
     //onMouseOver(this_artist,d.originalTarget.__data__.original.data)
    })
