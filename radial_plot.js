@@ -31,6 +31,7 @@ function updateRadialPlot(targetSong,simil,this_artist,named=true){
     let processed_song=simil[j]["data"][2]
     for(var i=0;i<categories.length;i++){
       var value=0
+      if (simil[j].length==0) continue;
       if (named){
         value=norm_min_max(processed_song[categories[i]], cat_limits[i][0], cat_limits[i][1])
       }
@@ -221,7 +222,7 @@ function radialPlotMain() {
     //console.log("label angle",angle_rad,categories[i])
     let text_rotate=10
     //if (i%2!=0) text_rotate=10
-    console.log("text ",categories[i],"rotate",text_rotate)
+    //console.log("text ",categories[i],"rotate",text_rotate)
     //add label
     svg.append('text')
       .text(categories[i])

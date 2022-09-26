@@ -1,12 +1,13 @@
 var cat_limits=[];
-const categories = ["tempo","danceability","liveness","energy","valence","loudness",
-"acousticness","instrumentalness","speechiness"]
+
 let filterLimits = {};
 
 let scatter_artists;
 let scatter_songs;
 let selected_artist;
 let selected_song;
+let selected_artist_coord;
+let selected_song_coord;
 let artistsPCA;
 let songsPCA;
 
@@ -26,7 +27,7 @@ let yLimits;
 let x;
 let y;
 
-let K_nearest=5;
+
 let nearest_elements;
 
 let searchArray = [];
@@ -40,46 +41,6 @@ let artistsNonDuplicates = [];
 //let simil_colors=["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
 const simil_colors = ["#fc8d59", "#fee090", "#e0f3f8", "#91bfdb", "#4575b4"]
 
-function get_distance(x1,x2,y1,y2){
-    return Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2))
-}
-
-function get_k_nearest_elements(this_artist,selected_elem){
-    console.log("selecting similar to:",selected_elem)
-    let nearest_scatter=null;
-    if (this_artist) { nearest_scatter=scatter_artists }
-    else { nearest_scatter=scatter_songs }
-    let nearest_elements=[]
-    nearest_scatter.selectAll("circle")
-    .each(function(d){
-        if (nearest_elements.length>=2){
-            nearest_elements.sort(function(a, b) {return a["distance"] - b["distance"];});
-        }
-        distance=get_distance(d[0],selected_elem[0],d[1],selected_elem[1])
-        //ignore selected element
-        if (this_artist && d[2]["artists"]==selected_elem[2]["artists"]){ return }
-        if (!this_artist && d[2]["id"]==selected_elem[2]["id"]){ return }
-        //select K nearest elements of selected artist
-        if (nearest_elements.length<K_nearest){
-            nearest_elements.push({"data":d,"distance":distance})
-            return
-        }
-        //compare with nearest elements
-        for (let i=0;i<K_nearest;i++){
-            if (distance<nearest_elements[i]["distance"]){
-                //add this element to the list
-                nearest_elements.splice(i,0,{"data":d,"distance":distance})
-                //delete last element of array
-                if (nearest_elements.length>K_nearest){
-                    nearest_elements.pop()
-                }
-                break
-            }
-        }
-    })
-    console.log("nearest elements:",nearest_elements)
-    return nearest_elements
-}
 
 
 function onClick(this_artist,d) {
@@ -89,6 +50,7 @@ function onClick(this_artist,d) {
     
     //an artist is selected both if click on songs and artists
     selected_artist=d[2]
+    selected_artist_coord=d
     console.log("SELECTED ELEMENT",d)
     
     //some debug info
@@ -111,10 +73,14 @@ function onClick(this_artist,d) {
     // Show stats for the selected song and for the 5 closest ones
     showStats(d[2], 0, this_artist)
     showStats(nearest_elements[0]["data"][2], 1, this_artist)
-    showStats(nearest_elements[1]["data"][2], 2, this_artist)
-    showStats(nearest_elements[2]["data"][2], 3, this_artist)
-    showStats(nearest_elements[3]["data"][2], 4, this_artist)
-    showStats(nearest_elements[4]["data"][2], 5, this_artist)
+    if (nearest_elements.length>1) 
+        showStats(nearest_elements[1]["data"][2], 2, this_artist)
+    if (nearest_elements.length>2)
+        showStats(nearest_elements[2]["data"][2], 3, this_artist)
+    if (nearest_elements.length>3)
+        showStats(nearest_elements[3]["data"][2], 4, this_artist)
+    if (nearest_elements.length>4)
+        showStats(nearest_elements[4]["data"][2], 5, this_artist)
 
     //get songs of this artist 
     //needed for boxplot
@@ -125,25 +91,37 @@ function onClick(this_artist,d) {
     scatter_songs.selectAll("circle")
     .each(function(d){
         song=d[2]
-        if (song["artists"]==selected_artist["artists"]) {
+        if (song["artists"]==selected_artist["artists"]
+            || song["co_artists"].indexOf(selected_artist["artists"])>-1){
             current_artist_songs.push(song)
             //song selected by clicking on artist
             if (this_artist) {
                 d3.select(this).transition()
-                .attrs(select_attr)
-                .styles(select_style);
+                let chose_attr=select_attr
+                let chose_style=select_style;
+                
+                if(song["co_artists"].indexOf(selected_artist["artists"])>-1){
+                    chose_attr=select_co_attr
+                    chose_style=select_co_style
+                }
+
+                d3.select(this).transition()
+                .attrs(chose_attr)
+                .styles(chose_style);
 
                 d3.select(this).moveToFront()
             }
         }
-        else {
+        
         //if song artist is in the nearest elements add to corresponding array
-            for (let k=0;k<K_nearest;k++){
-                if (song["artists"]==nearest_elements[k]["data"][2]["artists"]){
-                    similar_artists_songs[k].push(song)
-                }
+        for (let k=0;k<nearest_elements.length;k++){
+            if (!nearest_elements[k]) continue
+            if (song["artists"]==nearest_elements[k]["data"][2]["artists"] ||
+                song["co_artists"].indexOf(nearest_elements[k]["data"][2]["artists"])>-1){
+                similar_artists_songs[k].push(song)
             }
         }
+        
     });
     //update boxplot
     console.log("current artist songs:",current_artist_songs)
@@ -161,6 +139,7 @@ function onClick(this_artist,d) {
     if (this_artist) {
         //now an artist is selected, not a song
         selected_song=null
+        selected_song_coord=null
 
         //all other artists return to base style
         scatter_artists.selectAll("circle")
@@ -171,7 +150,8 @@ function onClick(this_artist,d) {
                     if (artist["artists"]!=selected_artist["artists"]){
 
                         let is_simil=false
-                        for(var simil_idx=0;simil_idx<K_nearest;simil_idx++){
+                        for(var simil_idx=0;simil_idx<nearest_elements.length;simil_idx++){
+                            if (!nearest_elements[simil_idx]) continue
                             if( artist["artists"]==nearest_elements[simil_idx]["data"][2]["artists"]){
                                 is_simil=true
                                 d3.select(this).transition()
@@ -205,15 +185,17 @@ function onClick(this_artist,d) {
     else{
 
         selected_song=d[2]
+        selected_song_coord=d
 
         //highlight artist of selected song
         scatter_artists.selectAll("circle")
             .each(function(d){
                 d3.select(this).attr("class","circle");
 
-                const artist=d[2]
+                let artist=d[2]
                 //if non selected artist stay normal
-                if (artist["artists"]!=selected_song["artists"]) {
+                if (artist["artists"]!=selected_song["artists"] ||
+                    selected_song["co_artists"].indexOf(artist["artists"])>-1) {
                     d3.select(this)
                         .transition()
                         .duration(50)
@@ -222,6 +204,13 @@ function onClick(this_artist,d) {
                 }
                 //if selected artist then change color
                 else if (artist["artists"]==selected_song["artists"]) {
+                    d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(select_attr)
+                        .styles(select_style)
+                }
+                else if (selected_song["co_artists"].indexOf(artist["artists"])>-1) {
                     d3.select(this)
                         .transition()
                         .duration(50)
@@ -258,27 +247,34 @@ function onClick(this_artist,d) {
 
                         song_style=simil_style
                         song_style.fill=simil_colors[simil_idx];
-                        console.log("song style",song_style)
+                        //console.log("song style",song_style)
                         song_attr=simil_attr
                     }
                 }
                 if(!is_simil){
                     //song of same artist
                     //clicked - same artist
-                    if (song["artists"]==selected_song["artists"]) {
-                        //clicked
-                        if (song["id"]==selected_song["id"]) {
-                            song_style=highlight_style
-                            song_attr=highlight_attr
-                            highlighted_element=d3.select(this)
-                            
-                        }
-                        //same artist but not selected song
-                        else{
-                            song_style=same_artist_style
-                            song_attr=same_artist_attr
-                        }
+                
+                    //clicked
+                    if (song["id"]==selected_song["id"]) {
+                        song_style=highlight_style
+                        song_attr=highlight_attr
+                        highlighted_element=d3.select(this)
+                        
                     }
+                    //same artist but not selected song
+                    else if (song["artists"]==selected_song["artists"]){
+                        song_style=same_artist_style
+                        song_attr=same_artist_attr
+                    }
+                    //same co artist but not same artist
+                    else if ( song["co_artists"].indexOf(selected_song["artists"])>-1 ||
+                    selected_song["co_artists"].indexOf(song["artists"])>-1) {
+                        console.log("same co artist")
+                        song_style=same_co_artist_style
+                        song_attr=same_co_artist_attr
+                    }
+
                 }
                 d3.select(this)
                 .transition()
@@ -303,6 +299,8 @@ function onMouseOver(this_artist) {
     
         const sel=d.originalTarget.__data__[2]
         let text_artist=formatArtists(sel["artists"])
+        let text_coartist=""
+        if (sel["co_artists"]) text_coartist=sel["co_artists"].join(", ")
 
         //Tooltip
         if (this_artist) {
@@ -335,7 +333,9 @@ function onMouseOver(this_artist) {
             tooltip_div.transition()		
                 .duration(200)		
                 .style("opacity", .8);		
-            tooltip_div.html(`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`)	
+            let tooltip_text=`<span style="font-weight: bold">Song:</span> ${song_text} <br/><span style="font-weight: bold">Artist:</span> ${text_artist}`
+            if(text_coartist) tooltip_text=tooltip_text+`<br/><span style="font-weight: bold">Co-artist:</span> ${text_coartist}`
+            tooltip_div.html(`${tooltip_text}`)	
                 .style("left", (d.pageX+5) + "px")		
                 .style("top", (d.pageY+5) + "px")        
                 .style("width", 150 + "px")     
@@ -381,7 +381,8 @@ function onMouseOut(this_artist) {
                 return
             }
         }*/
-        for(var simil_idx=0; simil_idx<K_nearest; simil_idx++){
+        for(var simil_idx=0; simil_idx<nearest_elements.length; simil_idx++){
+            if (!nearest_elements[simil_idx]) continue
             if( (this_artist && element["artists"]==nearest_elements[simil_idx]["data"][2]["artists"])
             || (!this_artist && element["id"]==nearest_elements[simil_idx]["data"][2]["id"])){
                 if ((selected_song && !this_artist) || (!selected_song && this_artist)) {
@@ -407,7 +408,8 @@ function onMouseOut(this_artist) {
         //song selected remain selected
         //difference between song selected by clicking on artist or 
         //selection by clicking on other song of same artist
-        if (element["artists"]==selected_artist["artists"]) {
+        if (element["artists"]==selected_artist["artists"] ||
+            (element["co_artists"] && element["co_artists"].indexOf(selected_artist["artists"])>-1)) {
             if (selected_song){
                 //selection by clicking on song
                 if (this_artist){
@@ -428,6 +430,11 @@ function onMouseOut(this_artist) {
                 else{
                     target_attr=select_attr
                     target_style=select_style
+
+                    if (element["co_artists"].indexOf(selected_artist["artists"])>-1){
+                        target_attr=select_co_attr
+                        target_style=select_co_style
+                    }
                 }
             }
 
@@ -437,6 +444,7 @@ function onMouseOut(this_artist) {
                 target_style=highlight_style
             }
         }
+        
 
         //apply target style
         d3.select(this)
@@ -457,6 +465,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         songByArtists_=d3.groups(data, d=>d["artists"])
         console.log("Grouped songs",songByArtists_)
 
+        songByArtists_=groupByArtist(data)
+        console.log("my Grouped songs",songByArtists_)
+
         //create new matrix with for each artist 6 values that are the mean of the 
         //caetgories for each song
 
@@ -468,6 +479,8 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         //for each artist create a new array that contains
         //the means of the categories for their songs
         for(var i=0;i<songByArtists_.length;i++){
+            //if(songByArtists_[i][1].length<2){ continue}
+            //don't consider artist with only one song
             artist_data=[]  
             additional_data={}
             additional_data["artists"]=songByArtists_[i][0]
@@ -699,6 +712,7 @@ function applyFilter(lowLimit, topLimit, cat) {
 
     // Same thing as create scatter plot a few lines above this
     // If that changes this should change too, they must be the same
+    
     scatter_songs.selectAll("circle")
         .data(filteredSongs)
         .join("circle")
@@ -711,7 +725,7 @@ function applyFilter(lowLimit, topLimit, cat) {
                 return onClick(false,d.originalTarget.__data__)})
             .on('mouseover', onMouseOver(false))
             .on('mouseout', onMouseOut(false))
-
+    
     // Do the same for scatter_artists where data is filteredArtists
     scatter_artists.selectAll("circle")
         .data(filteredArtists)
@@ -968,44 +982,14 @@ function main() {
 
             if (filterLimits['tempo'] > 220) alert("Trovata una canzone con tempo > 220, sistemare l'istogramma dei filtri")
 
-            console.log("limits:",cat_limits)
+    if (selected_song){
+        console.log("filtro song:",selected_song_coord)
+        onClick(false,selected_song_coord)
+    }
+    else if (selected_artist){
+        console.log("filtro artist:",selected_artist_coord)
+        onClick(true,selected_artist_coord)
+    }
 
-            // Building searchArray for the searchbar
-            
-            for (el of data) {
-                searchArray.push(el)
-            }
-
-            //CLICK ON STAT BOX
-            /*
-            let stats=[]
-            for(var k=1;k<=K_nearest;k++){
-                let stat=document.getElementById(k+"-stats")
-                stat.addEventListener("click", function(){
-                    console.log("clicchetto",k)
-                    
-                    if(nearest_elements) {
-                        let this_artist=true
-                        if(selected_song) this_artist=false
-                        onClick(this_artist,nearest_elements[k])
-                    }                   
-                    
-                })
-                stats.push(stat)
-            }
-            */
-
-
-            console.log("plot ready")
-            ScatterPlotMain(data, margin, width, height, svg1, false)
-            ScatterPlotMain(data, margin, width, height, svg2, true)
-
-            radialPlotMain()
-            boxPlotMain()
-            //similarityPlot()
-            
-            })
-        .catch((error) => console.log(error))
 }
 
-main();

@@ -14,21 +14,20 @@ let boxPlotSvg;
 //https://d3-graph-gallery.com/graph/boxplot_several_groups.html
 function update_boxplot(songs_data,simil_data,original_data,original_similar_data,this_artist){
     console.log("update_boxplot",songs_data);
+    console.log("update_boxplot simil",simil_data);
     let boxWidth=15;
     let similBoxWidth=5;
 
-    for (var i=0;i<K_nearest;i++){
+    for (var i=0;i<original_similar_data.length;i++){
+        //if(!original_similar_data[i]) continue;
         
         let offset_x=i*(boxWidth+similBoxWidth)+1;
         offset_x=boxWidth/2+ i*5 +5
         let current_data=simil_data[i];
         let current_color=simil_colors[i];
 
-       
-
         similVerticalLines[i]
         .data(current_data)
-        .attr("d",current_data)
         .transition()
         .attr("x1", d=> x_scale(d.category)+offset_x)
         .attr("x2", d=> x_scale(d.category)+offset_x)
@@ -64,7 +63,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
         // show median, min and max horizontal lines
         similHorizontalLines[i]
         .data(current_data)
-        .attr("d",current_data)
         .transition()
         .attr("x1", d=>{return x_scale(d.category)-similBoxWidth/2 +offset_x})
         .attr("x2", d=>{return x_scale(d.category)+similBoxWidth/2 +offset_x})
@@ -76,7 +74,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
 
     verticalLine
     .data(songs_data)
-    .attr("d",songs_data)
     .transition()
     .attr("x1", d=> x_scale(d.category))
     .attr("x2", d=> x_scale(d.category))
@@ -100,7 +97,6 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     
     // show median, min and max horizontal lines
     horizontalLine.data(songs_data)
-    .attr("d",songs_data)
     .transition()
     .attr("x1", d=>{return x_scale(d.category)-boxWidth/2})
     .attr("x2", d=>{return x_scale(d.category)+boxWidth/2})
@@ -153,7 +149,7 @@ function boxPlotMain() {
     const margin_left=50;
     const margin_right=20;
     const margin_top=10;
-    const margin_bottom=80;
+    const margin_bottom=40;
 
     x_scale = d3.scaleBand()
     .range([ margin_left, width-margin_right ])
@@ -167,8 +163,8 @@ function boxPlotMain() {
     .selectAll("text")  
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
-    .attr("dy", ".15em")
-    .attr("transform", "rotate(-45)");
+    .attr("dy", "0.5em")
+    .attr("transform", "rotate(-15)");
 
     // Show the Y scale
     y_scale = d3.scaleLinear()

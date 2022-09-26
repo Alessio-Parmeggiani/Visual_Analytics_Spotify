@@ -1,5 +1,9 @@
 let base_color="#69b3a2"
-let highlight_color="#d73027"
+let highlight_color="red"
+
+//https://observablehq.com/@d3/color-schemes
+let simil_colors=["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
+
 //Scatterplot styles
 let base_style={
     "opacity": 0.5,
@@ -42,6 +46,15 @@ let select_attr={
     "stroke": "red",
     "stroke-width":1,
 }
+let select_co_style={
+    "opacity": 1,
+    "fill":"blue",
+}
+let select_co_attr={
+    "r":6,
+    "stroke": "blue",
+    "stroke-width":1,
+}
 
 //similar artists/songs to clicked
 let simil_style={
@@ -63,6 +76,16 @@ let same_artist_style={
 let same_artist_attr={
     "r":5,
     "stroke": "red",
+    "stroke-width":1,
+}
+
+let same_co_artist_style={
+    "opacity": 0.8,
+    "fill":base_color,
+}
+let same_co_artist_attr={
+    "r":3,
+    "stroke": "none",
     "stroke-width":1,
 }
 
