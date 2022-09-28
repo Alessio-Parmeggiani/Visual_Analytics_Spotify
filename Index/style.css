@@ -16,9 +16,9 @@ body {
     font-weight: 800;
     text-align: left;
     padding-left: 10px;
-    margin-top: 5px;
+    margin-top: 10px;
     margin-bottom: 5px;
-    font-size: 1.0rem;
+    font-size: 1.2rem;
 }
 
 #search-form {
@@ -75,7 +75,7 @@ body {
     margin-left: 10px;
     font-family: 'Baloo 2';
     font-weight: 800;
-    font-size: 1.0rem;
+    font-size: 1.2rem;
 }
 
 .scatter-plot-header {
@@ -133,7 +133,7 @@ svg {
 #filter-bar {
     /*grid-area: filter-bar;*/
     /*border-color: blue;*/
-    font-size: 0.7rem;
+    font-size: 1rem;
     height: 100%;
     margin-right: 0;
     overflow-y: scroll;
@@ -236,7 +236,7 @@ svg {
 
 .stats {
     text-align: left;
-    font-size:0.7rem;
+    font-size: 1rem;
     width: 100%;
     /*
     border-top: 3px solid orange;

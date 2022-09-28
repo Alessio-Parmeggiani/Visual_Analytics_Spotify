@@ -1,8 +1,8 @@
 let base_color="#69b3a2"
-let highlight_color="red"
+let highlight_color="#d73027"
 
 //https://observablehq.com/@d3/color-schemes
-let simil_colors=["#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666"]
+const simil_colors = ["#fc8d59", "#fee090", "#e0f3f8", "#91bfdb", "#4575b4"]
 
 //Scatterplot styles
 let base_style={

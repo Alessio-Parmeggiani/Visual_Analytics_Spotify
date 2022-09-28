@@ -30,6 +30,74 @@ function main() {
 
     const filterBar = document.getElementById("filter-bar");
 
+    const innerArtistsColorKey = `
+        <div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: green; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Highlighted artist</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #d73027; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Selected artist</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Artist whose song is selected</span>
+            </div>
+        </div>
+    `
+    const innerSongsColorKey = `
+        <div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: green; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Highlighted song</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #d73027; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Selected song</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <span>: Songs made by selected artist</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #79bbab; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 2px 5px; flex-shrink: 0; align-self: flex-start;"></div>
+                <span>: Other songs made by the artist that made the selected song</span>
+            </div>
+        </div>
+    `
+
+    const artistsColorKey = document.getElementById("artists-color-key");
+    artistsColorKey.addEventListener('mouseover', (event) => {
+        tooltip_div.transition()		
+            .duration(200)		
+            .style("opacity", 1);                    	
+        tooltip_div.html(innerArtistsColorKey)
+            .style("width", 250 + "px")
+            .style("left", (event.clientX+5-250) + "px")		
+            .style("top", (event.clientY+5) + "px");
+    })
+    artistsColorKey.addEventListener("mouseout", (event) => {
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    })
+    const songsColorKey = document.getElementById("songs-color-key");
+    songsColorKey.addEventListener('mouseover', (event) => {
+        tooltip_div.transition()		
+            .duration(200)		
+            .style("opacity", 1);                    	
+        tooltip_div.html(innerSongsColorKey)
+            .style("width", 250 + "px")
+            .style("left", (event.clientX+5-250) + "px")		
+            .style("top", (event.clientY+5) + "px");
+    })
+    songsColorKey.addEventListener("mouseout", (event) => {
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    })
+
     const statsHeader = document.getElementById("stats-h3");
     statsHeader.addEventListener('mouseover', (event) => {
         tooltip_div.transition()		
