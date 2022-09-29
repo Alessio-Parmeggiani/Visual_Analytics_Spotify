@@ -190,29 +190,33 @@ function onClick(this_artist,d) {
                 d3.select(this).attr("class","circle");
 
                 let artist=d[2]
-                //if non selected artist stay normal
-                if (artist["artists"]!=selected_song["artists"] ||
-                    selected_song["co_artists"].indexOf(artist["artists"])>-1) {
+                //found artist of selected song
+                if (artist["artists"]==selected_song["artists"]) {
+                    console.log("trovato artista")
+                    d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(select_attr)
+                        .styles(select_style)
+                }
+                //found coartist of selected song
+                else if (selected_song["co_artists"].indexOf(artist["artists"])>-1) {
+                    //console.log("trovato coartista")
+                    //console.log("co-artist:",selected_song["co_artists"])
+                    //console.log("artist:",artist["artists"])
+                    d3.select(this)
+                        .transition()
+                        .duration(50)
+                        .attrs(select_co_attr)
+                        .styles(select_co_style)
+                }
+
+                else {
                     d3.select(this)
                         .transition()
                         .duration(50)
                         .attrs(base_attr)
                         .styles(base_style)
-                }
-                //if selected artist then change color
-                else if (artist["artists"]==selected_song["artists"]) {
-                    d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(select_attr)
-                        .styles(select_style)
-                }
-                else if (selected_song["co_artists"].indexOf(artist["artists"])>-1) {
-                    d3.select(this)
-                        .transition()
-                        .duration(50)
-                        .attrs(select_attr)
-                        .styles(select_style)
                 }
             
             })
@@ -405,42 +409,65 @@ function onMouseOut(this_artist) {
         //song selected remain selected
         //difference between song selected by clicking on artist or 
         //selection by clicking on other song of same artist
-        if (element["artists"]==selected_artist["artists"] ||
-            (element["co_artists"] && element["co_artists"].indexOf(selected_artist["artists"])>-1)) {
-            if (selected_song){
-                //selection by clicking on song
-                if (this_artist){
+
+        //song has been clicked
+        if (selected_song){
+            
+            //in artist plot
+            if (this_artist){
+                //artist of song -> highlight
+                if (element["artists"]==selected_artist["artists"]){
                     target_attr=select_attr
                     target_style=select_style
                 }
-                else{
+                //co-artist in song 
+                if (selected_song["co_artists"].indexOf(element["artists"])>-1){
+                    //console.log("CO-ARTIST")
+                    target_attr=select_co_attr
+                    target_style=select_co_style
+                }
+            }
+            //in song plot
+            else {
+                //song with same artist
+                if (element["artists"]==selected_artist["artists"]){
                     target_attr=same_artist_attr
                     target_style=same_artist_style
                 }
             }
-            else{
-                //selection by clicking on artist
-                if(this_artist){
+        }
+        //an artist has been clicked
+        else{
+            //in artist plot
+            if(this_artist){
+                //clicked artist
+                if (element["artists"]==selected_artist["artists"]){
                     target_attr=highlight_attr
                     target_style=highlight_style
                 }
-                else{
+            }
+            //in song plot
+            else{
+                //song made by the selected artist
+                if (element["artists"]==selected_artist["artists"]){
                     target_attr=select_attr
                     target_style=select_style
+                }
 
-                    if (element["co_artists"].indexOf(selected_artist["artists"])>-1){
-                        target_attr=select_co_attr
-                        target_style=select_co_style
-                    }
+                //song in whichc the selected artist is co-author
+                if (element["co_artists"].indexOf(selected_artist["artists"])>-1){
+                    target_attr=select_co_attr
+                    target_style=select_co_style
                 }
             }
-
-            //this is the song I selected, highlight in different color
-            if (selected_song && element["id"]==selected_song["id"]) {
-                target_attr=highlight_attr
-                target_style=highlight_style
-            }
         }
+
+        //this is the song I selected, highlight in different color
+        if (selected_song && element["id"]==selected_song["id"]) {
+            target_attr=highlight_attr
+            target_style=highlight_style
+        }
+        
         
 
         //apply target style
