@@ -2,6 +2,7 @@ html {
     scrollbar-width: none;
 }
 body {
+    --dark-mode-text-color: rgba(255,255,255,.8);
     height: 100vh;
     margin: 0;
     scrollbar-width: none;
@@ -9,6 +10,15 @@ body {
     overflow: hidden;
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
+}
+
+#dark-mode-toggle {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    height: 1.2em;
+    opacity: 50%;
+    cursor: pointer;
 }
 
 .title {
@@ -53,6 +63,10 @@ body {
     box-sizing: border-box;
     height: 100%;
     overflow: hidden;
+}
+
+#scatter-plot-and-name-container-1 {
+    border-right: 3px solid #e3e3e3;
 }
 
 .scatter-plot-and-name-container {

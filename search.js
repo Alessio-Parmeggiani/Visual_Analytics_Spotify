@@ -1,5 +1,5 @@
 const config = {
-    placeHolder: "\u2315  Search for songs or artists...",
+    placeHolder: "\u2315  Search for songs, artists, or click a point in the scatter plot",
     selector: "#search-input",
     data: {
         src: searchArray,

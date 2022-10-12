@@ -64,6 +64,7 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
         similHorizontalLines[i]
         .data(current_data)
         .transition()
+        .attr("class", "box-plot-horizontal-line")
         .attr("x1", d=>{return x_scale(d.category)-similBoxWidth/2 +offset_x})
         .attr("x2", d=>{return x_scale(d.category)+similBoxWidth/2 +offset_x})
         .attr("y1", function(d){ return(y_scale(d.median))} )
@@ -98,6 +99,7 @@ function update_boxplot(songs_data,simil_data,original_data,original_similar_dat
     // show median, min and max horizontal lines
     horizontalLine.data(songs_data)
     .transition()
+    .attr("class", "box-plot-horizontal-line")
     .attr("x1", d=>{return x_scale(d.category)-boxWidth/2})
     .attr("x2", d=>{return x_scale(d.category)+boxWidth/2})
     .attr("y1", function(d){ return(y_scale(d.median))} )

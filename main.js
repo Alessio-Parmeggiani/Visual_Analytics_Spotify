@@ -160,6 +160,21 @@ function main() {
             onClick(this_artist,nearest_elements[4].data)
         }          
     })       
+
+    // Dark or light mode toggle
+    const toggle = document.getElementById("dark-mode-toggle");
+    const colorHierarchy = document.getElementById("color-hierarchy");
+    toggle.addEventListener("click", function() {
+        document.getElementsByTagName("body")[0].classList.toggle("dark-mode");
+        if (document.getElementsByTagName("body")[0].classList.contains("dark-mode")) {
+            colorHierarchy.src = "../images/selected_and_hierarchy_dark.jpg";
+            toggle.src = "../images/light-mode.png"
+        }
+        else {
+            colorHierarchy.src = "../images/selected_and_hierarchy.jpg";
+            toggle.src = "../images/dark-mode.png"
+        }
+    })
     
 
 
