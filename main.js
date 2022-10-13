@@ -57,12 +57,16 @@ function main() {
                 <span>: Selected song</span>
             </div>
             <div style="display: flex; flex-direction: row; align-items: center;">
-                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
                 <span>: Songs made by selected artist</span>
             </div>
             <div style="display: flex; flex-direction: row; align-items: center;">
-                <div id="circle" style="background-color: #79bbab; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 2px 5px; flex-shrink: 0; align-self: flex-start;"></div>
-                <span>: Other songs made by the artist that made the selected song</span>
+                <div id="circle" style="background-color: grey; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 2px 5px; flex-shrink: 0; align-self: flex-start;"></div>
+                <span style="margin-left: 0px; text-align: left;">: Other songs made by the selected artist</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #984ea3; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 2px 5px; flex-shrink: 0; align-self: flex-start;"></div>
+                <span style="margin-left: 0px; text-align: left;">: Songs in which selected artist featured as a co-artist</span>
             </div>
         </div>
     `
@@ -113,6 +117,39 @@ function main() {
             .duration(500)		
             .style("opacity", 0);	
     })
+
+    const radialHeader = document.getElementById("radial-h3");
+    radialHeader.addEventListener('mouseover', (event) => {
+        tooltip_div.transition()		
+            .duration(200)		
+            .style("opacity", 1);                    	
+        tooltip_div.html("If a song is selected, this graph shows the values of its statistics and those of the five songs most similar to that. If an artist is selected, it shows the average values of the statistics of all their songs, and those of the five artists most similar to that.")
+            .style("width", 250 + "px")
+            .style("left", (event.clientX+5) + "px")		
+            .style("top", (event.clientY+5) + "px");
+    })
+    radialHeader.addEventListener("mouseout", (event) => {
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    })
+
+    const boxHeader = document.getElementById("box-h3");
+    boxHeader.addEventListener('mouseover', (event) => {
+        tooltip_div.transition()		
+            .duration(200)		
+            .style("opacity", 1);                    	
+        tooltip_div.html("This graph shows the aggregated values of the statistics of the selected artist or the artist that made the selected song.")
+            .style("width", 250 + "px")
+            .style("left", (event.clientX+5) + "px")		
+            .style("top", (event.clientY+5) + "px");
+    })
+    boxHeader.addEventListener("mouseout", (event) => {
+        tooltip_div.transition()		
+            .duration(500)		
+            .style("opacity", 0);	
+    })
+
 
     //Click on stat box
     document.getElementById("1-stats")

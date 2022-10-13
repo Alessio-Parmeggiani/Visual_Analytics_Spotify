@@ -110,15 +110,26 @@ svg {
     width: 100%;
 }
 
-#radial-graph {
+#radial-graph-container {
     grid-area: radial-graph;
-    /*width: 50%;*/
-    /*border-right: 3px solid green;*/
+    display: flex;
+    flex-direction: column;
+}
+
+#radial-graph {
+    width: 100%;
+    height: 100%;
+}
+
+#other-graph-container {
+    grid-area: other-graph;
+    display: flex;
+    flex-direction: column;
 }
 
 #other-graph {
-    grid-area: other-graph;
-    /*width: 50%;*/
+    width: 100%;
+    height: 100%;
 }
 
 .block {

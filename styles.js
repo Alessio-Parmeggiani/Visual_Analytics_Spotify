@@ -43,17 +43,17 @@ let select_style={
 }
 let select_attr={
     "r":7,
-    "stroke": "red",
-    "stroke-width":1,
+    "stroke": "black",
+    "stroke-width":2,
 }
 let select_co_style={
     "opacity": 1,
-    "fill":"blue",
+    "fill":"#984ea3",
 }
 let select_co_attr={
     "r":6,
-    "stroke": "blue",
-    "stroke-width":1,
+    "stroke": "black",
+    "stroke-width":2,
 }
 
 //similar artists/songs to clicked
@@ -64,7 +64,7 @@ let simil_style={
 let simil_attr={
     "r":7,
     "stroke": "black",
-    "stroke-width":1,
+    "stroke-width":2,
 }
 
 
@@ -76,7 +76,7 @@ let same_artist_style={
 let same_artist_attr={
     "r":5,
     "stroke": "red",
-    "stroke-width":1,
+    "stroke-width":2,
 }
 
 let same_co_artist_style={
@@ -86,7 +86,7 @@ let same_co_artist_style={
 let same_co_artist_attr={
     "r":3,
     "stroke": "none",
-    "stroke-width":1,
+    "stroke-width":2,
 }
 
 let inactive_style={
