@@ -163,6 +163,7 @@ function boxPlotMain() {
     .attr("transform", "translate(0," + (height-margin_bottom) + ")")
     .call(d3.axisBottom(x_scale))
     .selectAll("text")  
+    .style("font-size", "12px")
     .style("text-anchor", "end")
     .attr("dx", "-.8em")
     .attr("dy", "0.5em")
