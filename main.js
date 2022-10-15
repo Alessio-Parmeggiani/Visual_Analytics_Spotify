@@ -223,6 +223,7 @@ function main() {
             for(var i=0;i<categories.length;i++){
                 const limits=getMaxMin(data, categories[i]) //limits[0] is min, limits[1] is max
                 cat_limits.push(limits)
+                cat_mu_std.push(getMuStd(data, categories[i]))
             }
 
             // Initialize filters

@@ -1,4 +1,5 @@
 var cat_limits=[];
+var cat_mu_std=[];
 
 let filterLimits = {};
 
@@ -557,7 +558,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
                 value_not_norm=d3.mean(songByArtists_[i][1], 
                     d=>d[categories[j]])
                 value=d3.mean(songByArtists_[i][1], 
-                    d=>norm_min_max(d[categories[j]], cat_limits[j][0], cat_limits[j][1]))
+                    d=>normalize(d[categories[j]], cat_mu_std[j][0], cat_mu_std[j][1]))
                 artist_data.push(value)
                 additional_data[categories[j]]=value_not_norm
             }
@@ -593,7 +594,7 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         for(var i=0;i<data.length;i++){
             songData=[]
             for(var j=0;j<categories.length;j++){
-                value=norm_min_max(data[i][categories[j]], cat_limits[j][0], cat_limits[j][1])
+                value=normalize(data[i][categories[j]], cat_mu_std[j][0], cat_mu_std[j][1])
                 songData.push(value)
             }
             songsData.push(songData)

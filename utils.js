@@ -58,10 +58,20 @@ function getMaxMin(data, key) {
     return [min, max];
 }
 
+function getMuStd(data, key) {
+    let std = d3.deviation(data, d => d[key]);
+    let med = d3.median(data, d => d[key]);
+    console.log("mu:",med,"std:",std)
+    return [med, std];
+}
+
 function norm_min_max(value, min, max) {
     return (value - min) / (max - min);
 }
 
+function normalize(value,mean,std){
+    return (value-mean)/std
+}
 function getPCA(pca_data){
     //data must be in matrix form
     var PCAvectors = PCA.getEigenVectors(pca_data);
