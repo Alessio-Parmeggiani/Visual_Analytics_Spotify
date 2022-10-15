@@ -232,7 +232,7 @@ function getRadiusBySongsNumber(name,this_artist,default_radius){
             let numSongs=temp[1].length;
             if(!temp[1].length) numSongs=1
             if(numSongs>maxSongsByArtist) return max_value;
-            return default_radius/1.5+max_value*((numSongs)/maxSongsByArtist)   
+            return default_radius+max_value*((numSongs)/maxSongsByArtist)   
         }
     }
     return default_radius;
