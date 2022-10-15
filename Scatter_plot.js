@@ -11,6 +11,8 @@ let selected_song_coord;
 let artistsPCA;
 let songsPCA;
 
+let songByArtists_;
+
 let tooltip_div;
 
 let highlighted_element;
@@ -37,7 +39,7 @@ let displayedSongs = [];
 let artistsNonDuplicates = [];
 //PCA FROM https://www.npmjs.com/package/pca-js
 
-
+let maxSongsByArtist=0;
 
 
 function onClick(this_artist,d) {
@@ -161,9 +163,12 @@ function onClick(this_artist,d) {
                             }
                         }
                         if(!is_simil){
-                        d3.select(this).transition()
-                        .attrs(base_attr)
-                        .styles(base_style)
+                            d3.select(this).transition()
+                            .attrs(base_attr)
+                            .attr("r", function (d) {
+                                return getRadiusBySongsNumber(artist["artists"],this_artist,base_attr.r)
+                            } )
+                            .styles(base_style)
                         }
                     }
                     else {
@@ -348,6 +353,8 @@ function onMouseOut(this_artist) {
     return function (d, i) {
         //events on mouse out from scatter dot
         let target_attr=base_attr
+        
+        
         let target_style=base_style
 
         //tooltip disappear
@@ -363,6 +370,10 @@ function onMouseOut(this_artist) {
                 .transition()
                 .duration(50)
                 .attrs(base_attr)
+                .attr("r", function (d) {
+                    //console.log("size",getRadiusBySongsNumber(d[2]["artists"],this_artist,base_attr.r))
+                    return getRadiusBySongsNumber(d[2]["artists"],this_artist,base_attr.r)
+                } )
                 .styles(base_style)
             return
         }
@@ -409,7 +420,14 @@ function onMouseOut(this_artist) {
         //song selected remain selected
         //difference between song selected by clicking on artist or 
         //selection by clicking on other song of same artist
-
+        let incr_radius=base_attr.r;
+        let normal_dot=true;
+        if (this_artist){
+            //if artist is selected, then only song of selected artist are highlighted
+            let artist_name=element["artists"]
+            incr_radius=getRadiusBySongsNumber(artist_name,this_artist,3)
+        }
+        
         //song has been clicked
         if (selected_song){
             
@@ -419,13 +437,16 @@ function onMouseOut(this_artist) {
                 if (element["artists"]==selected_artist["artists"]){
                     target_attr=select_attr
                     target_style=select_style
+                    normal_dot=false
                 }
                 //co-artist in song 
                 if (selected_song["co_artists"].indexOf(element["artists"])>-1){
                     //console.log("CO-ARTIST")
                     target_attr=select_co_attr
                     target_style=select_co_style
+                    normal_dot=false
                 }
+
             }
             //in song plot
             else {
@@ -433,6 +454,7 @@ function onMouseOut(this_artist) {
                 if (element["artists"]==selected_artist["artists"]){
                     target_attr=same_artist_attr
                     target_style=same_artist_style
+                    normal_dot=false
                 }
             }
         }
@@ -444,6 +466,7 @@ function onMouseOut(this_artist) {
                 if (element["artists"]==selected_artist["artists"]){
                     target_attr=highlight_attr
                     target_style=highlight_style
+                    normal_dot=false
                 }
             }
             //in song plot
@@ -452,12 +475,14 @@ function onMouseOut(this_artist) {
                 if (element["artists"]==selected_artist["artists"]){
                     target_attr=select_attr
                     target_style=select_style
+                    normal_dot=false
                 }
 
                 //song in whichc the selected artist is co-author
                 if (element["co_artists"].indexOf(selected_artist["artists"])>-1){
                     target_attr=select_co_attr
                     target_style=select_co_style
+                    normal_dot=false
                 }
             }
         }
@@ -466,6 +491,7 @@ function onMouseOut(this_artist) {
         if (selected_song && element["id"]==selected_song["id"]) {
             target_attr=highlight_attr
             target_style=highlight_style
+            normal_dot=false
         }
         
         
@@ -475,7 +501,13 @@ function onMouseOut(this_artist) {
         .transition()
         .duration(50)
         .attrs(target_attr)
+        .attr("r", function (d) {
+            if (normal_dot) return incr_radius
+            return target_attr.r
+        })
         .styles(target_style)
+
+        //starget_attr=base_attr;
     }
 }
 
@@ -486,11 +518,21 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
     if (this_artist) {
         //group song by artist
         //artists or artist_ids
-        songByArtists_=d3.groups(data, d=>d["artists"])
-        console.log("Grouped songs",songByArtists_)
+        /*
+        songByArtists__=d3.groups(data, d=>d["artists"])
+        console.log("Grouped songs",songByArtists__)
+        */
+        //get max number of songs per artist
+        
+
 
         songByArtists_=groupByArtist(data)
         console.log("my Grouped songs",songByArtists_)
+
+        for (let i=0; i<songByArtists_.length; i++){
+            if (songByArtists_[i][1].length>maxSongsByArtist) 
+                maxSongsByArtist=songByArtists_[i][1].length
+        }
 
         //create new matrix with for each artist 6 values that are the mean of the 
         //caetgories for each song
@@ -691,6 +733,9 @@ function ScatterPlotMain(data, margin, width, height, svg, this_artist) {
         .attr("cx", function (d) { return x(d[0]); } )
         .attr("cy", function (d) { return y(d[1]); } )
         .attrs(base_attr)
+        .attr("r", function (d) {
+            return getRadiusBySongsNumber(d[2].artists,this_artist,base_attr.r)
+        } )
         .styles(base_style)
         .on('click', function(d) {
             console.log("selected element on scatter:",d)
@@ -757,6 +802,9 @@ function applyFilter(lowLimit, topLimit, cat) {
             .attr("cx", function (d) { return x(d[0]); } )
             .attr("cy", function (d) { return y(d[1]); } )
             .attrs(base_attr)
+            .attr("r", function (d) {
+                return getRadiusBySongsNumber(d[2].artists,true,base_attr.r)
+            } )
             .styles(base_style)
             .on('click', function(d) {
                 console.log("selected element on scatter:",d)

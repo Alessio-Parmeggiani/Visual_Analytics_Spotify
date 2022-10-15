@@ -210,3 +210,20 @@ function groupByArtist(data){
     }
     return groupedSongs
 }
+
+function getRadiusBySongsNumber(name,this_artist,default_radius){
+    //console.log("creating scatter:",d);  
+    if(!this_artist) return default_radius
+    let max_value=default_radius*3;
+    for (var i = 0; i < songByArtists_.length; i++) {
+        let temp=songByArtists_[i]
+        if (temp[0]==name) {
+            //map value between 3 and 10
+            let numSongs=temp[1].length;
+            if(!temp[1].length) numSongs=1
+            if(numSongs>maxSongsByArtist) return max_value;
+            return default_radius/1.5+max_value*((numSongs)/maxSongsByArtist)   
+        }
+    }
+    return default_radius;
+}
