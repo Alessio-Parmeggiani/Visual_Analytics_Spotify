@@ -41,8 +41,12 @@ function main() {
                 <span>: Selected artist</span>
             </div>
             <div style="display: flex; flex-direction: row; align-items: center;">
-                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid red; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
+                <div id="circle" style="background-color: #FF66D8; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 0 5px;"></div>
                 <span>: Artist whose song is selected</span>
+            </div>
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <div id="circle" style="background-color: #984ea3; opacity: 1; border: 2px solid black; width: 10px; height: 10px; border-radius: 100%; margin: 2px 5px; flex-shrink: 0; align-self: flex-start;"></div>
+                <span style="margin-left: 0px; text-align: left;">: Co-author of the selected song</span>
             </div>
         </div>
     `
