@@ -221,6 +221,9 @@ function onClick(this_artist,d) {
                         .transition()
                         .duration(50)
                         .attrs(base_attr)
+                        .attr("r", function (d) {
+                            return getRadiusBySongsNumber(d[2]["artists"],true,base_attr.r)
+                        } )
                         .styles(base_style)
                 }
             
