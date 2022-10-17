@@ -1,7 +1,7 @@
 # Visual Analytics Project
 ## Recommendation system for Spotify songs
 
-### Made by
+### Authors
 - Alessio Parmeggiani
 - Alessio Sfregola
 
