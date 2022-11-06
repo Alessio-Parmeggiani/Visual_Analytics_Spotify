@@ -9,16 +9,16 @@
         <script src="https://d3js.org/d3.v7.min.js"></script>
         <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/autoComplete.min.js"></script>
-        <script defer src="..\lib\pca.js"></script>
-        <script defer src="..\utils.js"></script>
-        <script defer src="..\styles.js"></script>
-        <script defer src="..\show_stats.js"></script>
-        <script defer src="..\histogram_filter.js"></script>
-        <script defer src="..\Scatter_plot.js"></script>
-        <script defer src="..\search.js"></script>
-        <script defer src="..\boxplot.js"></script>
-        <script defer src="..\radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
-        <script defer src="..\main.js"></script>
+        <script defer src="lib\pca.js"></script>
+        <script defer src="utils.js"></script>
+        <script defer src="styles.js"></script>
+        <script defer src="show_stats.js"></script>
+        <script defer src="histogram_filter.js"></script>
+        <script defer src="Scatter_plot.js"></script>
+        <script defer src="search.js"></script>
+        <script defer src="boxplot.js"></script>
+        <script defer src="radial_plot.js"></script> <!-- the defer attribute lets the script load but waits for the DOM to be ready before executing it -->
+        <script defer src="main.js"></script>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"> 
@@ -26,7 +26,7 @@
     </head>
     <body>
         <div id="container">
-            <img id="dark-mode-toggle" src="../images/dark-mode.png" alt="Toggle for dark or light mode">
+            <img id="dark-mode-toggle" src="images/dark-mode.png" alt="Toggle for dark or light mode">
             <div id="filter-bar-container" class="block">
                 <h3 class="title">Filters</h3>
                 <div id="filter-bar">
@@ -43,7 +43,7 @@
                             <div>
                                 <h3 class="scatter-plot-title">Songs</h3>
                             </div>
-                            <h4 class="color-key" id="songs-color-key">Color key <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
+                            <h4 class="color-key" id="songs-color-key">Color key <img class="question-mark" src="images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
                         </div>
                         <div id="scatter-plot-1" class="scatter-plot"></div>
                     </div>
@@ -52,7 +52,7 @@
                             <div>
                                 <h3 class="scatter-plot-title">Artists</h3>
                             </div>
-                            <h4 class="color-key" id="artists-color-key">Color key <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
+                            <h4 class="color-key" id="artists-color-key">Color key <img class="question-mark" src="images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h4>
                         </div>
                         <div id="scatter-plot-2" class="scatter-plot"></div>
                     </div>
@@ -60,8 +60,8 @@
             </div>
             <div id="stats-bar" class="block">
                 <div id="stats-bar-header">
-                    <h3 id="stats-h3" class="title">Stats <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h3>
-                    <img id="color-hierarchy" src="../images/selected_and_hierarchy.jpg" alt="Color hierarchy description">
+                    <h3 id="stats-h3" class="title">Stats <img class="question-mark" src="images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></h3>
+                    <img id="color-hierarchy" src="images/selected_and_hierarchy.jpg" alt="Color hierarchy description">
                 </div>
                 <div id="stats-container">
                     <div class="stats-and-bar">
@@ -92,11 +92,11 @@
             </div>
             <div id="graphs" class="block">
                 <div id="radial-graph-container">
-                    <h3 class="title"><span id="radial-h3">Radial Plot <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></span></h3>
+                    <h3 class="title"><span id="radial-h3">Radial Plot <img class="question-mark" src="images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></span></h3>
                     <div id="radial-graph"></div>
                 </div>
                 <div id="other-graph-container">
-                    <h3 class="title"><span id="box-h3">Box Plot <img class="question-mark" src="../images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></span></h3>
+                    <h3 class="title"><span id="box-h3">Box Plot <img class="question-mark" src="images/question-mark-on-a-circular-black-background.png" alt="Question Mark Icon"></span></h3>
                     <div id="other-graph"></div>
                 </div>
             </div>
