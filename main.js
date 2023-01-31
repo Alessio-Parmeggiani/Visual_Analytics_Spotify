@@ -220,7 +220,7 @@ function main() {
 
 
     //Read the data and plot the plots
-    d3.csv("../datasets/tracks_mid_1k.csv",d3.autoType)
+    d3.csv("./datasets/tracks_mid_1k.csv",d3.autoType)
         .then( function(data){ 
             console.log("data loaded")
             //get max and min for categories of radial plot (to nromalize)
